@@ -1,0 +1,37 @@
+{
+  "name": "account-store",
+  "version": "0.1.0",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "serve": "vue-cli-service serve --port 54321 --mode dev",
+    "build": "vue-cli-service build --mode pro",
+    "lint": "vue-cli-service lint",
+    "build:electron": "set NODE_ENV=production&&　electron-packager ./dist --overwrite --platform=win32 --arch=ia32 --asar --out=output --icon=./dist/favicon.ico",
+    "dev:electron": "set NODE_ENV=development&& electron ./app.js",
+    "test": "run-p serve dev:electron",
+    "dist": "run-s build build:electron"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@types/electron-devtools-installer": "^2.2.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "electron": "^12.0.9",
+    "electron-devtools-installer-bycrx": "^1.1.0",
+    "electron-packager": "^15.2.0",
+    "npm-run-all": "^4.1.5",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "typescript": "~4.1.5"
+  }
+}

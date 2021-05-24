@@ -2,7 +2,7 @@
  * @Description: vue-cli配置文件
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-23 00:22:44
- * @LastEditTime: 2021-05-23 18:52:10
+ * @LastEditTime: 2021-05-24 16:11:07
  */
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -14,19 +14,18 @@ module.exports = {
 		// host: "0.0.0.0",
 	},
 	chainWebpack: config => {
-		//将package.json复制到dist目录下，因为打包electron需要
+		//将以下文件复制到dist目录下，因为打包electron需要
 		config.plugin('copy').use(CopyWebpackPlugin, [[
 			{
 				from: 'package.json',
 				to: './'
 			},
 			{
-				from: 'app.js',
-				to: './'
-			},
-			{
-				from: 'app.preload.js',
-				to: './'
+				from: 'sys',
+				to: './',
+				globOptions: {
+					ignore: ["**/*.md", "**/*.ts", "**/*.json"]
+				}
 			},
 			{
 				from: 'public/favicon.ico',

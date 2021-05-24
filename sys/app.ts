@@ -2,16 +2,16 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-05-23 19:17:34
+ * @LastEditTime: 2021-05-24 16:06:33
  */
-const { app, BrowserWindow, Menu } = require('electron')
-const path = require('path')
+import { app, BrowserWindow, Menu, ipcMain } from 'electron'
+import path from 'path'
 
 // 环境变量
 const IsDev = process.env.NODE_ENV == "development"
 
 // 创建一个带有预加载脚本的新的浏览器窗口
-function createWindow () {
+function createWindow() {
     //隐藏菜单栏
     Menu.setApplicationMenu(null)
 
@@ -24,16 +24,18 @@ function createWindow () {
         resizable: IsDev, // 宽高拖拽
         frame: IsDev, // 边框显示
         webPreferences: {// web首选项
-            // nodeIntegration: true,// 具有Node集成, 并且可以使用像 require 和 process 这样的node APIs 去访问低层系统资源，不推荐
-            webSecurity: false,  //关闭窗口跨域,可访问本地绝对路径资源(图片)
-            preload: path.join(__dirname, 'app.preload.js') // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
+            nodeIntegration: false, // 是否开启Node集成, 并且可以使用像 require 和 process 这样的node APIs 去访问低层系统资源，Electron v5之后的默认为false
+            webSecurity: false,  // 关闭窗口跨域,可访问本地绝对路径资源(图片)
+            contextIsolation: true,// 上下文隔离（主进程和渲染进程隔离）防止原型污染
+            enableRemoteModule: false, // 关闭渲染进程中使用远程（remote）模块访问主进程方法，若要使用只能使用ipc模块发送消息事件
+            preload: path.join(__dirname, 'sys/preload/index.js') // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
         }
     })
 
     if (IsDev) {
         // 获取端口号
         const request = require('request')
-        const Port = process.env.npm_package_scripts_serve.split(" ").find((item, index, arr) => arr[index - 1] == "--port")
+        const Port = process.env.npm_package_scripts_serve!.split(" ").find((item, index, arr) => arr[index - 1] == "--port")
 
         // 打开测试页
         Win.loadURL("http://127.0.0.1:" + Port)
@@ -41,7 +43,7 @@ function createWindow () {
         // 由于vue-cli-service serve和electron命令同时启动，无法判定哪个先启动完成
         // 所以这里写个定时器，不断加载直到加载成功
         const Timer = setInterval(() => {
-            request("http://127.0.0.1:" + Port, function (err) {
+            request("http://127.0.0.1:" + Port, function (err: any) {
                 if (!err) {
                     // 刷新页面
                     Win.reload()
@@ -95,4 +97,9 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit()
     }
+})
+
+// 接收渲染进程（操作系统模块）,将模块返回
+ipcMain.on('todo', (event, something) => {
+    event.returnValue = something
 })

@@ -3,6 +3,14 @@ node_modules
 /dist
 /output
 
+# sys
+/sys/*.js
+/sys/*.map
+/sys/**/*.js
+/sys/**/*.map
+/sys/**/**/*.js
+/sys/**/**/*.map
+
 # Log files
 npm-debug.log*
 yarn-debug.log*

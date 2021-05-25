@@ -9,7 +9,6 @@
       "skipLibCheck": true,
       "esModuleInterop": true,
       "allowSyntheticDefaultImports": true,
-      "suppressImplicitAnyIndexErrors":true,
       "sourceMap": false,
       "baseUrl": ".",
       "paths": {
@@ -19,7 +18,8 @@
         "esnext",
         "dom",
         "dom.iterable",
-        "scripthost"
+        "scripthost",
+        "ES6"
       ]
     },
     "include": [

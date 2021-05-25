@@ -2,13 +2,19 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-25 13:23:05
+ * @LastEditTime: 2021-05-25 15:01:07
  */
 
 import { saveAccount } from "../service"
+import Response from "../config/Response"
+
+// 定义可索引类型的接口
+interface IMethods {
+    [key: string]: (...arg: any[]) => any
+}
 
 // 方法map
-const methods = {
+const methods: IMethods = {
     saveAccount
 }
 
@@ -19,10 +25,7 @@ export default (ipcMain: Electron.IpcMain) => {
         if (Object.keys(methods).includes(something)) {
             res = await methods[something](parames)
         } else {
-            res = {
-                ok: 0,
-                msg: `不存在“${something}”方法或此方法被禁用！`
-            }
+            res = Response.fail(`不存在“${something}”方法或此方法被禁用！`)
         }
         event.reply(something, res)
     })

@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-05-25 13:18:36
+ * @LastEditTime: 2021-05-25 15:01:15
  */
 
 /**
@@ -23,6 +23,7 @@
 
 
 import { contextBridge, ipcRenderer as ipc } from 'electron'
+import Response from "../config/Response"
 
 /**
  * 关闭控制台安全警告
@@ -52,10 +53,7 @@ contextBridge.exposeInMainWorld("sys", {
                     }
                 })
             } else {
-                reject({
-                    ok: 0,
-                    msg: `不存在“${something}”方法或此方法被禁用！`
-                })
+                reject(Response.fail(`不存在“${something}”方法或此方法被禁用！`))
             }
         })
     }

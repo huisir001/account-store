@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-05-24 15:28:07
+ * @LastEditTime: 2021-05-25 13:18:36
  */
 
 /**
@@ -39,9 +39,24 @@ const apiWhiteList = ['fs']
  * 将模块暴露给window对象
  */
 contextBridge.exposeInMainWorld("sys", {
-    do(something: string) {
-        if (apiWhiteList.includes(something)) {
-            return ipc.sendSync('todo', something)
-        }
+    do(something: string, parames: object) {
+        // 返回一个Promise用于接收执行结果
+        return new Promise((resolve, reject) => {
+            if (apiWhiteList.includes(something)) {
+                ipc.send('todo', something, parames)
+                ipc.on(something, (_, res) => {
+                    if (res.ok === 1) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                })
+            } else {
+                reject({
+                    ok: 0,
+                    msg: `不存在“${something}”方法或此方法被禁用！`
+                })
+            }
+        })
     }
 })

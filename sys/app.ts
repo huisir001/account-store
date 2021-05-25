@@ -2,10 +2,11 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-05-24 16:06:33
+ * @LastEditTime: 2021-05-25 11:49:49
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
+import router from "./router"
 
 // 环境变量
 const IsDev = process.env.NODE_ENV == "development"
@@ -35,7 +36,7 @@ function createWindow() {
     if (IsDev) {
         // 获取端口号
         const request = require('request')
-        const Port = process.env.npm_package_scripts_serve!.split(" ").find((item, index, arr) => arr[index - 1] == "--port")
+        const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] == "--port")
 
         // 打开测试页
         Win.loadURL("http://127.0.0.1:" + Port)
@@ -99,7 +100,5 @@ app.on('window-all-closed', () => {
     }
 })
 
-// 接收渲染进程（操作系统模块）,将模块返回
-ipcMain.on('todo', (event, something) => {
-    event.returnValue = something
-})
+// 系统操作分发
+router(ipcMain)

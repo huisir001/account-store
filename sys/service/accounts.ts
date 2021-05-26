@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-26 11:27:11
+ * @LastEditTime: 2021-05-26 13:43:43
  */
 import Response from "../config/Response"
 
@@ -17,6 +17,7 @@ interface IAddAccountParams {
 }
 
 interface IGetListParams {
+    name?: string // 名称
     page: number // 当前页码
     limit: number // 每页条数
 }
@@ -52,12 +53,12 @@ const delAccount = (id: string): Promise<Response> => {
 }
 
 /**
- * @description: 
+ * @description: 分页查询列表
  * @param {IGetListParams} params
  * @return {*}
  */
 const getAccountListByPage = (params: IGetListParams): Promise<Response> => {
-    const { page, limit } = params
+    const { page, limit, name = "" } = params // name 模糊查询，可不传
 
     return new Promise((resolve, reject) => {
 

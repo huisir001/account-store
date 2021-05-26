@@ -2,7 +2,7 @@
  * @Description: 响应参数配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 14:23:18
- * @LastEditTime: 2021-05-26 11:23:54
+ * @LastEditTime: 2021-05-26 22:33:27
  */
 interface IResponse {
     ok: number
@@ -16,14 +16,6 @@ interface ISuccArg {
 }
 
 export default class Response implements IResponse {
-    ok: number = 1
-    msg: string = "成功"
-    data?: any
-    private constructor(ok?: number, msg?: string, data?: any) {
-        ok && (this.ok = ok)
-        msg && (this.msg = msg)
-        data && (this.data = data)
-    }
 
     static succ(arg: ISuccArg = {}): Response {
         const { msg, data } = arg
@@ -33,4 +25,15 @@ export default class Response implements IResponse {
     static fail(msg: string = "未知错误"): Response {
         return new Response(0, msg)
     }
+
+    ok: number = 1
+    msg: string = "成功"
+    data?: any
+
+    private constructor(ok?: number, msg?: string, data?: any) {
+        ok && (this.ok = ok)
+        msg && (this.msg = msg)
+        data && (this.data = data)
+    }
+
 }

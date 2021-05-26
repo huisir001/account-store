@@ -13,8 +13,14 @@
     "interface-name": false,
     "no-consecutive-blank-lines": false,
     "object-literal-sort-keys": false,
+    "no-trailing-whitespace": false,
     "ordered-imports": false,
+    "eofline": false,
     "quotemark": [false, "single"],
+    "trailing-comma":false,
+    "member-access": [true, "no-public"],
+    "no-conditional-assignment": true,
+     "no-unused-expression": false,
     "semicolon": [
       false,
       "always"

@@ -2,9 +2,9 @@
  * @Description: 日志处理 log4js
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:05:31
- * @LastEditTime: 2021-05-26 18:05:46
+ * @LastEditTime: 2021-05-26 22:27:10
  */
-const log4js = require('log4js')
+import log4js from 'log4js'
 const isDev = process.argv.includes('--dev')
 
 //日志等级列表，顺序越后等级越高
@@ -72,8 +72,8 @@ log4js.configure({
     //pm2:true  //使用pm2执行
 })
 
-const Log = isDev ? log4js.getLogger('debug') : log4js.getLogger(),
-    Print = log4js.getLogger('process')
+const Log = isDev ? log4js.getLogger('debug') : log4js.getLogger()
+const Print = log4js.getLogger('process')
 
 /* Example */
 // Log.trace('Log', 'Entering cheese testing')

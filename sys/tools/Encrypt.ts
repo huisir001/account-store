@@ -2,11 +2,9 @@
  * @Description: 对称加密
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:09:58
- * @LastEditTime: 2021-05-26 18:39:10
+ * @LastEditTime: 2021-05-26 22:24:30
  */
-
-// const { Log } = require('./logger') //日志
-import { SKEY } from "../config/const"
+import CONST from "../config/const"
 
 class Encrypt {
     private skey: string
@@ -16,24 +14,24 @@ class Encrypt {
     }
 
     //加密
-    encrypt(str, skey = this.skey) {
-        let strArr = Buffer.from(str + skey)
+    encrypt(str: string, skey: string = this.skey) {
+        const strArr: string[] = Buffer.from(str + skey)
             .toString('base64')
             .split('') //Base64
         strArr.reverse() //逆序
-        let enStr = strArr.join('').replace(/=/g, '$') //将=替换
+        const enStr: string = strArr.join('').replace(/=/g, '$') //将=替换
         return enStr
     }
 
     //解密
-    decrypt(pass, skey = this.skey) {
-        let strArr = pass.replace(/\$/g, '=').split('')
+    decrypt(pass: string, skey: string = this.skey) {
+        const strArr: string[] = pass.replace(/\$/g, '=').split('')
         strArr.reverse() //逆序
-        let str = Buffer.from(strArr.join(''), 'base64')
+        const str: string = Buffer.from(strArr.join(''), 'base64')
             .toString()
             .split(skey)[0]
         return str
     }
 }
 
-export default new Encrypt(SKEY)
+export default new Encrypt(CONST.SKEY)

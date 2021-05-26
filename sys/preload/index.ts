@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-05-26 11:24:03
+ * @LastEditTime: 2021-05-26 22:01:04
  */
 
 /**
@@ -11,7 +11,8 @@
  * 预加载脚本在渲染进程中最先执行。（在浏览器窗口中执行一次）
  * 这里可以设置访问后台数据的白名单，使用ipc进行进程间传值
  * 预加载js只会执行一次
- * 使用`contextBridge.exposeInMainWorld(key,data/method)`方法可以将方法暴露给渲染进程window对象，可见文档(https://www.electronjs.org/docs/api/context-bridge#contextbridge)
+ * 使用`contextBridge.exposeInMainWorld(key,data/method)`方法可以将方法暴露给渲染进程window对象，
+ * 可见文档(https://www.electronjs.org/docs/api/context-bridge#contextbridge)
  */
 
 /**
@@ -29,7 +30,7 @@ import Permission from "../config/Permission"
  * 关闭控制台安全警告
  * 除了这种方式，也可以在命令中执行`set ELECTRON_DISABLE_SECURITY_WARNINGS=true`
  */
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 /**
  * 将模块暴露给window对象

@@ -2,7 +2,7 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-26 11:29:37
+ * @LastEditTime: 2021-05-26 21:57:25
  */
 
 import { saveAccount, delAccount, getAccountListByPage } from "../service/accounts"
@@ -18,7 +18,7 @@ const methods: IMethods = {
     // accounts
     saveAccount,
     delAccount,
-    getAccountListByPage
+    getAccountListByPage,
 }
 
 export default (ipcMain: Electron.IpcMain) => {

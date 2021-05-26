@@ -2,7 +2,7 @@
  * @Description: 日志处理 log4js
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:05:31
- * @LastEditTime: 2021-05-26 22:27:10
+ * @LastEditTime: 2021-05-26 22:39:45
  */
 import log4js from 'log4js'
 const isDev = process.argv.includes('--dev')
@@ -85,7 +85,7 @@ const Print = log4js.getLogger('process')
 // Log.error('Log', 'Cheese is too ripe!')
 // Log.fatal('Log', 'Cheese was breeding ground for listeria.')
 
-module.exports = {
+export {
     Log,
     Print,
 }

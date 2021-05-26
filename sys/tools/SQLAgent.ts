@@ -2,11 +2,11 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-26 17:55:48
+ * @LastEditTime: 2021-05-26 22:42:05
  */
-const { Log } = require('../../utils/logger') //日志
-const { v1: uuidv1 } = require('uuid')
-class DB {
+import { Log } from './Logger' //日志
+import { v1 as uuidv1 } from 'uuid'
+class SQLAgent {
     /**
      * 构造方法
      */
@@ -35,7 +35,7 @@ class DB {
             removeKeys = [],
             getOutKeys = []
         filterKeys.forEach((item) => {
-            if (item[0] == '-') {
+            if (item[0] === '-') {
                 removeKeys.push(item.slice(1))
             } else {
                 getOutKeys.push(item)
@@ -60,7 +60,7 @@ class DB {
      */
     static obj2whereStr(where) {
         //字符串直接返回
-        if (typeof where == 'string') {
+        if (typeof where === 'string') {
             return where
         }
         //对象类型
@@ -95,7 +95,7 @@ class DB {
      * @author: HuiSir
      */
     static sort2QueryStr(orderStr) {
-        if (!orderStr || orderStr.trim() == '') {
+        if (!orderStr || orderStr.trim() === '') {
             return ''
         }
 
@@ -103,7 +103,7 @@ class DB {
         const orderArr2 = orderArr.map((item) => {
             //升降序，带-号为降序
             let sortMark = 'ASC' //升序
-            if (item[0] == '-') {
+            if (item[0] === '-') {
                 item = item.slice(1)
                 sortMark = 'DESC'
             }
@@ -144,7 +144,7 @@ class DB {
             if (error) {
                 Log.error(error)
             } else {
-                if (result.length == 0) {
+                if (result.length === 0) {
                     //表不存在创建表
                     let dbQueryStemp = ''
                     Object.keys(schema).forEach((key) => {
@@ -260,7 +260,7 @@ class DB {
             return Promise.reject(new Error('请传参Array对象')) //返回带有拒绝原因的promise对象
         }
 
-        if (slot.length == 0) {
+        if (slot.length === 0) {
             return Promise.reject(new Error('插入数据为空')) //返回带有拒绝原因的promise对象
         }
 
@@ -367,4 +367,4 @@ class DB {
     }
 }
 
-module.exports = DB
+export default SQLAgent

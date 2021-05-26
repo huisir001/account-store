@@ -2,24 +2,24 @@
  * @Description: 响应参数配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 14:23:18
- * @LastEditTime: 2021-05-25 15:00:17
+ * @LastEditTime: 2021-05-26 11:23:54
  */
 interface IResponse {
     ok: number
     msg: string
-    data?: object
+    data?: any
 }
 
 interface ISuccArg {
     msg?: string
-    data?: object
+    data?: any
 }
 
 export default class Response implements IResponse {
     ok: number = 1
     msg: string = "成功"
-    data?: object
-    constructor(ok?: number, msg?: string, data?: object) {
+    data?: any
+    private constructor(ok?: number, msg?: string, data?: any) {
         ok && (this.ok = ok)
         msg && (this.msg = msg)
         data && (this.data = data)

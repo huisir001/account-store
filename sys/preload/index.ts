@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-05-25 15:01:15
+ * @LastEditTime: 2021-05-26 11:24:03
  */
 
 /**
@@ -21,9 +21,9 @@
  * 也就是说用户以为系统级别的操作是在客户端窗口中完成的，而实际是通过消息传递（类似前端接口传参）到主进程（类似后端）完成的
  */
 
-
 import { contextBridge, ipcRenderer as ipc } from 'electron'
 import Response from "../config/Response"
+import Permission from "../config/Permission"
 
 /**
  * 关闭控制台安全警告
@@ -32,19 +32,18 @@ import Response from "../config/Response"
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 /**
- * api白名单
- */
-const apiWhiteList = ['fs']
-
-/**
  * 将模块暴露给window对象
  */
 contextBridge.exposeInMainWorld("sys", {
-    do(something: string, parames: object) {
+    do(something: string, parames: object): Promise<Response> {
         // 返回一个Promise用于接收执行结果
         return new Promise((resolve, reject) => {
-            if (apiWhiteList.includes(something)) {
+            // 验证权限
+            if (Permission.verify(something)) {
+                // 发送请求
                 ipc.send('todo', something, parames)
+
+                // 接收请求结果
                 ipc.on(something, (_, res) => {
                     if (res.ok === 1) {
                         resolve(res)
@@ -53,7 +52,7 @@ contextBridge.exposeInMainWorld("sys", {
                     }
                 })
             } else {
-                reject(Response.fail(`不存在“${something}”方法或此方法被禁用！`))
+                reject(Response.fail(`“${something}”不是可用的请求！`))
             }
         })
     }

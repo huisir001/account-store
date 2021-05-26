@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-05-26 22:16:30
+ * @LastEditTime: 2021-05-26 22:35:45
  */
 
 export default {
@@ -11,5 +11,7 @@ export default {
     LOGIN_TIMEOUT: 60 * 5,
 
     SKEY: "ABC..123", // 总密码加密私钥
+
+    API_BLACK_LIST: []   // api黑名单
     // 搞个操作日志表，再搞个错误日志
 }

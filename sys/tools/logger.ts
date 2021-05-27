@@ -2,10 +2,10 @@
  * @Description: 日志处理 log4js
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:05:31
- * @LastEditTime: 2021-05-26 22:39:45
+ * @LastEditTime: 2021-05-27 16:02:34
  */
 import log4js from 'log4js'
-const isDev = process.argv.includes('--dev')
+const IsDev = process.env.NODE_ENV == "development"
 
 //日志等级列表，顺序越后等级越高
 //等级大小写均可，all是输出全部，off是不输出
@@ -61,7 +61,7 @@ log4js.configure({
             level: LEVELS[3],
         },
         process: {
-            appenders: isDev ? ['process'] : ['process', 'output', 'errors'], //进程打印到文件，同时打印到终端
+            appenders: IsDev ? ['process'] : ['process', 'output', 'errors'], //进程打印到文件，同时打印到终端
             level: LEVELS[3],
         },
         debug: {
@@ -72,18 +72,16 @@ log4js.configure({
     //pm2:true  //使用pm2执行
 })
 
-const Log = isDev ? log4js.getLogger('debug') : log4js.getLogger()
+const Log = IsDev ? log4js.getLogger('debug') : log4js.getLogger()
 const Print = log4js.getLogger('process')
 
 /* Example */
-// Log.trace('Log', 'Entering cheese testing')
-// Log.debug('Log', 'Got cheese.')
-// Print.info('Print', 'Cheese is Gouda.')
-// Print.info('Print', 'Cheese is Gouda.')
-// Print.info('Print', 'Cheese is Gouda.')
-// Log.warn('Log', 'Cheese is quite smelly.')
-// Log.error('Log', 'Cheese is too ripe!')
-// Log.fatal('Log', 'Cheese was breeding ground for listeria.')
+// Log.trace('Entering cheese testing')
+// Log.debug('Got cheese.')
+// Print.info('配置文件读取成功')
+// Log.warn('Cheese is quite smelly.')
+// Log.error('Cheese is too ripe!')
+// Log.fatal('Cheese was breeding ground for listeria.')
 
 export {
     Log,

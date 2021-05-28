@@ -2,30 +2,19 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2021-05-28 18:03:52
+ * @LastEditTime: 2021-05-29 00:02:14
  */
-import sqlite from "sqlite3"
+import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"
-import { v1 as uuidv1 } from 'uuid'
-const { Print, Log } = require('./Logger') //日志
+import { Print, Log } from './Logger' //日志
 const { DB_NAME, BD_POOL_LEN, BD_POOL_MAX_LEN } = CONST
 
-/**
- * Database扩展方法
- */
-export class ISQLiteDB extends sqlite.Database {
-    id: string = uuidv1()  // 数据库连接对象id
-    locked: boolean = false // 连接使用上锁，释放后解锁
-    release(): void {
-        this.locked = false
-    }
-}
 
 /**
  * 创建连接池及读取连接
  */
-export class Pool {
-    private pool: ISQLiteDB[] = []
+export default class Pool {
+    private pool: SQLiteDB[] = []
     private dbName: string
 
     /**
@@ -44,8 +33,8 @@ export class Pool {
     /**
      * 创建数据库连接
      */
-    createDBConn(): ISQLiteDB {
-        return new ISQLiteDB(this.dbName, function (err) {
+    createDBConn(): SQLiteDB {
+        return new SQLiteDB(this.dbName, function (err) {
             if (err) {
                 Log.error("创建数据库连接失败：", err.toString())
             }
@@ -55,9 +44,9 @@ export class Pool {
     /**
      * 读取连接
      */
-    getDBConn(): ISQLiteDB {
+    getDBConn(): SQLiteDB {
         // 取出第一个可用db
-        let db: ISQLiteDB | undefined = this.pool.find(item => !item.locked)
+        const db: SQLiteDB | undefined = this.pool.find((item) => !item.locked)
 
         // 是否存在可用db,不存在创建
         if (!db) {
@@ -87,4 +76,4 @@ export class Pool {
     }
 }
 
-export default new Pool(DB_NAME)
+// export default new Pool(DB_NAME)

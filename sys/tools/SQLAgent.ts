@@ -2,11 +2,12 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-28 18:49:45
+ * @LastEditTime: 2021-05-29 00:06:38
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
-import { ISQLiteDB, Pool } from './DBPool'
+import Pool from './DBPool'
+import SQLiteDB from "./SQLiteDB"
 
 interface IWhereItem {
     [key: string]: any
@@ -18,37 +19,14 @@ interface IWhere extends IWhereItem {
 }
 
 class SQLAgent {
-    private pool: Pool
-    private tableName: string
-    private schema: IWhereItem
-
-    /**
-     * 构造方法
-     */
-    constructor(pool: Pool, tableName: string, schema: object) {
-        this.pool = pool
-        this.tableName = tableName
-
-        // 添加主键id
-        this.schema = {
-            id: {
-                type: 'VARCHAR(36)',
-                notNull: true,
-            },
-            ...schema,
-        }
-
-        //数据表创建
-        this.creatTable()
-    }
 
     /**
      * 返回字段过滤
      */
     static fieldFilter(filter: string, schema: object) {
-        let filterKeys = filter.split(' '),
-            removeKeys: string[] = [],
-            getOutKeys: string[] = []
+        const filterKeys = filter.split(' ')
+        const removeKeys: string[] = []
+        const getOutKeys: string[] = []
         filterKeys.forEach((item) => {
             if (item[0] === '-') {
                 removeKeys.push(item.slice(1))
@@ -79,21 +57,21 @@ class SQLAgent {
             return where
         }
         //对象类型
-        let whereStrArr = [],
-            joinStr = ' AND '
+        const whereStrArr = []
+        let joinStr = ' AND '
         if (where.hasOwnProperty('_OR')) {
-            for (let key in where._OR) {
-                whereStrArr.push(`${key} = '${where._OR[key]}'`)
-            }
+            Object.keys(where._OR!).forEach((key) => {
+                whereStrArr.push(`${key} = '${where._OR![key]}'`)
+            })
             joinStr = ' OR '
         } else {
             const curWhere = where.hasOwnProperty('_AND') ? where._AND : where
-            for (let key in curWhere) {
+            for (const key in curWhere) {
                 if (curWhere[key] instanceof Array) {
-                    let tempArr = curWhere[key].map(
+                    const tempArr = curWhere[key].map(
                         (item: string) => `${key} = '${item}'`
                     )
-                    let tempStr = tempArr.join(' OR ')
+                    const tempStr = tempArr.join(' OR ')
                     whereStrArr.push(tempStr)
                 } else {
                     whereStrArr.push(`${key} = '${curWhere[key]}'`)
@@ -114,7 +92,7 @@ class SQLAgent {
             return ''
         }
 
-        let orderArr = orderStr.split(' ')
+        const orderArr = orderStr.split(' ')
         const orderArr2 = orderArr.map((item) => {
             //升降序，带-号为降序
             let sortMark = 'ASC' //升序
@@ -127,11 +105,34 @@ class SQLAgent {
 
         return ' ORDER BY ' + orderArr2.join(',')
     }
+    private pool: Pool
+    private tableName: string
+    private schema: IWhereItem
+
+    /**
+     * 构造方法
+     */
+    constructor(pool: Pool, tableName: string, schema: object) {
+        this.pool = pool
+        this.tableName = tableName
+
+        // 添加主键id
+        this.schema = {
+            id: {
+                type: 'VARCHAR(36)',
+                notNull: true,
+            },
+            ...schema,
+        }
+
+        //数据表创建
+        this.creatTable()
+    }
 
     /**
      * 取db连接
      */
-    getDBConn(): ISQLiteDB {
+    getDBConn(): SQLiteDB {
         return this.pool.getDBConn()
     }
 
@@ -196,7 +197,7 @@ class SQLAgent {
                 },`
         })
 
-        let querystr = `CREATE TABLE IF NOT EXISTS ${tableName}(${dbQueryStemp} PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+        const querystr = `CREATE TABLE IF NOT EXISTS ${tableName}(${dbQueryStemp} PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8;`
 
         getDBConn().run(querystr, function (err) {
             if (err) {
@@ -272,7 +273,7 @@ class SQLAgent {
         const resFields = SQLAgent.fieldFilter(filter, schema)
         return new Promise((resolve, reject) => {
             const slotKeys = Object.keys(slot)
-            const slotVals = slotKeys.map(key => slot[key])
+            const slotVals = slotKeys.map((key) => slot[key])
             const sqlMod1 = `INSERT INTO ${tableName} (${slotKeys.join(',')}) VALUES (${slotVals.join(',')});`
             const sqlMod2 = `SELECT ${resFields} FROM ${tableName} WHERE id = '${slot.id}';`
             const db = getDBConn()
@@ -314,16 +315,16 @@ class SQLAgent {
         }
 
         const { tableName, pool, schema } = this
-        let ids = []
+        const ids = []
 
         //插入字段
-        let insertKeys = Object.keys(slot[0])
+        const insertKeys = Object.keys(slot[0])
         insertKeys.unshift('id') //插入主键id
         //插入数据转义
-        let insertValues = slot.map((item) => {
+        const insertValues = slot.map((item) => {
             item.id = uuidv1() // uuid
             ids.push(item.id)
-            let valuesArr = insertKeys.map((k) => item[k])
+            const valuesArr = insertKeys.map((k) => item[k])
             return valuesArr.join("','")
         })
         const insertValuesStr = insertValues.join("'),('")
@@ -360,8 +361,7 @@ class SQLAgent {
         return new Promise((resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ? WHERE ${whereStr}`
             pool.query(sqlMod, updateSlot, (error, result) => {
-                if (error) reject(error)
-                else resolve(result)
+                if (error) { reject(error) } else { resolve(result) }
             })
         })
     }
@@ -380,7 +380,7 @@ class SQLAgent {
         //返回字段过滤
         const resFields = returnData && SQLAgent.fieldFilter(filter, schema)
         return new Promise((resolve, reject) => {
-            let sqlDelMod = `DELETE FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
+            const sqlDelMod = `DELETE FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
                 };`
 
             //是否返回被删数据
@@ -390,8 +390,7 @@ class SQLAgent {
                 : sqlDelMod
 
             pool.query(sqlMod, (error, result) => {
-                if (error) reject(error)
-                else returnData ? resolve(result[0]) : resolve(result)
+                if (error) { reject(error) } else { returnData ? resolve(result[0]) : resolve(result) }
             })
         })
     }
@@ -409,8 +408,7 @@ class SQLAgent {
             const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
                 }`
             pool.query(sqlMod, (error, result) => {
-                if (error) reject(error)
-                else resolve(result.pop())
+                if (error) { reject(error) } else { resolve(result.pop()) }
             })
         })
     }

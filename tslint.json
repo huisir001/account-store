@@ -20,7 +20,12 @@
     "trailing-comma":false,
     "member-access": [true, "no-public"],
     "no-conditional-assignment": true,
-     "no-unused-expression": false,
+    "no-unused-expression": false,
+    "space-before-function-paren":[false, {
+        "anonymous": "always",
+        "named": "always",
+        "asyncArrow": "always"
+    }],
     "semicolon": [
       false,
       "always"
@@ -28,6 +33,9 @@
     "comment-format": [
       false,
       "check-space"
+    ],
+    "only-arrow-functions": [
+      false
     ]
   }
 }

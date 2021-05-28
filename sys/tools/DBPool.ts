@@ -2,27 +2,30 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2021-05-27 17:23:01
+ * @LastEditTime: 2021-05-28 18:03:52
  */
-
 import sqlite from "sqlite3"
 import CONST from "../config/const"
+import { v1 as uuidv1 } from 'uuid'
 const { Print, Log } = require('./Logger') //日志
+const { DB_NAME, BD_POOL_LEN, BD_POOL_MAX_LEN } = CONST
 
 /**
- * 连接池元素类型
+ * Database扩展方法
  */
-interface IPool {
-    id: string // 数据库连接对象id
-    db: sqlite.Database
-    locked: boolean // 连接使用上锁，释放后解锁
+export class ISQLiteDB extends sqlite.Database {
+    id: string = uuidv1()  // 数据库连接对象id
+    locked: boolean = false // 连接使用上锁，释放后解锁
+    release(): void {
+        this.locked = false
+    }
 }
 
 /**
  * 创建连接池及读取连接
  */
-class Pool {
-    private pool: IPool[] = []
+export class Pool {
+    private pool: ISQLiteDB[] = []
     private dbName: string
 
     /**
@@ -31,70 +34,57 @@ class Pool {
     constructor(dbName: string) {
         this.dbName = dbName
 
-        // 连接池中默认初始化6个连接
-        for (let n = 1; n < 7; n++) {
-            this.createDBConn().then(db => {
-                this.pool.push({
-                    id: Date.now() + n + '',
-                    db,
-                    locked: false
-                })
-                Print.info(`数据库连接池连接${n}初始化成功`)
-            }).catch(err => {
-                Log.error("连接池初始化连接：", err.toString())
-            })
+        // 连接池中连接数初始化
+        for (let n = 0; n < BD_POOL_LEN; n++) {
+            this.pool.push(this.createDBConn())
+            Print.info(`数据库连接池连接${n + 1}初始化成功`)
         }
     }
 
     /**
      * 创建数据库连接
      */
-    createDBConn(): Promise<sqlite.Database> {
-        return new Promise((resolve, reject) => {
-            let db = new sqlite.Database(this.dbName, function (err) {
-                if (!err) {
-                    resolve(db)
-                } else {
-                    reject(err)
-                }
-            })
+    createDBConn(): ISQLiteDB {
+        return new ISQLiteDB(this.dbName, function (err) {
+            if (err) {
+                Log.error("创建数据库连接失败：", err.toString())
+            }
         })
     }
 
     /**
      * 读取连接
      */
-    async getdb() {
+    getDBConn(): ISQLiteDB {
         // 取出第一个可用db
-        let PoolItem: IPool | undefined = this.pool.find(item => !item.locked)
+        let db: ISQLiteDB | undefined = this.pool.find(item => !item.locked)
 
-        // 是否存在可用db，不存在创建
-        if (!PoolItem) {
-            let db
-            try {
-                db = await this.createDBConn()
-                this.pool.push({
-                    id: Date.now() + Number(Math.random().toFixed(3)) * 1000 + '',
-                    locked: true,
-                    db
-                })
-            } catch (error) {
-                Log.error("连接池新增连接：", error.toString())
-            }
-            return db
+        // 是否存在可用db,不存在创建
+        if (!db) {
+            this.pool.push(this.createDBConn())
+            return this.pool[this.pool.length - 1]
         } else {
-            PoolItem.locked = true  // 加锁
-            return PoolItem.db
+            db.locked = true  // 加锁
+
+            // 若连接池超过最大连接数,则开启回收机制(将闲置连接关闭出栈,直到连接池保持在最大连接数量)
+            let overNum: number = this.pool.length - BD_POOL_MAX_LEN
+            if (overNum > 0) {
+                this.pool.forEach((item, index) => {
+                    if (overNum > 0 && !item.locked) {
+                        item.close((err) => {
+                            if (err) {
+                                Log.error("关闭数据库连接失败：", err.toString())
+                            }
+                        })
+                        this.pool.splice(index, 1)
+                        overNum--
+                    }
+                })
+            }
+
+            return db
         }
     }
-
-    /**
-     * 释放连接
-     */
-    release() {
-
-    }
-
 }
 
-export default new Pool(CONST.DB_NAME)
+export default new Pool(DB_NAME)

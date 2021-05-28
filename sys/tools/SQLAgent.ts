@@ -2,17 +2,32 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-26 22:42:05
+ * @LastEditTime: 2021-05-28 18:49:45
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
+import { ISQLiteDB, Pool } from './DBPool'
+
+interface IWhereItem {
+    [key: string]: any
+}
+
+interface IWhere extends IWhereItem {
+    _OR?: IWhereItem
+    _AND?: IWhereItem
+}
+
 class SQLAgent {
+    private pool: Pool
+    private tableName: string
+    private schema: IWhereItem
+
     /**
      * 构造方法
      */
-    constructor(pool, tableName, schema) {
-        this.tableName = tableName
+    constructor(pool: Pool, tableName: string, schema: object) {
         this.pool = pool
+        this.tableName = tableName
 
         // 添加主键id
         this.schema = {
@@ -30,10 +45,10 @@ class SQLAgent {
     /**
      * 返回字段过滤
      */
-    static fieldFilter(filter, schema) {
+    static fieldFilter(filter: string, schema: object) {
         let filterKeys = filter.split(' '),
-            removeKeys = [],
-            getOutKeys = []
+            removeKeys: string[] = [],
+            getOutKeys: string[] = []
         filterKeys.forEach((item) => {
             if (item[0] === '-') {
                 removeKeys.push(item.slice(1))
@@ -58,7 +73,7 @@ class SQLAgent {
      * 注：where为Object类型时仅支持单个AND子句或OR子句，不支持混合子句，且仅支持相等`=`条件
      * 注：where为Object类型时,若where某个字段为数组，则该字段数组中的值为OR子句，与其他字段用AND连接
      */
-    static obj2whereStr(where) {
+    static obj2whereStr(where: IWhere): string {
         //字符串直接返回
         if (typeof where === 'string') {
             return where
@@ -76,7 +91,7 @@ class SQLAgent {
             for (let key in curWhere) {
                 if (curWhere[key] instanceof Array) {
                     let tempArr = curWhere[key].map(
-                        (item) => `${key} = '${item}'`
+                        (item: string) => `${key} = '${item}'`
                     )
                     let tempStr = tempArr.join(' OR ')
                     whereStrArr.push(tempStr)
@@ -94,7 +109,7 @@ class SQLAgent {
      * @return {*}
      * @author: HuiSir
      */
-    static sort2QueryStr(orderStr) {
+    static sort2QueryStr(orderStr: string): string {
         if (!orderStr || orderStr.trim() === '') {
             return ''
         }
@@ -114,17 +129,51 @@ class SQLAgent {
     }
 
     /**
-     * 自定义查询
-     * @param sql  String
+     * 取db连接
+     */
+    getDBConn(): ISQLiteDB {
+        return this.pool.getDBConn()
+    }
+
+    /**
+     * 自定义执行单条语句
+     * @param sqlMod  String
      * @returns {Promise<any>}
      */
-    doQuery(sqlMod) {
+    run(sqlMod: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.pool.query(sqlMod, (error, result) => {
-                if (error) {
-                    reject(error)
+            this.getDBConn().run(sqlMod, function (err) {
+                if (err) {
+                    reject(err)
                 } else {
-                    resolve(result)
+                    // this 代表回调函数的上下文
+                    resolve({
+                        ok: 1,
+                        lastID: this.lastID,
+                        changes: this.changes,
+                    })
+                }
+            })
+        })
+    }
+
+    /**
+     * 自定义执行多条语句
+     * @param sqlMod  String
+     * @returns {Promise<any>}
+     */
+    exec(sqlMod: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getDBConn().run(sqlMod, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    // this 代表回调函数的上下文
+                    resolve({
+                        ok: 1,
+                        lastID: this.lastID,
+                        changes: this.changes,
+                    })
                 }
             })
         })
@@ -132,38 +181,28 @@ class SQLAgent {
 
     /**
      * 创建数据表
-     * @param tableName
-     * @param model
-     * @returns {Promise<any>}
      */
-    creatTable() {
-        const { pool, tableName, schema } = this
+    creatTable(): void {
+        const { tableName, schema, getDBConn } = this
 
-        //判断表是否存在
-        pool.query(`SHOW TABLES LIKE '${tableName}'`, (error, result) => {
-            if (error) {
-                Log.error(error)
+        //表不存在创建表
+        let dbQueryStemp = ''
+        Object.keys(schema).forEach((key) => {
+            const item = schema[key]
+            dbQueryStemp += `${key} ${item.type}${item.notNull ? ' NOT NULL' : ''
+                }${item.default !== undefined
+                    ? ' DEFAULT ' + item.default
+                    : ''
+                },`
+        })
+
+        let querystr = `CREATE TABLE IF NOT EXISTS ${tableName}(${dbQueryStemp} PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+
+        getDBConn().run(querystr, function (err) {
+            if (err) {
+                Log.error(err)
             } else {
-                if (result.length === 0) {
-                    //表不存在创建表
-                    let dbQueryStemp = ''
-                    Object.keys(schema).forEach((key) => {
-                        const item = schema[key]
-                        dbQueryStemp += `${key} ${item.type}${item.notNull ? ' NOT NULL' : ''
-                            }${item.default !== undefined
-                                ? ' DEFAULT ' + item.default
-                                : ''
-                            },`
-                    })
-                    let querystr = `CREATE TABLE IF NOT EXISTS ${tableName}(${dbQueryStemp} PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8;`
-                    pool.query(querystr, (err) => {
-                        if (err) {
-                            Log.error(err)
-                        } else {
-                            Log.info(`数据表 ${tableName} 创建成功`)
-                        }
-                    })
-                }
+                Log.info(`数据表 ${tableName} 创建成功`)
             }
         })
     }
@@ -174,24 +213,19 @@ class SQLAgent {
      * @param slot Object
      * @returns {Promise<any>}
      */
-    findOne(slot, filter = '') {
-        const { tableName, pool, schema } = this
+    findOne(slot: object, filter = ''): Promise<any> {
+        const { tableName, schema, getDBConn } = this
         //返回字段过滤
-        const resFields = DB.fieldFilter(filter, schema)
+        const resFields = SQLAgent.fieldFilter(filter, schema)
         //条件转义
-        const whereStr = DB.obj2whereStr(slot)
+        const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
-            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
-                }`
-            pool.query(sqlMod, (error, results) => {
-                if (error) {
-                    reject(error)
+            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
+            getDBConn().get(sqlMod, function (err, row) {
+                if (err) {
+                    reject(err)
                 } else {
-                    if (results) {
-                        resolve(results.pop()) //返回最后一条
-                    } else {
-                        resolve(results)
-                    }
+                    resolve(row)
                 }
             })
         })
@@ -202,9 +236,9 @@ class SQLAgent {
      * @param slot
      * @returns {Promise<any>}
      */
-    find(slot, filter = '', sort = '') {
-        const { tableName, pool, schema } = this
-        const { fieldFilter, obj2whereStr, sort2QueryStr } = DB
+    find(slot: object, filter = '', sort = ''): Promise<any> {
+        const { tableName, getDBConn, schema } = this
+        const { fieldFilter, obj2whereStr, sort2QueryStr } = SQLAgent
         //返回字段过滤
         const resFields = fieldFilter(filter, schema)
         //条件转义
@@ -212,12 +246,13 @@ class SQLAgent {
         //升降序，带-号为降序
         const sortQueryStr = sort2QueryStr(sort)
         return new Promise((resolve, reject) => {
-            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
-                }${sortQueryStr}`
-            pool.query(sqlMod, (error, results) => {
-                if (error) {
-                    reject(error)
-                } else resolve(results)
+            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr}`
+            getDBConn().all(sqlMod, function (err, rows) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(rows)
+                }
             })
         })
     }
@@ -229,20 +264,34 @@ class SQLAgent {
      * @param filter String el:'-password -id' 要返回的字段或要排除的字段，-号为排除
      * @returns {Promise<any>}
      */
-    create(slot, filter = '') {
-        const { tableName, pool, schema } = this
+    create(slot: any, filter = ''): Promise<any> {
+        const { tableName, getDBConn, schema } = this
         // uuid
         slot.id = uuidv1()
         // 返回字段过滤
-        const resFields = DB.fieldFilter(filter, schema)
+        const resFields = SQLAgent.fieldFilter(filter, schema)
         return new Promise((resolve, reject) => {
-            const sqlMod = `INSERT INTO ${tableName} SET ?;SELECT ${resFields} FROM ${tableName} WHERE id = '${slot.id}';`
-            pool.query(sqlMod, slot, (error, results) => {
-                if (error) {
-                    reject(error)
-                } else {
-                    resolve(results[1][0])
-                }
+            const slotKeys = Object.keys(slot)
+            const slotVals = slotKeys.map(key => slot[key])
+            const sqlMod1 = `INSERT INTO ${tableName} (${slotKeys.join(',')}) VALUES (${slotVals.join(',')});`
+            const sqlMod2 = `SELECT ${resFields} FROM ${tableName} WHERE id = '${slot.id}';`
+            const db = getDBConn()
+
+            // 串行
+            db.serialize(function () {
+                db.run(sqlMod1, function (err) {
+                    if (err) {
+                        reject(err)
+                    }
+                })
+
+                db.get(sqlMod2, function (err, row) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(row)
+                    }
+                })
             })
         })
     }
@@ -279,9 +328,9 @@ class SQLAgent {
         })
         const insertValuesStr = insertValues.join("'),('")
         //返回字段过滤
-        const resFields = DB.fieldFilter(filter, schema)
+        const resFields = SQLAgent.fieldFilter(filter, schema)
         //条件转义
-        const whereStr = DB.obj2whereStr({ id: ids })
+        const whereStr = SQLAgent.obj2whereStr({ id: ids })
         return new Promise((resolve, reject) => {
             const sqlMod = `INSERT INTO ${tableName} (${insertKeys.join(
                 ','
@@ -304,10 +353,10 @@ class SQLAgent {
      * @param updateSlot Object
      * @returns {Promise<any>}
      */
-    update(whereSlot, updateSlot) {
-        const { tableName, pool } = this
+    update(whereSlot: object, updateSlot: object): Promise<any> {
+        const { tableName, getDBConn } = this
         //条件转义
-        const whereStr = DB.obj2whereStr(whereSlot)
+        const whereStr = SQLAgent.obj2whereStr(whereSlot)
         return new Promise((resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ? WHERE ${whereStr}`
             pool.query(sqlMod, updateSlot, (error, result) => {
@@ -327,9 +376,9 @@ class SQLAgent {
     remove(slot, returnData = false, filter = '') {
         const { tableName, pool, schema } = this
         //条件转义
-        const whereStr = DB.obj2whereStr(slot)
+        const whereStr = SQLAgent.obj2whereStr(slot)
         //返回字段过滤
-        const resFields = returnData && DB.fieldFilter(filter, schema)
+        const resFields = returnData && SQLAgent.fieldFilter(filter, schema)
         return new Promise((resolve, reject) => {
             let sqlDelMod = `DELETE FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
                 };`
@@ -355,7 +404,7 @@ class SQLAgent {
     count(slot = {}) {
         const { tableName, pool } = this
         //条件转义
-        const whereStr = DB.obj2whereStr(slot)
+        const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
                 }`

@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-29 00:06:38
+ * @LastEditTime: 2021-05-29 11:46:12
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
@@ -304,22 +304,18 @@ class SQLAgent {
      * @return {*}
      * @author: HuiSir
      */
-    createMany(slot = [], filter = '') {
-        //验证slot
-        if (!slot instanceof Array) {
-            return Promise.reject(new Error('请传参Array对象')) //返回带有拒绝原因的promise对象
-        }
-
+    createMany(slot: Array<any> = [], filter: string = ''): Promise<any> {
         if (slot.length === 0) {
-            return Promise.reject(new Error('插入数据为空')) //返回带有拒绝原因的promise对象
+            return Promise.reject(new Error('插入数据为空'))
         }
 
-        const { tableName, pool, schema } = this
-        const ids = []
+        const { tableName, getDBConn, schema } = this
+        const ids: string[] = []
 
         //插入字段
         const insertKeys = Object.keys(slot[0])
         insertKeys.unshift('id') //插入主键id
+
         //插入数据转义
         const insertValues = slot.map((item) => {
             item.id = uuidv1() // uuid
@@ -333,16 +329,26 @@ class SQLAgent {
         //条件转义
         const whereStr = SQLAgent.obj2whereStr({ id: ids })
         return new Promise((resolve, reject) => {
-            const sqlMod = `INSERT INTO ${tableName} (${insertKeys.join(
-                ','
-            )}) VALUES ('${insertValuesStr}');SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
-                }`
-            pool.query(sqlMod, (error, results) => {
-                if (error) {
-                    reject(error)
-                } else {
-                    resolve(results[1])
-                }
+            const sqlMod1 = `INSERT INTO ${tableName} (${insertKeys.join(',')}) VALUES ('${insertValuesStr}');`
+            const sqlMod2 = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''};`
+
+            const db = getDBConn()
+
+            // 串行
+            db.serialize(function () {
+                db.run(sqlMod1, function (err) {
+                    if (err) {
+                        reject(err)
+                    }
+                })
+
+                db.all(sqlMod2, function (err, rows) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(rows)
+                    }
+                })
             })
         })
     }
@@ -360,6 +366,17 @@ class SQLAgent {
         const whereStr = SQLAgent.obj2whereStr(whereSlot)
         return new Promise((resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ? WHERE ${whereStr}`
+
+            getDBConn().run(sqlMod, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve({
+                        ok: 1
+                    })
+                }
+            })
+
             pool.query(sqlMod, updateSlot, (error, result) => {
                 if (error) { reject(error) } else { resolve(result) }
             })
@@ -373,7 +390,7 @@ class SQLAgent {
      * @param {string} filter  可选参数，返回数据过滤
      * @returns {Promise<any>}
      */
-    remove(slot, returnData = false, filter = '') {
+    remove(slot: object, returnData: boolean = false, filter: string = ''): Promise<any> {
         const { tableName, pool, schema } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
@@ -400,7 +417,7 @@ class SQLAgent {
      * @param slot
      * @returns {Promise<any>}
      */
-    count(slot = {}) {
+    count(slot = {}): Promise<any> {
         const { tableName, pool } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)

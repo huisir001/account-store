@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-29 11:46:12
+ * @LastEditTime: 2021-05-29 13:17:33
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
@@ -51,7 +51,7 @@ class SQLAgent {
      * 注：where为Object类型时仅支持单个AND子句或OR子句，不支持混合子句，且仅支持相等`=`条件
      * 注：where为Object类型时,若where某个字段为数组，则该字段数组中的值为OR子句，与其他字段用AND连接
      */
-    static obj2whereStr(where: IWhere): string {
+    static obj2whereStr(where: IWhere | string): string {
         //字符串直接返回
         if (typeof where === 'string') {
             return where
@@ -79,6 +79,21 @@ class SQLAgent {
             }
         }
         return whereStrArr.join(joinStr)
+    }
+
+    /**
+     * @description: 将对象转换为SET关键字后的插值语句
+     * @param {IWhereItem} setObj
+     * @return {string}
+     * @author: HuiSir
+     */
+    static obj2SetStr(setObj: IWhereItem): string {
+        const keys = Object.keys(setObj)
+        let str = ""
+        keys.map((key, index) => {
+            str += `${key}=${setObj[key]}${index !== (keys.length - 1) ? ',' : ''}`
+        })
+        return str
     }
 
     /**
@@ -304,7 +319,7 @@ class SQLAgent {
      * @return {*}
      * @author: HuiSir
      */
-    createMany(slot: Array<any> = [], filter: string = ''): Promise<any> {
+    createMany(slot: any[] = [], filter: string = ''): Promise<any> {
         if (slot.length === 0) {
             return Promise.reject(new Error('插入数据为空'))
         }
@@ -364,21 +379,16 @@ class SQLAgent {
         const { tableName, getDBConn } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(whereSlot)
+        const updateStr = SQLAgent.obj2SetStr(updateSlot)
         return new Promise((resolve, reject) => {
-            const sqlMod = `UPDATE ${tableName} SET ? WHERE ${whereStr}`
+            const sqlMod = `UPDATE ${tableName} SET ${updateStr} WHERE ${whereStr}`
 
             getDBConn().run(sqlMod, function (err) {
                 if (err) {
                     reject(err)
                 } else {
-                    resolve({
-                        ok: 1
-                    })
+                    resolve({ ok: 1 })
                 }
-            })
-
-            pool.query(sqlMod, updateSlot, (error, result) => {
-                if (error) { reject(error) } else { resolve(result) }
             })
         })
     }
@@ -391,24 +401,43 @@ class SQLAgent {
      * @returns {Promise<any>}
      */
     remove(slot: object, returnData: boolean = false, filter: string = ''): Promise<any> {
-        const { tableName, pool, schema } = this
+        const { tableName, getDBConn, schema } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
         //返回字段过滤
         const resFields = returnData && SQLAgent.fieldFilter(filter, schema)
         return new Promise((resolve, reject) => {
-            const sqlDelMod = `DELETE FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
-                };`
+            const sqlDelMod = `DELETE FROM ${tableName} WHERE ${whereStr};`
 
-            //是否返回被删数据
-            const sqlMod = returnData
-                ? `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
-                };${sqlDelMod}`
-                : sqlDelMod
+            //返回被删数据
+            const sqlMod = `SELECT ${resFields} FROM ${tableName} WHERE ${whereStr};`
 
-            pool.query(sqlMod, (error, result) => {
-                if (error) { reject(error) } else { returnData ? resolve(result[0]) : resolve(result) }
-            })
+            const db = getDBConn()
+
+            if (returnData) {
+                // 串行
+                db.get(sqlMod, function (err, row) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        db.run(sqlDelMod, function (err2) {
+                            if (err2) {
+                                reject(err)
+                            } else {
+                                resolve(row)
+                            }
+                        })
+                    }
+                })
+            } else {
+                db.run(sqlDelMod, function (err) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve({ ok: 1 })
+                    }
+                })
+            }
         })
     }
 
@@ -418,14 +447,18 @@ class SQLAgent {
      * @returns {Promise<any>}
      */
     count(slot = {}): Promise<any> {
-        const { tableName, pool } = this
+        const { tableName, getDBConn } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
-            const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''
-                }`
-            pool.query(sqlMod, (error, result) => {
-                if (error) { reject(error) } else { resolve(result.pop()) }
+            const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
+            // 串行
+            getDBConn().get(sqlMod, function (err, row) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(row)
+                }
             })
         })
     }

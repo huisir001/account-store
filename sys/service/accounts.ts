@@ -2,15 +2,16 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-28 17:51:06
+ * @LastEditTime: 2021-05-29 18:12:28
  */
 import Response from "../config/Response"
+import AccountModel from '../models/Accounts'
 
 interface IAddAccountParams {
     id?: string // 若有id 为修改原数据，若无，则为新增
-    name: string // 名称
-    account: string // 登录账号
-    password: string // 登录密码
+    name?: string // 名称
+    account?: string // 登录账号
+    password?: string // 登录密码
     email?: string // 绑定邮箱
     phone?: string // 绑定手机
     remark?: string // 备注
@@ -35,10 +36,23 @@ interface IAccountListByPage {
  * @param {IAddAccountParams} params
  * @return {*}
  */
-const saveAccount = (params: IAddAccountParams): Promise<Response> => {
-    return new Promise((resolve, reject) => {
-        resolve(Response.succ())
-    })
+const saveAccount = async (params: IAddAccountParams): Promise<any> => {
+    // 修改
+    if (params.hasOwnProperty("id")) {
+        // 这里不需要捕获错误，因为router处统一捕获了
+        const id = params.id
+        delete params.id
+        const { ok } = await AccountModel.update({ id }, params)
+        if (ok === 1) {
+            return Promise.resolve(Response.succ())
+        }
+    } else {
+        // 新增账户
+        const res = await AccountModel.create(params)
+        if (res) {
+            return Promise.resolve(Response.succ({ msg: "新增成功", data: res }))
+        }
+    }
 }
 
 /**
@@ -46,10 +60,11 @@ const saveAccount = (params: IAddAccountParams): Promise<Response> => {
  * @param {string} id
  * @return {*}
  */
-const delAccount = (id: string): Promise<Response> => {
-    return new Promise((resolve, reject) => {
-        resolve(Response.succ())
-    })
+const delAccount = async (id: string): Promise<any> => {
+    const { ok } = await AccountModel.remove({ id })
+    if (ok === 1) {
+        return Promise.resolve(Response.succ({ msg: "删除成功" }))
+    }
 }
 
 /**
@@ -63,7 +78,7 @@ const getAccountListByPage = (params: IGetListParams): Promise<Response> => {
     return new Promise((resolve, reject) => {
 
 
-        let resData: IAccountListByPage = {
+        const resData: IAccountListByPage = {
             list: [],
             page,
             limit,

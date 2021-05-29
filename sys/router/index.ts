@@ -2,12 +2,12 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-28 17:54:36
+ * @LastEditTime: 2021-05-29 17:17:39
  */
 
 import { saveAccount, delAccount, getAccountListByPage } from "../service/accounts"
 import Response from "../config/Response"
-const { Print, Log } = require('../tools/Logger') //日志
+import { Log } from '../tools/Logger' //日志
 
 // 定义可索引类型的接口
 interface IMethods {
@@ -31,8 +31,8 @@ export default (ipcMain: Electron.IpcMain) => {
             try {
                 res = await methods[something](params)
             } catch (err) {
-                res = Response.fail("服务器请求失败：" + err.toString())
-                Log.error("服务器请求失败：", err.toString())
+                res = Response.fail("执行错误：" + err.toString())
+                Log.error("执行错误：", err.toString())
             }
 
         } else {

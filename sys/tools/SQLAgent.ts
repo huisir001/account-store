@@ -2,12 +2,13 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-29 13:17:33
+ * @LastEditTime: 2021-05-29 18:10:03
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
-import Pool from './DBPool'
 import SQLiteDB from "./SQLiteDB"
+import Pool from "./DBPool"
+import CONST from "../config/const"
 
 interface IWhereItem {
     [key: string]: any
@@ -18,7 +19,7 @@ interface IWhere extends IWhereItem {
     _AND?: IWhereItem
 }
 
-class SQLAgent {
+export default class SQLAgent {
 
     /**
      * 返回字段过滤
@@ -120,15 +121,15 @@ class SQLAgent {
 
         return ' ORDER BY ' + orderArr2.join(',')
     }
-    private pool: Pool
+
+    private pool: Pool = new Pool(CONST.DB_NAME)    // 初始化数据库连接池
     private tableName: string
     private schema: IWhereItem
 
     /**
      * 构造方法
      */
-    constructor(pool: Pool, tableName: string, schema: object) {
-        this.pool = pool
+    constructor(tableName: string, schema: object) {
         this.tableName = tableName
 
         // 添加主键id
@@ -370,7 +371,6 @@ class SQLAgent {
 
     /**
      * 数据修改接口
-     * @param tableName
      * @param whereSlot Object
      * @param updateSlot Object
      * @returns {Promise<any>}
@@ -463,5 +463,3 @@ class SQLAgent {
         })
     }
 }
-
-export default SQLAgent

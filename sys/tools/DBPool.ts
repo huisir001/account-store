@@ -2,12 +2,12 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2021-05-29 00:02:14
+ * @LastEditTime: 2021-05-29 17:37:08
  */
 import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"
 import { Print, Log } from './Logger' //日志
-const { DB_NAME, BD_POOL_LEN, BD_POOL_MAX_LEN } = CONST
+const { BD_POOL_LEN, BD_POOL_MAX_LEN } = CONST
 
 
 /**
@@ -75,5 +75,3 @@ export default class Pool {
         }
     }
 }
-
-// export default new Pool(DB_NAME)

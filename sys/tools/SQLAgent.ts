@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-29 18:10:03
+ * @LastEditTime: 2021-05-30 09:51:38
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
@@ -458,6 +458,25 @@ export default class SQLAgent {
                     reject(err)
                 } else {
                     resolve(row)
+                }
+            })
+        })
+    }
+
+    /**
+     * @description: 清空表数据
+     * @return {Promise<any>}
+     * @author: HuiSir
+     */
+    clearTable(): Promise<any> {
+        const { tableName, getDBConn } = this
+        return new Promise((resolve, reject) => {
+            const sqlMod = `TRUNCATE TABLE ${tableName}`
+            getDBConn().run(sqlMod, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve({ ok: 1 })
                 }
             })
         })

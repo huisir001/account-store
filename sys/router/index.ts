@@ -2,9 +2,9 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-30 19:09:12
+ * @LastEditTime: 2021-05-30 19:58:23
  */
-import accountsMethods from "../service/accounts"
+import accountsMethods from "../service/Accounts"
 import loginMethods from "../service/Login"
 import { getOperateLogs } from "../service/operationLog"
 import Response from "../tools/Response"

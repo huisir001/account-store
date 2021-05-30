@@ -90,7 +90,7 @@ const getAccountListByPage = (params: IGetListParams): Promise<Response> => {
     })
 }
 
-export {
+export default {
     saveAccount,
     delAccount,
     getAccountListByPage

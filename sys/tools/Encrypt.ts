@@ -2,7 +2,7 @@
  * @Description: 对称加密
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:09:58
- * @LastEditTime: 2021-05-26 22:48:41
+ * @LastEditTime: 2021-05-30 12:51:15
  */
 import CONST from "../config/const"
 
@@ -20,8 +20,8 @@ class Encrypt {
      * @return {string}
      * @author: HuiSir
      */
-    encrypt(str: string, skey: string = this.skey): string {
-        const strArr: string[] = Buffer.from(str + skey)
+    encrypt(str: string): string {
+        const strArr: string[] = Buffer.from(str + this.skey)
             .toString('base64')
             .split('') //Base64
         strArr.reverse() //逆序
@@ -36,12 +36,12 @@ class Encrypt {
      * @return {string}
      * @author: HuiSir
      */
-    decrypt(pass: string, skey: string = this.skey): string {
+    decrypt(pass: string): string {
         const strArr: string[] = pass.replace(/\$/g, '=').split('')
         strArr.reverse() //逆序
         const str: string = Buffer.from(strArr.join(''), 'base64')
             .toString()
-            .split(skey)[0]
+            .split(this.skey)[0]
         return str
     }
 }

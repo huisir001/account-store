@@ -2,13 +2,14 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-30 11:21:03
+ * @LastEditTime: 2021-05-30 12:58:30
  */
 
 import Response from "../config/Response"
 import LoginModel from '../models/Login'
 import AccountModel from '../models/Accounts'
 import OptionsModel from '../models/Options'
+import { creatToken } from "../tools/Token"
 
 
 interface ILoginParams {
@@ -43,7 +44,7 @@ const saveLoginData = async (params: ILoginParams): Promise<any> => {
  * @description: 是否存在登陆数据（返回登陆数据id）
  * @return {Promise<Response>}
  */
-const getLoginDataId = async (): Promise<Response> => {
+const getLoginData = async (): Promise<Response> => {
     const res = await LoginModel.find({}, 'id')
     if (res.length > 0) {
         return Promise.resolve(Response.succ({ data: res[0] }))
@@ -58,9 +59,17 @@ const getLoginDataId = async (): Promise<Response> => {
  * @param {ILoginParams} params
  * @return {Promise<Response>}
  */
-const verifyLoginData = async (params: ILoginParams): Promise<Response> => {
+const doLogin = async (params: ILoginParams): Promise<Response> => {
     const res = await LoginModel.findOne(params, "-core_password -verify_answer")
     if (res && res.verify_question) {
+        // 这里做简单的登陆验证(使用用户id+时间戳生成token)
+        // 此处需要做登陆缓存（将token存于sqlite缓存数据库中，附加登陆时间）
+        // 每次请求携带token,验证有效期是否失效
+        // 若失效则删除缓存数据,重新登陆
+        // 若未失效，则重置登陆时间
+
+
+
         return Promise.resolve(Response.succ({ data: true }))
     } else {
         return Promise.resolve(Response.succ({ data: false }))
@@ -79,4 +88,27 @@ const clearAllTable = async (): Promise<Response> => {
     } else {
         return Promise.resolve(Response.succ({ data: false }))
     }
+}
+
+/**
+ * @description: 登出
+ * @return {Promise<Response>}
+ * @author: HuiSir
+ */
+const logout = async (): Promise<Response> => {
+    const { ok } = await LoginModel.aaa
+
+    if (ok === 1) {
+        return Promise.resolve(Response.succ({ data: true }))
+    } else {
+        return Promise.resolve(Response.succ({ data: false }))
+    }
+}
+
+export default {
+    saveLoginData,
+    getLoginData,
+    doLogin,
+    logout,
+    clearAllTable
 }

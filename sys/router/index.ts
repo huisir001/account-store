@@ -2,10 +2,11 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-29 17:17:39
+ * @LastEditTime: 2021-05-30 12:09:58
  */
 
-import { saveAccount, delAccount, getAccountListByPage } from "../service/accounts"
+import accountsMethods from "../service/accounts"
+import loginMethods from "../service/login"
 import Response from "../config/Response"
 import { Log } from '../tools/Logger' //日志
 
@@ -16,10 +17,8 @@ interface IMethods {
 
 // 方法map
 const methods: IMethods = {
-    // accounts
-    saveAccount,
-    delAccount,
-    getAccountListByPage,
+    ...accountsMethods,
+    ...loginMethods
 }
 
 export default (ipcMain: Electron.IpcMain) => {

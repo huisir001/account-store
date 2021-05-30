@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-30 09:51:38
+ * @LastEditTime: 2021-05-30 14:49:20
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
@@ -122,15 +122,18 @@ export default class SQLAgent {
         return ' ORDER BY ' + orderArr2.join(',')
     }
 
-    private pool: Pool = new Pool(CONST.DB_NAME)    // 初始化数据库连接池
+    private pool: Pool
     private tableName: string
     private schema: IWhereItem
 
     /**
      * 构造方法
      */
-    constructor(tableName: string, schema: object) {
+    constructor(tableName: string, schema: object, cache: boolean = false) {
         this.tableName = tableName
+
+        // 初始化数据库连接池,缓存数据库名为“:memory:”
+        this.pool = cache ? new Pool(":memory:") : new Pool(CONST.DB_NAME)
 
         // 添加主键id
         this.schema = {

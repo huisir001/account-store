@@ -2,13 +2,14 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-30 12:58:30
+ * @LastEditTime: 2021-05-30 14:51:35
  */
 
 import Response from "../config/Response"
 import LoginModel from '../models/Login'
 import AccountModel from '../models/Accounts'
 import OptionsModel from '../models/Options'
+import TokenModel from '../models/Token'
 import { creatToken } from "../tools/Token"
 
 
@@ -49,7 +50,7 @@ const getLoginData = async (): Promise<Response> => {
     if (res.length > 0) {
         return Promise.resolve(Response.succ({ data: res[0] }))
     } else {
-        return Promise.resolve(Response.succ({ data: {} }))
+        return Promise.resolve(Response.fail())
     }
 }
 
@@ -59,7 +60,7 @@ const getLoginData = async (): Promise<Response> => {
  * @param {ILoginParams} params
  * @return {Promise<Response>}
  */
-const doLogin = async (params: ILoginParams): Promise<Response> => {
+const doLogin = async (params: ILoginParams): Promise<any> => {
     const res = await LoginModel.findOne(params, "-core_password -verify_answer")
     if (res && res.verify_question) {
         // 这里做简单的登陆验证(使用用户id+时间戳生成token)
@@ -67,12 +68,13 @@ const doLogin = async (params: ILoginParams): Promise<Response> => {
         // 每次请求携带token,验证有效期是否失效
         // 若失效则删除缓存数据,重新登陆
         // 若未失效，则重置登陆时间
-
-
-
-        return Promise.resolve(Response.succ({ data: true }))
+        const token = creatToken(res.id)
+        const saveToken = await TokenModel.create({ token })
+        if (saveToken) {
+            return Promise.resolve(Response.succ({ data: { token } }))
+        }
     } else {
-        return Promise.resolve(Response.succ({ data: false }))
+        return Promise.resolve(Response.fail('密码或验证问题错误'))
     }
 }
 
@@ -84,9 +86,9 @@ const clearAllTable = async (): Promise<Response> => {
         await Promise.all([LoginModel.clearTable(), AccountModel.clearTable(), OptionsModel.clearTable()])
 
     if (ok1 === 1 && ok2 === 1 && ok3 === 1) {
-        return Promise.resolve(Response.succ({ data: true }))
+        return Promise.resolve(Response.succ())
     } else {
-        return Promise.resolve(Response.succ({ data: false }))
+        return Promise.resolve(Response.fail())
     }
 }
 
@@ -96,12 +98,12 @@ const clearAllTable = async (): Promise<Response> => {
  * @author: HuiSir
  */
 const logout = async (): Promise<Response> => {
-    const { ok } = await LoginModel.aaa
+    const { ok } = await TokenModel.remove({ token })
 
     if (ok === 1) {
-        return Promise.resolve(Response.succ({ data: true }))
+        return Promise.resolve(Response.succ())
     } else {
-        return Promise.resolve(Response.succ({ data: false }))
+        return Promise.resolve(Response.fail())
     }
 }
 

@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-05-29 18:06:44
+ * @LastEditTime: 2021-05-30 18:09:30
  */
 
 /**
@@ -23,8 +23,7 @@
  */
 
 import { contextBridge, ipcRenderer as ipc } from 'electron'
-import Response from "../config/Response"
-import Permission from "../config/Permission"
+import Response from "../tools/Response"
 
 /**
  * 关闭控制台安全警告
@@ -36,25 +35,24 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
  * 将模块暴露给window对象
  */
 contextBridge.exposeInMainWorld("sys", {
-    do(something: string, parames: object): Promise<Response> {
+    do(something: string, ...parames: any[]): Promise<Response> {
         // 返回一个Promise用于接收执行结果
         return new Promise((resolve, reject) => {
-            // 验证权限
-            if (Permission.verify(something)) {
-                // 发送请求
-                ipc.send('todo', something, parames)
+            // 发送请求
+            const token = window.sessionStorage.getItem("token")
+            ipc.send('todo', something, token, ...parames)
 
-                // 接收请求结果
-                ipc.on(something, (_, res) => {
-                    if (res.ok === 1) {
-                        resolve(res)
-                    } else {
-                        reject(res)
+            // 接收请求结果
+            ipc.on(something, (_, res) => {
+                if (res.ok === 1) {
+                    if (res.token) {
+                        window.sessionStorage.setItem("token", res.token)
                     }
-                })
-            } else {
-                reject(Response.fail(`“${something}”不是可用的请求！`))
-            }
+                    resolve(res)
+                } else {
+                    reject(res)
+                }
+            })
         })
     }
 })

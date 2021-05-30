@@ -2,13 +2,12 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-30 14:49:20
+ * @LastEditTime: 2021-05-30 18:36:45
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
 import SQLiteDB from "./SQLiteDB"
-import Pool from "./DBPool"
-import CONST from "../config/const"
+import { IPool, dataPool, cachePool } from "./DBPool"
 
 interface IWhereItem {
     [key: string]: any
@@ -122,7 +121,7 @@ export default class SQLAgent {
         return ' ORDER BY ' + orderArr2.join(',')
     }
 
-    private pool: Pool
+    private pool: IPool
     private tableName: string
     private schema: IWhereItem
 
@@ -131,9 +130,7 @@ export default class SQLAgent {
      */
     constructor(tableName: string, schema: object, cache: boolean = false) {
         this.tableName = tableName
-
-        // 初始化数据库连接池,缓存数据库名为“:memory:”
-        this.pool = cache ? new Pool(":memory:") : new Pool(CONST.DB_NAME)
+        this.pool = cache ? cachePool : dataPool
 
         // 添加主键id
         this.schema = {
@@ -168,7 +165,6 @@ export default class SQLAgent {
                 } else {
                     // this 代表回调函数的上下文
                     resolve({
-                        ok: 1,
                         lastID: this.lastID,
                         changes: this.changes,
                     })
@@ -190,7 +186,6 @@ export default class SQLAgent {
                 } else {
                     // this 代表回调函数的上下文
                     resolve({
-                        ok: 1,
                         lastID: this.lastID,
                         changes: this.changes,
                     })
@@ -390,7 +385,7 @@ export default class SQLAgent {
                 if (err) {
                     reject(err)
                 } else {
-                    resolve({ ok: 1 })
+                    resolve(true)
                 }
             })
         })
@@ -437,7 +432,7 @@ export default class SQLAgent {
                     if (err) {
                         reject(err)
                     } else {
-                        resolve({ ok: 1 })
+                        resolve(true)
                     }
                 })
             }
@@ -479,7 +474,7 @@ export default class SQLAgent {
                 if (err) {
                     reject(err)
                 } else {
-                    resolve({ ok: 1 })
+                    resolve(true)
                 }
             })
         })

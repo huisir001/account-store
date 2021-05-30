@@ -2,14 +2,16 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-05-25 11:49:49
+ * @LastEditTime: 2021-05-30 18:38:15
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
 import router from "./router"
+import { dataPool, cachePool } from "./tools/DBPool"
+import { Print } from './tools/Logger' //日志
 
 // 环境变量
-const IsDev = process.env.NODE_ENV == "development"
+const IsDev = process.env.NODE_ENV === "development"
 
 // 创建一个带有预加载脚本的新的浏览器窗口
 function createWindow() {
@@ -18,25 +20,30 @@ function createWindow() {
 
     // 你通过调用 createWindow方法，在 electron app 第一次被初始化时创建了一个新的窗口
     const Win = new BrowserWindow({
-        backgroundColor: '#386efa',// 初始化背景
-        fullscreen: false,// 是否全屏
+        backgroundColor: '#386efa', // 初始化背景
+        fullscreen: false, // 是否全屏
         width: 800,
         height: 600,
         resizable: IsDev, // 宽高拖拽
         frame: IsDev, // 边框显示
         webPreferences: {// web首选项
-            nodeIntegration: false, // 是否开启Node集成, 并且可以使用像 require 和 process 这样的node APIs 去访问低层系统资源，Electron v5之后的默认为false
+            // 是否开启Node集成, 并且可以使用像 require 和 process 这样的node APIs 去访问低层系统资源，
+            // Electron v5之后的默认为false
+            nodeIntegration: false,
+
             webSecurity: false,  // 关闭窗口跨域,可访问本地绝对路径资源(图片)
-            contextIsolation: true,// 上下文隔离（主进程和渲染进程隔离）防止原型污染
+            contextIsolation: true, // 上下文隔离（主进程和渲染进程隔离）防止原型污染
             enableRemoteModule: false, // 关闭渲染进程中使用远程（remote）模块访问主进程方法，若要使用只能使用ipc模块发送消息事件
-            preload: path.join(__dirname, 'sys/preload/index.js') // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
+            // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 
+            // 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
+            preload: path.join(__dirname, 'sys/preload/index.js')
         }
     })
 
     if (IsDev) {
         // 获取端口号
         const request = require('request')
-        const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] == "--port")
+        const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] === "--port")
 
         // 打开测试页
         Win.loadURL("http://127.0.0.1:" + Port)
@@ -72,10 +79,10 @@ app.whenReady().then(async () => {
                 path: "http://wailian.qn.zuifengyun.com/vue-devtools-6.0.0-beta.11.mod-by-huisir.crx",
             })
             if (res) {
-                console.log("success load : " + res)
+                Print.info("success load : " + res)
             }
         } catch (err) {
-            console.error('Vue Devtools failed to install : ', err.toString())
+            Print.info('Vue Devtools failed to install : ', err.toString())
         }
     }
 
@@ -92,10 +99,14 @@ app.whenReady().then(async () => {
     })
 })
 
-// 退出所有窗口时 关闭主进程
+// 退出所有窗口时 关闭主进程、关闭数据库连接
 app.on('window-all-closed', () => {
     // 当应用程序不再有任何打开窗口时试图退出
     if (process.platform !== 'darwin') {
+        // 关闭数据库连接
+        dataPool.closeAll()
+        cachePool.closeAll()
+        // 关闭主进程
         app.quit()
     }
 })

@@ -2,10 +2,11 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-30 11:19:26
+ * @LastEditTime: 2021-05-30 19:56:09
  */
-import Response from "../config/Response"
+import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
+import { operate } from "./operationLog"
 
 interface IAddAccountParams {
     id?: string // 若有id 为修改原数据，若无，则为新增
@@ -42,8 +43,8 @@ const saveAccount = async (params: IAddAccountParams): Promise<any> => {
         // 这里不需要捕获错误，因为router处统一捕获了
         const id = params.id
         delete params.id
-        const { ok } = await AccountModel.update({ id }, params)
-        if (ok === 1) {
+        const res = await AccountModel.update({ id }, params)
+        if (res) {
             return Promise.resolve(Response.succ())
         }
     } else {
@@ -61,8 +62,8 @@ const saveAccount = async (params: IAddAccountParams): Promise<any> => {
  * @return {*}
  */
 const delAccount = async (id: string): Promise<any> => {
-    const { ok } = await AccountModel.remove({ id })
-    if (ok === 1) {
+    const res = await AccountModel.remove({ id })
+    if (res) {
         return Promise.resolve(Response.succ({ msg: "删除成功" }))
     }
 }
@@ -72,7 +73,7 @@ const delAccount = async (id: string): Promise<any> => {
  * @param {IGetListParams} params
  * @return {*}
  */
-const getAccountListByPage = (params: IGetListParams): Promise<Response> => {
+const getAccountList = (params: IGetListParams): Promise<Response> => {
     const { page, limit, name = "" } = params // name 模糊查询，可不传
 
     return new Promise((resolve, reject) => {
@@ -93,5 +94,5 @@ const getAccountListByPage = (params: IGetListParams): Promise<Response> => {
 export default {
     saveAccount,
     delAccount,
-    getAccountListByPage
+    getAccountList
 }

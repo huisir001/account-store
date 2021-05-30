@@ -2,10 +2,10 @@
  * @Description: 日志处理 log4js
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:05:31
- * @LastEditTime: 2021-05-27 16:02:34
+ * @LastEditTime: 2021-05-30 18:44:05
  */
 import log4js from 'log4js'
-const IsDev = process.env.NODE_ENV == "development"
+const IsDev = process.env.NODE_ENV === "development"
 
 //日志等级列表，顺序越后等级越高
 //等级大小写均可，all是输出全部，off是不输出

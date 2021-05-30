@@ -2,18 +2,23 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2021-05-29 17:37:08
+ * @LastEditTime: 2021-05-30 18:39:03
  */
 import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"
 import { Print, Log } from './Logger' //日志
 const { BD_POOL_LEN, BD_POOL_MAX_LEN } = CONST
 
+export interface IPool {
+    createDBConn(): SQLiteDB
+    getDBConn(): SQLiteDB
+    closeAll(): void
+}
 
 /**
  * 创建连接池及读取连接
  */
-export default class Pool {
+class Pool implements IPool {
     private pool: SQLiteDB[] = []
     private dbName: string
 
@@ -26,7 +31,7 @@ export default class Pool {
         // 连接池中连接数初始化
         for (let n = 0; n < BD_POOL_LEN; n++) {
             this.pool.push(this.createDBConn())
-            Print.info(`数据库连接池连接${n + 1}初始化成功`)
+            Print.info(`数据库连接池${dbName}连接${n + 1}初始化成功`)
         }
     }
 
@@ -74,4 +79,22 @@ export default class Pool {
             return db
         }
     }
+
+    /**
+     * 关闭所有连接
+     */
+    closeAll(): void {
+        this.pool.forEach((item) => {
+            item.close((err) => {
+                if (err) {
+                    Log.error("关闭所有数据库：", err.toString())
+                }
+            })
+            this.pool = []
+        })
+    }
 }
+
+// 初始化数据库连接池,缓存数据库名为“:memory:”
+export const dataPool = new Pool(CONST.DB_NAME)
+export const cachePool = new Pool(':memory:')

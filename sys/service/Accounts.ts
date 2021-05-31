@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-31 12:46:49
+ * @LastEditTime: 2021-05-31 23:06:51
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -61,7 +61,7 @@ class Accounts implements IAccunts {
      */
     async saveAccount(params: IAddAccountParams): Promise<any> {
         // 加密
-        Object.keys(params).forEach(key => {
+        Object.keys(params).forEach((key) => {
             if (key !== "id" && key !== "name") {
                 params[key] = Encrypt.encrypt(params[key])
             }
@@ -69,7 +69,7 @@ class Accounts implements IAccunts {
 
         // 修改
         if (params.hasOwnProperty("id")) {
-            operate("更新账户数据")
+            operate("更新账户数据")()
             // 这里不需要捕获错误，因为router处统一捕获了
             const id = params.id
             delete params.id
@@ -78,7 +78,7 @@ class Accounts implements IAccunts {
                 return Promise.resolve(Response.succ())
             }
         } else {
-            operate("新增账户数据")
+            operate("新增账户数据")()
             // 新增账户
             const res = await AccountModel.create(params)
             if (res) {

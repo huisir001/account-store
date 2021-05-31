@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-31 12:37:05
+ * @LastEditTime: 2021-05-31 23:05:16
  */
 
 import Response from "../tools/Response"
@@ -36,14 +36,14 @@ class Login {
      */
     async saveLoginData(params: ILoginParams): Promise<any> {
         // 加密
-        Object.keys(params).forEach(key => {
+        Object.keys(params).forEach((key) => {
             if (key !== "id") {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })
 
         if (params.hasOwnProperty("id")) {
-            operate("重设登陆数据")
+            operate("重设登陆数据")()
             const id = params.id
             delete params.id
             const res = await LoginModel.update({ id }, params)
@@ -51,7 +51,7 @@ class Login {
                 return Promise.resolve(Response.succ())
             }
         } else {
-            operate("初始化登陆数据")
+            operate("初始化登陆数据")()
             const res = await LoginModel.create(params)
             if (res) {
                 return Promise.resolve(Response.succ({ data: res }))
@@ -80,7 +80,7 @@ class Login {
     @operate("验证登陆数据")
     async doLogin(params: ILoginParams): Promise<any> {
         // 加密
-        Object.keys(params).forEach(key => {
+        Object.keys(params).forEach((key) => {
             if (key !== "id") {
                 params[key] = Encrypt.encrypt(params[key])
             }

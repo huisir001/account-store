@@ -2,7 +2,7 @@
  * @Description: 配置项
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 18:21:14
- * @LastEditTime: 2021-05-31 19:06:12
+ * @LastEditTime: 2021-05-31 22:41:26
  */
 import SQLAgent from '../tools/SQLAgent'
 import os from "os"
@@ -22,7 +22,7 @@ const OptionsSchema = {
     },
     create_time: {
         type: 'DATETIME',
-        default: '(datetime(\'now\',\'localtime\'))', //默认当前时间
+        default: "datetime('now','localtime')", //默认当前时间
         notNull: true,
     },
 }

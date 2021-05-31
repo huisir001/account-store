@@ -2,14 +2,14 @@
  * @Description: 对称加密
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:09:58
- * @LastEditTime: 2021-05-31 17:24:53
+ * @LastEditTime: 2021-05-31 23:07:00
  */
 import CONST from "../config/const"
 import { Print } from './Logger' //日志
 import os from "os"
 
 const netInfo: NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces()
-const MAC = Object.keys(netInfo).map(key => netInfo[key]![0]).find(item => item.mac !== "00:00:00:00:00:00")!.mac
+const MAC = Object.keys(netInfo).map((key) => netInfo[key]![0]).find((item) => item.mac !== "00:00:00:00:00:00")!.mac
 Print.info("本机MAC地址为" + MAC)
 
 class Encrypt {

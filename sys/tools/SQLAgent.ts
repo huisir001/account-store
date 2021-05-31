@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-31 18:59:20
+ * @LastEditTime: 2021-05-31 22:58:28
  */
 
 /**
@@ -80,7 +80,7 @@ export default class SQLAgent {
         } else {
             const curWhere = where.hasOwnProperty('_AND') ? where._AND : where
             for (const key in curWhere) {
-                if (curWhere[key]) continue;
+                if (curWhere[key]) { continue }
                 if (curWhere[key] instanceof Array) {
                     const tempArr = curWhere[key].map(
                         (item: string) => `${key} = '${item}'`
@@ -134,11 +134,11 @@ export default class SQLAgent {
 
         return ' ORDER BY ' + orderArr2.join(',')
     }
+    getDBConn: () => any
 
     private pool: IPool
     private tableName: string
     private schema: IWhereItem
-    getDBConn: () => any
 
     /**
      * 构造方法
@@ -160,13 +160,6 @@ export default class SQLAgent {
         //数据表创建
         this.creatTable()
     }
-
-    /**
-     * 取db连接
-     */
-    // getDBConn(): SQLiteDB {
-    //     return this.pool.getDBConn()
-    // }
 
     /**
      * 自定义执行单条语句
@@ -226,7 +219,6 @@ export default class SQLAgent {
 
         getDBConn().run(querystr, function (err: any) {
             if (err) {
-                console.log(querystr)
                 Log.error(`创建数据表${tableName}失败：` + err.toString())
             } else {
                 Log.info(`数据表 ${tableName} 创建成功`)
@@ -263,7 +255,7 @@ export default class SQLAgent {
      * @param slot
      * @returns {Promise<any>}
      */
-    find(slot: object, listParams: IListParams = {}): Promise<any> {
+    find(slot: object | string, listParams: IListParams = {}): Promise<any> {
         const { tableName, getDBConn, schema } = this
         const { filter = "", sort = "", page = 1, limit } = listParams
         const { fieldFilter, obj2whereStr, sort2QueryStr } = SQLAgent
@@ -478,7 +470,7 @@ export default class SQLAgent {
      * @param slot
      * @returns {Promise<any>}
      */
-    count(slot = {}): Promise<any> {
+    count(slot: object | string = ""): Promise<any> {
         const { tableName, getDBConn } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)

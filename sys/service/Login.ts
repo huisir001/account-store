@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-31 11:43:16
+ * @LastEditTime: 2021-05-31 12:37:05
  */
 
 import Response from "../tools/Response"
@@ -13,9 +13,13 @@ import TokenModel from '../models/Token'
 import { creatToken } from "../tools/Token"
 import { formatDate } from '../tools/utils' //工具
 import { operate } from "./operationLog"
+import Encrypt from "../tools/Encrypt"
 
+interface Index {
+    [key: string]: any
+}
 
-interface ILoginParams {
+interface ILoginParams extends Index {
     id?: string
     core_password: string
     verify_question: string
@@ -31,6 +35,13 @@ class Login {
      * @return {*}
      */
     async saveLoginData(params: ILoginParams): Promise<any> {
+        // 加密
+        Object.keys(params).forEach(key => {
+            if (key !== "id") {
+                params[key] = Encrypt.encrypt(params[key])
+            }
+        })
+
         if (params.hasOwnProperty("id")) {
             operate("重设登陆数据")
             const id = params.id
@@ -52,7 +63,7 @@ class Login {
      * @description: 是否存在登陆数据（返回登陆数据id）
      * @return {Promise<Response>}
      */
-    @operate("查询登陆数据")
+    @operate("查询软件登陆id")
     async getLoginData(): Promise<any> {
         const res = await LoginModel.find({}, { filter: 'id' })
         if (res.length > 0) {
@@ -68,6 +79,13 @@ class Login {
      */
     @operate("验证登陆数据")
     async doLogin(params: ILoginParams): Promise<any> {
+        // 加密
+        Object.keys(params).forEach(key => {
+            if (key !== "id") {
+                params[key] = Encrypt.encrypt(params[key])
+            }
+        })
+        // 查询
         const res = await LoginModel.findOne(params, "id")
         if (res && res.id) {
             // 这里做简单的登陆验证(使用用户id+时间戳生成token)

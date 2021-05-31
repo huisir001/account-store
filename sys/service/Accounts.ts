@@ -2,13 +2,18 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-31 11:48:20
+ * @LastEditTime: 2021-05-31 12:46:49
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
 import { operate } from "./operationLog"
+import Encrypt from "../tools/Encrypt"
 
-interface IAddAccountParams {
+interface Index {
+    [key: string]: any
+}
+
+interface IAddAccountParams extends Index {
     id?: string // 若有id 为修改原数据，若无，则为新增
     name?: string // 名称
     account?: string // 登录账号
@@ -55,6 +60,13 @@ class Accounts implements IAccunts {
      * @return {*}
      */
     async saveAccount(params: IAddAccountParams): Promise<any> {
+        // 加密
+        Object.keys(params).forEach(key => {
+            if (key !== "id" && key !== "name") {
+                params[key] = Encrypt.encrypt(params[key])
+            }
+        })
+
         // 修改
         if (params.hasOwnProperty("id")) {
             operate("更新账户数据")
@@ -104,7 +116,7 @@ class Accounts implements IAccunts {
                 page,
                 limit,
                 total, // 总条数
-                pageTotal: total % limit > 0 ? total / limit : total / limit + 1// 总页数
+                pageTotal: total % limit > 0 ? total / limit : total / limit + 1
             }
             return Promise.resolve(Response.succ({ data }))
         }

@@ -2,9 +2,15 @@
  * @Description: 对称加密
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:09:58
- * @LastEditTime: 2021-05-30 12:51:15
+ * @LastEditTime: 2021-05-31 13:01:16
  */
 import CONST from "../config/const"
+import os from "os"
+
+const netInfo: NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces()
+const MAC = Object.keys(netInfo).map(key => netInfo[key]![0]).find(item => item.mac !== "00:00:00:00:00:00")!.mac
+
+console.log("MAC:", MAC)
 
 class Encrypt {
     private skey: string
@@ -21,7 +27,7 @@ class Encrypt {
      * @author: HuiSir
      */
     encrypt(str: string): string {
-        const strArr: string[] = Buffer.from(str + this.skey)
+        const strArr: string[] = Buffer.from(str + this.skey + MAC)
             .toString('base64')
             .split('') //Base64
         strArr.reverse() //逆序

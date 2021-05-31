@@ -2,7 +2,7 @@
  * @Description: 操作日志存表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 18:46:12
- * @LastEditTime: 2021-05-31 11:46:11
+ * @LastEditTime: 2021-05-31 12:05:52
  */
 import Response from "../tools/Response"
 import OperateLogModel from '../models/OperateLog'
@@ -57,7 +57,7 @@ const getOperateLogs = async (params: IGetOperateLogsParams): Promise<any> => {
             page,
             limit,
             total, // 总条数
-            pageTotal: total % limit > 0 ? total / limit : total / limit + 1// 总页数
+            pageTotal: total % limit > 0 ? total / limit : total / limit + 1 // 总页数
         }
         return Promise.resolve(Response.succ({ data }))
     }

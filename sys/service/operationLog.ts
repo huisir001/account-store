@@ -2,7 +2,7 @@
  * @Description: 操作日志存表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 18:46:12
- * @LastEditTime: 2021-05-31 23:04:31
+ * @LastEditTime: 2021-05-31 23:31:43
  */
 import Response from "../tools/Response"
 import OperateLogModel from '../models/OperateLog'
@@ -35,11 +35,9 @@ interface IdelParam {
  * @author: HuiSir
  */
 const operate = (log: string): any => {
-    return function () {
-        OperateLogModel.create({ log }).catch((err) => {
-            Log.error("保存操作日志出错：", err.toString())
-        })
-    }
+    OperateLogModel.create({ log }).catch((err) => {
+        Log.error(`保存操作日志（${log}）：`, err.toString())
+    })
 }
 
 /**
@@ -49,7 +47,7 @@ const operate = (log: string): any => {
  * @author: HuiSir
  */
 const getOperateLogs = async (params: IGetOperateLogsParams): Promise<any> => {
-    operate("查询操作记录")()
+    operate("查询操作记录")
     const { beginTime, endTime, page, limit } = params
     const whereStr = `create_time BETWEEN '${beginTime} 00:00:00' AND '${endTime} 00:00:00'`
     const list = await OperateLogModel.find(whereStr, { page, limit })
@@ -73,7 +71,7 @@ const getOperateLogs = async (params: IGetOperateLogsParams): Promise<any> => {
  * @author: HuiSir
  */
 const delOperateLogs = async (param: IdelParam): Promise<any> => {
-    operate("批量删除操作记录")()
+    operate("批量删除操作记录")
     const res = await OperateLogModel.removeMany("id", param.ids)
     if (res) {
         return Promise.resolve(Response.succ())

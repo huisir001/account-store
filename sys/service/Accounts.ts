@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-31 23:06:51
+ * @LastEditTime: 2021-05-31 23:29:09
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -69,7 +69,7 @@ class Accounts implements IAccunts {
 
         // 修改
         if (params.hasOwnProperty("id")) {
-            operate("更新账户数据")()
+            operate("更新账户数据")
             // 这里不需要捕获错误，因为router处统一捕获了
             const id = params.id
             delete params.id
@@ -78,7 +78,7 @@ class Accounts implements IAccunts {
                 return Promise.resolve(Response.succ())
             }
         } else {
-            operate("新增账户数据")()
+            operate("新增账户数据")
             // 新增账户
             const res = await AccountModel.create(params)
             if (res) {
@@ -92,8 +92,8 @@ class Accounts implements IAccunts {
      * @param {string} id
      * @return {*}
      */
-    @operate("删除账户数据")
     async delAccount(id: string): Promise<any> {
+        operate("删除账户数据")
         const res = await AccountModel.remove({ id })
         if (res) {
             return Promise.resolve(Response.succ({ msg: "删除成功" }))
@@ -105,8 +105,8 @@ class Accounts implements IAccunts {
      * @param {IGetListParams} params
      * @return {*}
      */
-    @operate("账户列表分页查询")
     async getAccountList(params: IGetListParams): Promise<any> {
+        operate("账户列表分页查询")
         const { name = "", page, limit } = params
         const list = await AccountModel.find({ name }, { page, limit })
         const { count: total } = await AccountModel.count({ name })

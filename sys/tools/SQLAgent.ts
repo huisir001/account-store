@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-31 22:58:28
+ * @LastEditTime: 2021-05-31 23:17:29
  */
 
 /**
@@ -12,7 +12,6 @@
 
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
-import SQLiteDB from "./SQLiteDB"
 import { IPool, dataPool, cachePool } from "./DBPool"
 
 interface IWhereItem {
@@ -208,7 +207,7 @@ export default class SQLAgent {
         const schemaKeys = Object.keys(schema)
         schemaKeys.forEach((key, index) => {
             const item = schema[key]
-            dbQueryStemp += `${key} ${item.type}${key === 'id' ? ' PRIMARY KEY ' : ''}${item.notNull ? ' NOT NULL' : ''
+            dbQueryStemp += `${key} ${item.type}${key === 'id' ? ' PRIMARY KEY' : ''}${item.notNull ? ' NOT NULL' : ''
                 }${item.default !== undefined
                     ? ` DEFAULT ${item.default}`
                     : ''
@@ -219,6 +218,7 @@ export default class SQLAgent {
 
         getDBConn().run(querystr, function (err: any) {
             if (err) {
+                console.log(querystr)
                 Log.error(`创建数据表${tableName}失败：` + err.toString())
             } else {
                 Log.info(`数据表 ${tableName} 创建成功`)

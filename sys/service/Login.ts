@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-31 23:05:16
+ * @LastEditTime: 2021-05-31 23:31:28
  */
 
 import Response from "../tools/Response"
@@ -43,7 +43,7 @@ class Login {
         })
 
         if (params.hasOwnProperty("id")) {
-            operate("重设登陆数据")()
+            operate("重设登陆数据")
             const id = params.id
             delete params.id
             const res = await LoginModel.update({ id }, params)
@@ -51,7 +51,7 @@ class Login {
                 return Promise.resolve(Response.succ())
             }
         } else {
-            operate("初始化登陆数据")()
+            operate("初始化登陆数据")
             const res = await LoginModel.create(params)
             if (res) {
                 return Promise.resolve(Response.succ({ data: res }))
@@ -63,8 +63,8 @@ class Login {
      * @description: 是否存在登陆数据（返回登陆数据id）
      * @return {Promise<Response>}
      */
-    @operate("查询软件登陆id")
     async getLoginData(): Promise<any> {
+        operate("查询软件登陆id")
         const res = await LoginModel.find({}, { filter: 'id' })
         if (res.length > 0) {
             return Promise.resolve(Response.succ({ data: res[0] }))
@@ -77,8 +77,8 @@ class Login {
      * @param {ILoginParams} params
      * @return {Promise<Response>}
      */
-    @operate("验证登陆数据")
     async doLogin(params: ILoginParams): Promise<any> {
+        operate("验证登陆数据")
         // 加密
         Object.keys(params).forEach((key) => {
             if (key !== "id") {
@@ -118,8 +118,8 @@ class Login {
      * @return {Promise<Response>}
      * @author: HuiSir
      */
-    @operate("登出")
     async logout(): Promise<any> {
+        operate("登出")
         const res = await TokenModel.clearTable()
 
         if (res) {

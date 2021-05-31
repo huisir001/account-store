@@ -2,11 +2,11 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-30 19:58:23
+ * @LastEditTime: 2021-05-31 10:47:16
  */
 import accountsMethods from "../service/Accounts"
 import loginMethods from "../service/Login"
-import { getOperateLogs } from "../service/operationLog"
+import { getOperateLogs, delOperateLogs } from "../service/operationLog"
 import Response from "../tools/Response"
 import Permission from "../tools/Permission"
 import { decodeToken } from "../tools/Token"
@@ -22,7 +22,8 @@ interface IMethods {
 const methods: IMethods = {
     ...accountsMethods,
     ...loginMethods,
-    getOperateLogs
+    getOperateLogs,
+    delOperateLogs
 }
 
 export default async (ipcMain: Electron.IpcMain) => {

@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-30 19:56:09
+ * @LastEditTime: 2021-05-31 11:48:20
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -18,12 +18,18 @@ interface IAddAccountParams {
     remark?: string // 备注
 }
 
+/**
+ * 分页列表入参
+ */
 interface IGetListParams {
     name?: string // 名称
     page: number // 当前页码
     limit: number // 每页条数
 }
 
+/**
+ * 查询列表返回数据类型
+ */
 interface IAccountListByPage {
     list: object[]  // 数据集
     page: number  // 当前页码
@@ -33,66 +39,76 @@ interface IAccountListByPage {
 }
 
 /**
- * @description: 修改或新增账户数据
- * @param {IAddAccountParams} params
- * @return {*}
+ * 账户列表类
  */
-const saveAccount = async (params: IAddAccountParams): Promise<any> => {
-    // 修改
-    if (params.hasOwnProperty("id")) {
-        // 这里不需要捕获错误，因为router处统一捕获了
-        const id = params.id
-        delete params.id
-        const res = await AccountModel.update({ id }, params)
-        if (res) {
-            return Promise.resolve(Response.succ())
+interface IAccunts {
+    saveAccount: (params: IAddAccountParams) => Promise<any>
+    delAccount: (id: string) => Promise<any>
+    getAccountList: (params: IGetListParams) => Promise<Response>
+}
+
+class Accounts implements IAccunts {
+
+    /**
+     * @description: 修改或新增账户数据
+     * @param {IAddAccountParams} params
+     * @return {*}
+     */
+    async saveAccount(params: IAddAccountParams): Promise<any> {
+        // 修改
+        if (params.hasOwnProperty("id")) {
+            operate("更新账户数据")
+            // 这里不需要捕获错误，因为router处统一捕获了
+            const id = params.id
+            delete params.id
+            const res = await AccountModel.update({ id }, params)
+            if (res) {
+                return Promise.resolve(Response.succ())
+            }
+        } else {
+            operate("新增账户数据")
+            // 新增账户
+            const res = await AccountModel.create(params)
+            if (res) {
+                return Promise.resolve(Response.succ({ msg: "新增成功", data: res }))
+            }
         }
-    } else {
-        // 新增账户
-        const res = await AccountModel.create(params)
+    }
+
+    /**
+     * @description: 删除账号
+     * @param {string} id
+     * @return {*}
+     */
+    @operate("删除账户数据")
+    async delAccount(id: string): Promise<any> {
+        const res = await AccountModel.remove({ id })
         if (res) {
-            return Promise.resolve(Response.succ({ msg: "新增成功", data: res }))
+            return Promise.resolve(Response.succ({ msg: "删除成功" }))
+        }
+    }
+
+    /**
+     * @description: 分页查询列表
+     * @param {IGetListParams} params
+     * @return {*}
+     */
+    @operate("账户列表分页查询")
+    async getAccountList(params: IGetListParams): Promise<any> {
+        const { name = "", page, limit } = params
+        const list = await AccountModel.find({ name }, { page, limit })
+        const { count: total } = await AccountModel.count({ name })
+        if (list) {
+            const data: IAccountListByPage = {
+                list,
+                page,
+                limit,
+                total, // 总条数
+                pageTotal: total % limit > 0 ? total / limit : total / limit + 1// 总页数
+            }
+            return Promise.resolve(Response.succ({ data }))
         }
     }
 }
 
-/**
- * @description: 删除账号
- * @param {string} id
- * @return {*}
- */
-const delAccount = async (id: string): Promise<any> => {
-    const res = await AccountModel.remove({ id })
-    if (res) {
-        return Promise.resolve(Response.succ({ msg: "删除成功" }))
-    }
-}
-
-/**
- * @description: 分页查询列表
- * @param {IGetListParams} params
- * @return {*}
- */
-const getAccountList = (params: IGetListParams): Promise<Response> => {
-    const { page, limit, name = "" } = params // name 模糊查询，可不传
-
-    return new Promise((resolve, reject) => {
-
-
-        const resData: IAccountListByPage = {
-            list: [],
-            page,
-            limit,
-            total: 1000,
-            pageTotal: 1000
-        }
-
-        resolve(Response.succ({ data: resData }))
-    })
-}
-
-export default {
-    saveAccount,
-    delAccount,
-    getAccountList
-}
+export default new Accounts()

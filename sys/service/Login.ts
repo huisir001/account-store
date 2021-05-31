@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-30 19:55:50
+ * @LastEditTime: 2021-05-31 11:43:16
  */
 
 import Response from "../tools/Response"
@@ -54,7 +54,7 @@ class Login {
      */
     @operate("查询登陆数据")
     async getLoginData(): Promise<any> {
-        const res = await LoginModel.find({}, 'id')
+        const res = await LoginModel.find({}, { filter: 'id' })
         if (res.length > 0) {
             return Promise.resolve(Response.succ({ data: res[0] }))
         }

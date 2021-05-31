@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-30 18:36:45
+ * @LastEditTime: 2021-05-31 11:37:30
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
@@ -16,6 +16,13 @@ interface IWhereItem {
 interface IWhere extends IWhereItem {
     _OR?: IWhereItem
     _AND?: IWhereItem
+}
+
+interface IListParams {
+    filter?: string
+    sort?: string
+    page?: number
+    limit?: number
 }
 
 export default class SQLAgent {
@@ -67,6 +74,7 @@ export default class SQLAgent {
         } else {
             const curWhere = where.hasOwnProperty('_AND') ? where._AND : where
             for (const key in curWhere) {
+                if (curWhere[key]) continue;
                 if (curWhere[key] instanceof Array) {
                     const tempArr = curWhere[key].map(
                         (item: string) => `${key} = '${item}'`
@@ -235,7 +243,7 @@ export default class SQLAgent {
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
-            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
+            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} limit 1;`
             getDBConn().get(sqlMod, function (err, row) {
                 if (err) {
                     reject(err)
@@ -251,8 +259,9 @@ export default class SQLAgent {
      * @param slot
      * @returns {Promise<any>}
      */
-    find(slot: object, filter = '', sort = ''): Promise<any> {
+    find(slot: object, listParams: IListParams): Promise<any> {
         const { tableName, getDBConn, schema } = this
+        const { filter = "", sort = "", page = 1, limit } = listParams
         const { fieldFilter, obj2whereStr, sort2QueryStr } = SQLAgent
         //返回字段过滤
         const resFields = fieldFilter(filter, schema)
@@ -260,8 +269,10 @@ export default class SQLAgent {
         const whereStr = obj2whereStr(slot)
         //升降序，带-号为降序
         const sortQueryStr = sort2QueryStr(sort)
+        // 分页
+        const pageLimitStr = limit ? `limit ${(page - 1) * limit},${limit}` : ""
         return new Promise((resolve, reject) => {
-            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr}`
+            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr} ${pageLimitStr};`
             getDBConn().all(sqlMod, function (err, rows) {
                 if (err) {
                     reject(err)
@@ -436,6 +447,25 @@ export default class SQLAgent {
                     }
                 })
             }
+        })
+    }
+
+    /**
+     * 批量删除,简单删除，仅限一个字段
+     * @param key el: id
+     * @param values el: "1,2,3" 
+     */
+    removeMany(key: string, values: string): Promise<any> {
+        const { tableName, getDBConn } = this
+        return new Promise((resolve, reject) => {
+            const sqlMod = `DELETE FROM ${tableName} WHERE ${key} IN (${values})`
+            getDBConn().run(sqlMod, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(true)
+                }
+            })
         })
     }
 

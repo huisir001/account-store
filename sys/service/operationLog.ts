@@ -2,8 +2,9 @@
  * @Description: 操作日志存表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 18:46:12
- * @LastEditTime: 2021-05-30 19:48:50
+ * @LastEditTime: 2021-05-31 11:46:11
  */
+import Response from "../tools/Response"
 import OperateLogModel from '../models/OperateLog'
 import { Log } from '../tools/Logger' //日志
 
@@ -20,6 +21,10 @@ interface IOperateLogsByPage {
     limit: number // 每页条数
     total: number // 总条数
     pageTotal: number // 总页数
+}
+
+interface IdelParam {
+    ids: string // 使用逗号分隔字符串
 }
 
 
@@ -42,18 +47,38 @@ const operate = (log: string): any => {
  * @author: HuiSir
  */
 const getOperateLogs = async (params: IGetOperateLogsParams): Promise<any> => {
-    try {
-        const res = await OperateLogModel.create({})
-        if (!res) {
-            Log.error("保存操作日志错误：", res.toString())
+    operate("查询操作记录")
+    const { beginTime, endTime, page, limit } = params
+    const list = await OperateLogModel.find({ beginTime, endTime }, { page, limit })
+    const { count: total } = await OperateLogModel.count({ beginTime, endTime })
+    if (list) {
+        const data: IOperateLogsByPage = {
+            list,
+            page,
+            limit,
+            total, // 总条数
+            pageTotal: total % limit > 0 ? total / limit : total / limit + 1// 总页数
         }
-    } catch (err) {
+        return Promise.resolve(Response.succ({ data }))
+    }
+}
 
-        Log.error("保存操作日志错误：", err.toString())
+/**
+ * @description: 批量删除操作记录
+ * @param {*} async
+ * @return {*}
+ * @author: HuiSir
+ */
+const delOperateLogs = async (param: IdelParam): Promise<any> => {
+    operate("批量删除操作记录")
+    const res = await OperateLogModel.removeMany("id", param.ids)
+    if (res) {
+        return Promise.resolve(Response.succ())
     }
 }
 
 export {
     operate,
-    getOperateLogs
+    getOperateLogs,
+    delOperateLogs
 }

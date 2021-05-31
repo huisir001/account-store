@@ -2,13 +2,14 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-05-30 18:38:15
+ * @LastEditTime: 2021-05-31 11:59:39
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
 import router from "./router"
 import { dataPool, cachePool } from "./tools/DBPool"
 import { Print } from './tools/Logger' //日志
+import CONST from './config/const'
 
 // 环境变量
 const IsDev = process.env.NODE_ENV === "development"
@@ -20,10 +21,10 @@ function createWindow() {
 
     // 你通过调用 createWindow方法，在 electron app 第一次被初始化时创建了一个新的窗口
     const Win = new BrowserWindow({
-        backgroundColor: '#386efa', // 初始化背景
+        backgroundColor: CONST.BG_COLOR, // 初始化背景
         fullscreen: false, // 是否全屏
-        width: 800,
-        height: 600,
+        width: CONST.WIN_WIDTH,
+        height: CONST.WIN_HEIGHT,
         resizable: IsDev, // 宽高拖拽
         frame: IsDev, // 边框显示
         webPreferences: {// web首选项
@@ -75,8 +76,8 @@ app.whenReady().then(async () => {
         try {
             const installExtension = require('electron-devtools-installer-bycrx')
             const res = await installExtension({
-                id: "vue-devtools-6.0.0-beta.11.mod-by-huisir",
-                path: "http://wailian.qn.zuifengyun.com/vue-devtools-6.0.0-beta.11.mod-by-huisir.crx",
+                id: path.basename(CONST.VUE_DEVTOOLS_CDN_LINK).split(".")[0],
+                path: CONST.VUE_DEVTOOLS_CDN_LINK,
             })
             if (res) {
                 Print.info("success load : " + res)

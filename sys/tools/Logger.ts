@@ -2,7 +2,7 @@
  * @Description: 日志处理 log4js
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:05:31
- * @LastEditTime: 2021-05-30 18:44:05
+ * @LastEditTime: 2021-05-31 16:24:57
  */
 import log4js from 'log4js'
 const IsDev = process.env.NODE_ENV === "development"
@@ -75,12 +75,12 @@ const Log = IsDev ? log4js.getLogger('debug') : log4js.getLogger()
 const Print = log4js.getLogger('process')
 
 /* Example */
-// Log.trace('Entering cheese testing')
-// Log.debug('Got cheese.')
-// Print.info('配置文件读取成功')
-// Log.warn('Cheese is quite smelly.')
-// Log.error('Cheese is too ripe!')
-// Log.fatal('Cheese was breeding ground for listeria.')
+// Log.trace('追踪级别')
+// Log.debug('调试级别')
+// Print.info('信息级别')
+// Log.warn('警告级别')
+// Log.error('错误级别')
+// Log.fatal('致命错误级别')
 
 export {
     Log,

@@ -2,6 +2,8 @@
 node_modules
 /dist
 /output
+*.db
+/logs
 
 # sys
 /sys/*.js

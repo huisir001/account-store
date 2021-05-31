@@ -2,8 +2,14 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-31 13:52:09
+ * @LastEditTime: 2021-05-31 16:42:23
  */
+
+/**
+ * SQLite语句中 带特殊符号的字符串要加单引号
+ */
+
+
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
 import SQLiteDB from "./SQLiteDB"
@@ -132,6 +138,7 @@ export default class SQLAgent {
     private pool: IPool
     private tableName: string
     private schema: IWhereItem
+    getDBConn: () => any
 
     /**
      * 构造方法
@@ -139,6 +146,7 @@ export default class SQLAgent {
     constructor(tableName: string, schema: object, cache: boolean = false) {
         this.tableName = tableName
         this.pool = cache ? cachePool : dataPool
+        this.getDBConn = this.pool.getDBConn.bind(this.pool)
 
         // 添加主键id
         this.schema = {
@@ -156,9 +164,9 @@ export default class SQLAgent {
     /**
      * 取db连接
      */
-    getDBConn(): SQLiteDB {
-        return this.pool.getDBConn()
-    }
+    // getDBConn(): SQLiteDB {
+    //     return this.pool.getDBConn()
+    // }
 
     /**
      * 自定义执行单条语句
@@ -167,15 +175,12 @@ export default class SQLAgent {
      */
     run(sqlMod: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.getDBConn().run(sqlMod, function (err) {
+            this.getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)
                 } else {
                     // this 代表回调函数的上下文
-                    resolve({
-                        lastID: this.lastID,
-                        changes: this.changes,
-                    })
+                    resolve(true)
                 }
             })
         })
@@ -188,15 +193,12 @@ export default class SQLAgent {
      */
     exec(sqlMod: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.getDBConn().run(sqlMod, function (err) {
+            this.getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)
                 } else {
                     // this 代表回调函数的上下文
-                    resolve({
-                        lastID: this.lastID,
-                        changes: this.changes,
-                    })
+                    resolve(true)
                 }
             })
         })
@@ -221,7 +223,7 @@ export default class SQLAgent {
 
         const querystr = `CREATE TABLE IF NOT EXISTS ${tableName}(${dbQueryStemp} PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8;`
 
-        getDBConn().run(querystr, function (err) {
+        getDBConn().run(querystr, function (err: any) {
             if (err) {
                 Log.error(err)
             } else {
@@ -244,7 +246,7 @@ export default class SQLAgent {
         const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} limit 1;`
-            getDBConn().get(sqlMod, function (err, row) {
+            getDBConn().get(sqlMod, function (err: any, row: any) {
                 if (err) {
                     reject(err)
                 } else {
@@ -273,7 +275,7 @@ export default class SQLAgent {
         const pageLimitStr = limit ? `limit ${(page - 1) * limit},${limit}` : ""
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr} ${pageLimitStr};`
-            getDBConn().all(sqlMod, function (err, rows) {
+            getDBConn().all(sqlMod, function (err: any, rows: any) {
                 if (err) {
                     reject(err)
                 } else {
@@ -299,19 +301,19 @@ export default class SQLAgent {
         return new Promise((resolve, reject) => {
             const slotKeys = Object.keys(slot)
             const slotVals = slotKeys.map((key) => slot[key])
-            const sqlMod1 = `INSERT INTO ${tableName} (${slotKeys.join(',')}) VALUES (${slotVals.join(',')});`
+            const sqlMod1 = `INSERT INTO ${tableName} (${slotKeys.join(',')}) VALUES ('${slotVals.join('\',\'')}');`
             const sqlMod2 = `SELECT ${resFields} FROM ${tableName} WHERE id = '${slot.id}';`
             const db = getDBConn()
 
             // 串行
             db.serialize(function () {
-                db.run(sqlMod1, function (err) {
+                db.run(sqlMod1, function (err: any) {
                     if (err) {
                         reject(err)
                     }
                 })
 
-                db.get(sqlMod2, function (err, row) {
+                db.get(sqlMod2, function (err: any, row: any) {
                     if (err) {
                         reject(err)
                     } else {
@@ -361,13 +363,13 @@ export default class SQLAgent {
 
             // 串行
             db.serialize(function () {
-                db.run(sqlMod1, function (err) {
+                db.run(sqlMod1, function (err: any) {
                     if (err) {
                         reject(err)
                     }
                 })
 
-                db.all(sqlMod2, function (err, rows) {
+                db.all(sqlMod2, function (err: any, rows: any) {
                     if (err) {
                         reject(err)
                     } else {
@@ -392,7 +394,7 @@ export default class SQLAgent {
         return new Promise((resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ${updateStr} WHERE ${whereStr}`
 
-            getDBConn().run(sqlMod, function (err) {
+            getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)
                 } else {
@@ -425,11 +427,11 @@ export default class SQLAgent {
 
             if (returnData) {
                 // 串行
-                db.get(sqlMod, function (err, row) {
+                db.get(sqlMod, function (err: any, row: any) {
                     if (err) {
                         reject(err)
                     } else {
-                        db.run(sqlDelMod, function (err2) {
+                        db.run(sqlDelMod, function (err2: any) {
                             if (err2) {
                                 reject(err)
                             } else {
@@ -439,7 +441,7 @@ export default class SQLAgent {
                     }
                 })
             } else {
-                db.run(sqlDelMod, function (err) {
+                db.run(sqlDelMod, function (err: any) {
                     if (err) {
                         reject(err)
                     } else {
@@ -459,7 +461,7 @@ export default class SQLAgent {
         const { tableName, getDBConn } = this
         return new Promise((resolve, reject) => {
             const sqlMod = `DELETE FROM ${tableName} WHERE ${key} IN (${values})`
-            getDBConn().run(sqlMod, function (err) {
+            getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)
                 } else {
@@ -481,7 +483,7 @@ export default class SQLAgent {
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
             // 串行
-            getDBConn().get(sqlMod, function (err, row) {
+            getDBConn().get(sqlMod, function (err: any, row: any) {
                 if (err) {
                     reject(err)
                 } else {
@@ -500,7 +502,7 @@ export default class SQLAgent {
         const { tableName, getDBConn } = this
         return new Promise((resolve, reject) => {
             const sqlMod = `TRUNCATE TABLE ${tableName}`
-            getDBConn().run(sqlMod, function (err) {
+            getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)
                 } else {

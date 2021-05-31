@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-      "target": "esnext",
-      "module": "esnext",
+      "target": "es6",
+      "module": "commonjs",
       "strict": true,
       "jsx": "preserve",
       "importHelpers": true,
       "moduleResolution": "node",
       "skipLibCheck": true,
+      "removeComments": true,
       "esModuleInterop": true,
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,

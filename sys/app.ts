@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-05-31 11:59:39
+ * @LastEditTime: 2021-05-31 14:41:15
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -10,6 +10,8 @@ import router from "./router"
 import { dataPool, cachePool } from "./tools/DBPool"
 import { Print } from './tools/Logger' //日志
 import CONST from './config/const'
+import request from 'request'
+import installExtension from 'electron-devtools-installer-bycrx'
 
 // 环境变量
 const IsDev = process.env.NODE_ENV === "development"
@@ -43,7 +45,6 @@ function createWindow() {
 
     if (IsDev) {
         // 获取端口号
-        const request = require('request')
         const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] === "--port")
 
         // 打开测试页
@@ -74,7 +75,6 @@ app.whenReady().then(async () => {
         // 安装vue-devtools插件
         // 使用try catch避免阻塞后续脚本执行
         try {
-            const installExtension = require('electron-devtools-installer-bycrx')
             const res = await installExtension({
                 id: path.basename(CONST.VUE_DEVTOOLS_CDN_LINK).split(".")[0],
                 path: CONST.VUE_DEVTOOLS_CDN_LINK,

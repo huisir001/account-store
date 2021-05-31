@@ -2,7 +2,7 @@
  * @Description: 配置项
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 18:21:14
- * @LastEditTime: 2021-05-30 12:30:25
+ * @LastEditTime: 2021-05-31 14:09:21
  */
 import SQLAgent from '../tools/SQLAgent'
 import os from "os"

@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-31 11:37:30
+ * @LastEditTime: 2021-05-31 13:52:09
  */
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
@@ -259,7 +259,7 @@ export default class SQLAgent {
      * @param slot
      * @returns {Promise<any>}
      */
-    find(slot: object, listParams: IListParams): Promise<any> {
+    find(slot: object, listParams: IListParams = {}): Promise<any> {
         const { tableName, getDBConn, schema } = this
         const { filter = "", sort = "", page = 1, limit } = listParams
         const { fieldFilter, obj2whereStr, sort2QueryStr } = SQLAgent

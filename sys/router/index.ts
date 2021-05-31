@@ -2,10 +2,11 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-31 10:47:16
+ * @LastEditTime: 2021-05-31 14:14:51
  */
 import accountsMethods from "../service/Accounts"
 import loginMethods from "../service/Login"
+import optionsMethods from "../service/Options"
 import { getOperateLogs, delOperateLogs } from "../service/operationLog"
 import Response from "../tools/Response"
 import Permission from "../tools/Permission"
@@ -22,6 +23,7 @@ interface IMethods {
 const methods: IMethods = {
     ...accountsMethods,
     ...loginMethods,
+    ...optionsMethods,
     getOperateLogs,
     delOperateLogs
 }

@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-31 16:42:23
+ * @LastEditTime: 2021-05-31 18:59:20
  */
 
 /**
@@ -212,20 +212,22 @@ export default class SQLAgent {
 
         //表不存在创建表
         let dbQueryStemp = ''
-        Object.keys(schema).forEach((key) => {
+        const schemaKeys = Object.keys(schema)
+        schemaKeys.forEach((key, index) => {
             const item = schema[key]
-            dbQueryStemp += `${key} ${item.type}${item.notNull ? ' NOT NULL' : ''
+            dbQueryStemp += `${key} ${item.type}${key === 'id' ? ' PRIMARY KEY ' : ''}${item.notNull ? ' NOT NULL' : ''
                 }${item.default !== undefined
-                    ? ' DEFAULT ' + item.default
+                    ? ` DEFAULT ${item.default}`
                     : ''
-                },`
+                }${index < schemaKeys.length - 1 ? ',' : ''}`
         })
 
-        const querystr = `CREATE TABLE IF NOT EXISTS ${tableName}(${dbQueryStemp} PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+        const querystr = `CREATE TABLE IF NOT EXISTS ${tableName} (${dbQueryStemp});`
 
         getDBConn().run(querystr, function (err: any) {
             if (err) {
-                Log.error(err)
+                console.log(querystr)
+                Log.error(`创建数据表${tableName}失败：` + err.toString())
             } else {
                 Log.info(`数据表 ${tableName} 创建成功`)
             }

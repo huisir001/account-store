@@ -2,7 +2,7 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2021-05-31 16:10:12
+ * @LastEditTime: 2021-05-31 17:25:50
  */
 import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"
@@ -31,8 +31,8 @@ class Pool implements IPool {
         // 连接池中连接数初始化
         for (let n = 0; n < BD_POOL_LEN; n++) {
             this.pool.push(this.createDBConn())
-            Print.info(`数据库连接池${dbName}连接${n + 1}初始化成功\n`)
         }
+        Print.info(`数据库 [${dbName}] 连接池初始化成功`)
     }
 
     /**

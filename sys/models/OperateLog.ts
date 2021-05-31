@@ -2,7 +2,7 @@
  * @Description:
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 18:49:16
- * @LastEditTime: 2021-05-30 18:58:01
+ * @LastEditTime: 2021-05-31 19:06:00
  */
 import SQLAgent from '../tools/SQLAgent'
 
@@ -14,7 +14,7 @@ const OperateLogSchema = {
     },
     create_time: {
         type: 'DATETIME',
-        default: 'CURRENT_TIMESTAMP', //默认当前时间
+        default: '(datetime(\'now\',\'localtime\'))', //默认当前时间
         notNull: true,
     },
 }

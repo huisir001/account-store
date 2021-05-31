@@ -2,7 +2,7 @@
  * @Description: 日志处理 log4js
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:05:31
- * @LastEditTime: 2021-05-31 16:24:57
+ * @LastEditTime: 2021-05-31 17:03:20
  */
 import log4js from 'log4js'
 const IsDev = process.env.NODE_ENV === "development"

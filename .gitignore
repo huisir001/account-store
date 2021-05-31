@@ -3,7 +3,7 @@ node_modules
 /dist
 /output
 *.db
-/logs
+logs
 
 # sys
 /sys/*.js

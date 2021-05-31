@@ -2,7 +2,7 @@
  * @Description: 配置项
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 18:21:14
- * @LastEditTime: 2021-05-31 14:09:21
+ * @LastEditTime: 2021-05-31 19:06:12
  */
 import SQLAgent from '../tools/SQLAgent'
 import os from "os"
@@ -12,7 +12,7 @@ import path from "path"
 const OptionsSchema = {
     backup_path: { // 备份路径
         type: 'VARCHAR(255)',
-        default: path.join(os.homedir(), "AccountStore"),
+        default: `'${path.join(os.homedir(), "AccountStore")}'`,
         notNull: true,
     },
     auto_backup: {  // 自动备份时机
@@ -22,7 +22,7 @@ const OptionsSchema = {
     },
     create_time: {
         type: 'DATETIME',
-        default: 'CURRENT_TIMESTAMP', //默认当前时间
+        default: '(datetime(\'now\',\'localtime\'))', //默认当前时间
         notNull: true,
     },
 }

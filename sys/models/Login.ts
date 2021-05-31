@@ -2,7 +2,7 @@
  * @Description:
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:34:20
- * @LastEditTime: 2021-05-29 18:20:06
+ * @LastEditTime: 2021-05-31 18:56:09
  */
 import SQLAgent from '../tools/SQLAgent' //配置文件
 
@@ -22,7 +22,7 @@ const LoginSchema = {
     },
     create_time: {
         type: 'DATETIME',
-        default: 'CURRENT_TIMESTAMP', //默认当前时间
+        default: '(datetime(\'now\',\'localtime\'))', //默认当前时间
         notNull: true,
     },
 }

@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint",
     "tsc:sys": "tsc --build ./sys/tsconfig.json",
     "build:electron": "set NODE_ENV=production&&　electron-packager ./dist --overwrite --platform=win32 --arch=ia32 --asar --out=output --icon=./dist/favicon.ico",
-    "dev:electron": "set NODE_ENV=development&& electron ./sys/app.js",
+    "dev:electron": "chcp 65001 && set NODE_ENV=development&& electron ./sys/app.js",
     "test": "npm-run-all -s tsc:sys -p serve dev:electron",
     "dist": "run-s tsc:sys build build:electron"
   },

@@ -31,7 +31,7 @@ const AccountSchema = {
     },
     create_time: {
         type: 'DATETIME',
-        default: 'CURRENT_TIMESTAMP', //默认当前时间
+        default: '(datetime(\'now\',\'localtime\'))', //默认当前时间
         notNull: true,
     },
 }

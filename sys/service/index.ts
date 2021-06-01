@@ -2,7 +2,7 @@
  * @Description: 暴露方法
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-01 17:44:18
- * @LastEditTime: 2021-06-01 18:05:25
+ * @LastEditTime: 2021-06-01 18:59:18
  */
 import accounts from "./Accounts"
 import login from "./Login"
@@ -19,8 +19,9 @@ let methods: IMethods = {
     delOperateLogs
 }
 
-const getProtoMethods = (instant: any) => {
-    return Object.getOwnPropertyNames(Object.getPrototypeOf(instant)).filter(m => m != "constructor")
+const getProtoMethods = (instance: InstanceType<any>) => {
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
+        .filter(m => m != "constructor")
 }
 
 const classMethods = [accounts, login, options]

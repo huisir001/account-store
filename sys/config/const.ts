@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-05-31 11:59:31
+ * @LastEditTime: 2021-06-01 10:23:24
  */
 
 export default {
@@ -22,7 +22,7 @@ export default {
     WIN_WIDTH: 800, // 窗口宽
     WIN_HEIGHT: 600, // 窗口高
 
-    VUE_DEVTOOLS_CDN_LINK: "http://wailian.qn.zuifengyun.com/vue-devtools-6.0.0-beta.11.mod-by-huisir.crx"
+    VUE_DEVTOOLS_CDN_LINK: "http://wailian.qn.zuifengyun.com/vue_devtools_20210601.crx"
 
     // 搞个操作日志表
 }

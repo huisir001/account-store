@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-05-31 18:43:05
+ * @LastEditTime: 2021-06-01 10:10:28
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -80,10 +80,10 @@ app.whenReady().then(async () => {
                 path: CONST.VUE_DEVTOOLS_CDN_LINK,
             })
             if (res) {
-                Print.info("success load : " + res)
+                Print.info("插件加载成功：" + res)
             }
         } catch (err) {
-            Print.info('Vue Devtools failed to install : ', err.toString())
+            Print.info('Vue Devtools 加载失败：', err.toString())
         }
     }
 

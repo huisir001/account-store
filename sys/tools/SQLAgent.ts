@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-05-31 23:17:29
+ * @LastEditTime: 2021-06-01 10:37:44
  */
 
 /**
@@ -202,26 +202,35 @@ export default class SQLAgent {
     creatTable(): void {
         const { tableName, schema, getDBConn } = this
 
-        //表不存在创建表
-        let dbQueryStemp = ''
-        const schemaKeys = Object.keys(schema)
-        schemaKeys.forEach((key, index) => {
-            const item = schema[key]
-            dbQueryStemp += `${key} ${item.type}${key === 'id' ? ' PRIMARY KEY' : ''}${item.notNull ? ' NOT NULL' : ''
-                }${item.default !== undefined
-                    ? ` DEFAULT ${item.default}`
-                    : ''
-                }${index < schemaKeys.length - 1 ? ',' : ''}`
-        })
-
-        const querystr = `CREATE TABLE IF NOT EXISTS ${tableName} (${dbQueryStemp});`
-
-        getDBConn().run(querystr, function (err: any) {
+        // 判断表是否存在
+        const tableExistSql = `SELECT count(*) as count FROM sqlite_master WHERE type = 'table' AND name = '${tableName}'`
+        getDBConn().get(tableExistSql, function (err: any, { count }: any) {
             if (err) {
-                console.log(querystr)
-                Log.error(`创建数据表${tableName}失败：` + err.toString())
+                Log.error(`数据库查询出错：` + err.toString())
             } else {
-                Log.info(`数据表 ${tableName} 创建成功`)
+                //表不存在创建表
+                if (count <= 0) {
+                    let dbQueryStemp = ''
+                    const schemaKeys = Object.keys(schema)
+                    schemaKeys.forEach((key, index) => {
+                        const item = schema[key]
+                        dbQueryStemp += `${key} ${item.type}${key === 'id' ? ' PRIMARY KEY' : ''}${item.notNull ? ' NOT NULL' : ''
+                            }${item.default !== undefined
+                                ? ` DEFAULT ${item.default}`
+                                : ''
+                            }${index < schemaKeys.length - 1 ? ',' : ''}`
+                    })
+
+                    const querystr = `CREATE TABLE IF NOT EXISTS ${tableName} (${dbQueryStemp});`
+
+                    getDBConn().run(querystr, function (err: any, a: string) {
+                        if (err) {
+                            Log.error(`创建数据表${tableName}失败：` + err.toString())
+                        } else {
+                            Log.info(`数据表 ${tableName} 创建成功` + a)
+                        }
+                    })
+                }
             }
         })
     }
@@ -476,7 +485,6 @@ export default class SQLAgent {
         const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
-            // 串行
             getDBConn().get(sqlMod, function (err: any, row: any) {
                 if (err) {
                     reject(err)

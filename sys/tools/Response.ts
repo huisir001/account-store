@@ -2,7 +2,7 @@
  * @Description: 响应参数配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 14:23:18
- * @LastEditTime: 2021-05-26 22:33:27
+ * @LastEditTime: 2021-06-01 17:24:11
  */
 interface IResponse {
     ok: number
@@ -31,7 +31,7 @@ export default class Response implements IResponse {
     data?: any
 
     private constructor(ok?: number, msg?: string, data?: any) {
-        ok && (this.ok = ok)
+        ok !== undefined && (this.ok = ok)
         msg && (this.msg = msg)
         data && (this.data = data)
     }

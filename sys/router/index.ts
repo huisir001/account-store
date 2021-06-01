@@ -2,31 +2,14 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-05-31 14:14:51
+ * @LastEditTime: 2021-06-01 18:10:29
  */
-import accountsMethods from "../service/Accounts"
-import loginMethods from "../service/Login"
-import optionsMethods from "../service/Options"
-import { getOperateLogs, delOperateLogs } from "../service/operationLog"
+import methods from "../service"
 import Response from "../tools/Response"
 import Permission from "../tools/Permission"
 import { decodeToken } from "../tools/Token"
 import { Log } from '../tools/Logger' //日志
 import CONST from "../config/const"
-
-// 定义可索引类型的接口
-interface IMethods {
-    [key: string]: (...arg: any[]) => any
-}
-
-// 方法map
-const methods: IMethods = {
-    ...accountsMethods,
-    ...loginMethods,
-    ...optionsMethods,
-    getOperateLogs,
-    delOperateLogs
-}
 
 export default async (ipcMain: Electron.IpcMain) => {
     // 接收渲染进程（操作系统模块）,将模块返回
@@ -41,9 +24,9 @@ export default async (ipcMain: Electron.IpcMain) => {
                         return
                     }
                     const userid = decodeToken(token)
-                    const { data: { id } } = await loginMethods.getLoginData()
+                    const { data: { id } } = await methods.getLoginData()
                     const { data: { id: tokenId, act_time, token: cacheToken } } =
-                        await loginMethods.getTokenCache(token)
+                        await methods.getTokenCache(token)
 
                     if (!userid || userid !== id || cacheToken !== token) {
                         event.reply(something, Response.fail("Token验证失败"))
@@ -53,7 +36,7 @@ export default async (ipcMain: Electron.IpcMain) => {
                         return
                     } else {
                         // 更新token时间
-                        await loginMethods.updateCatcheActTime(tokenId)
+                        await methods.updateCatcheActTime(tokenId)
                     }
                 }
 

@@ -2,18 +2,19 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-05-31 23:31:28
+ * @LastEditTime: 2021-06-01 18:44:52
  */
-
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
 import AccountModel from '../models/Accounts'
 import OptionsModel from '../models/Options'
 import TokenModel from '../models/Token'
+import OperateLogModel from '../models/OperateLog'
 import { creatToken } from "../tools/Token"
 import { formatDate } from '../tools/utils' //工具
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
+import optionsMethods from "./Options"
 
 interface Index {
     [key: string]: any
@@ -52,6 +53,8 @@ class Login {
             }
         } else {
             operate("初始化登陆数据")
+            // 首选项默认数据初始化
+            await optionsMethods.initOptions()
             const res = await LoginModel.create(params)
             if (res) {
                 return Promise.resolve(Response.succ({ data: res }))
@@ -66,9 +69,7 @@ class Login {
     async getLoginData(): Promise<any> {
         operate("查询软件登陆id")
         const res = await LoginModel.find({}, { filter: 'id' })
-        if (res.length > 0) {
-            return Promise.resolve(Response.succ({ data: res[0] }))
-        }
+        return Promise.resolve(Response.succ({ data: res.length > 0 ? res[0] : {} }))
     }
 
 
@@ -106,7 +107,12 @@ class Login {
      */
     async clearAllTable(): Promise<any> {
         const [res1, res2, res3] =
-            await Promise.all([LoginModel.clearTable(), AccountModel.clearTable(), OptionsModel.clearTable()])
+            await Promise.all([
+                LoginModel.clearTable(),
+                AccountModel.clearTable(),
+                OptionsModel.clearTable(),
+                OperateLogModel.clearTable()
+            ])
 
         if (res1 && res2 && res3) {
             return Promise.resolve(Response.succ())

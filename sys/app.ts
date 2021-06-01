@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-01 10:10:28
+ * @LastEditTime: 2021-06-01 16:26:08
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -39,7 +39,7 @@ function createWindow() {
             enableRemoteModule: false, // 关闭渲染进程中使用远程（remote）模块访问主进程方法，若要使用只能使用ipc模块发送消息事件
             // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 
             // 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
-            preload: path.join(__dirname, 'sys/preload/index.js')
+            preload: path.join(__dirname, 'preload/index.js')
         }
     })
 

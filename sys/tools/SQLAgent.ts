@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-01 10:37:44
+ * @LastEditTime: 2021-06-01 18:42:33
  */
 
 /**
@@ -223,11 +223,11 @@ export default class SQLAgent {
 
                     const querystr = `CREATE TABLE IF NOT EXISTS ${tableName} (${dbQueryStemp});`
 
-                    getDBConn().run(querystr, function (err: any, a: string) {
+                    getDBConn().run(querystr, function (err: any) {
                         if (err) {
                             Log.error(`创建数据表${tableName}失败：` + err.toString())
                         } else {
-                            Log.info(`数据表 ${tableName} 创建成功` + a)
+                            Log.info(`数据表 ${tableName} 创建成功`)
                         }
                     })
                 }
@@ -503,7 +503,7 @@ export default class SQLAgent {
     clearTable(): Promise<any> {
         const { tableName, getDBConn } = this
         return new Promise((resolve, reject) => {
-            const sqlMod = `TRUNCATE TABLE ${tableName}`
+            const sqlMod = `DELETE FROM ${tableName};`
             getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)

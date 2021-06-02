@@ -2,7 +2,7 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-01 18:10:29
+ * @LastEditTime: 2021-06-02 14:39:38
  */
 import methods from "../service"
 import Response from "../tools/Response"
@@ -11,16 +11,26 @@ import { decodeToken } from "../tools/Token"
 import { Log } from '../tools/Logger' //日志
 import CONST from "../config/const"
 
-export default async (ipcMain: Electron.IpcMain) => {
+export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boolean, query?: object) => any) => {
     // 接收渲染进程（操作系统模块）,将模块返回
     ipcMain.on('todo', async (event: Electron.IpcMainEvent, something: string, token?: string, ...params: any[]) => {
         let res: object
+
+        // 登录成功启动主窗口
+        if (something === "openMainWindow") {
+            // 启动主窗口，将token以query方式传回
+            createWindow(false, { token })
+            return
+        }
+
         if (Object.keys(methods).includes(something)) {
             try {
                 // 验证token
                 if (!Permission.verify(something)) {
                     if (!token) {
                         event.reply(something, Response.fail("Token验证失败"))
+                        // 重新登录
+                        createWindow(true)
                         return
                     }
                     const userid = decodeToken(token)
@@ -30,9 +40,13 @@ export default async (ipcMain: Electron.IpcMain) => {
 
                     if (!userid || userid !== id || cacheToken !== token) {
                         event.reply(something, Response.fail("Token验证失败"))
+                        // 重新登录
+                        createWindow(true)
                         return
                     } else if (Date.now() - new Date(act_time).getTime() >= CONST.LOGIN_TIMEOUT) {
                         event.reply(something, Response.fail("Token失效"))
+                        // 重新登录
+                        createWindow(true)
                         return
                     } else {
                         // 更新token时间

@@ -2,12 +2,12 @@
  * @Description: 
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 15:46:37
- * @LastEditTime: 2021-05-22 16:11:06
+ * @LastEditTime: 2021-06-02 15:10:36
 -->
 <template>
     <div id="nav">
         <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
+        <router-link to="/login">Login</router-link>
     </div>
     <router-view />
 </template>

@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-02 14:51:04
+ * @LastEditTime: 2021-06-02 14:57:13
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -69,7 +69,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] === "--port")
 
         // 打开测试页
-        Win.loadURL(`http://127.0.0.1:${Port}${query ? '?' + obj2Query(query) : ''}`)
+        Win.loadURL(`http://127.0.0.1:${Port}#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
 
         // 由于vue-cli-service serve和electron命令同时启动，无法判定哪个先启动完成
         // 所以这里写个定时器，不断加载直到加载成功
@@ -86,7 +86,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         }, 500)
     } else {
         // 入口页面
-        Win.loadFile(`./index.html${query ? '?' + obj2Query(query) : ''}`)
+        Win.loadFile(`./index.html#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
     }
 
     // 将窗口push到集合中

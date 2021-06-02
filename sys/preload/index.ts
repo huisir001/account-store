@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-06-02 14:50:33
+ * @LastEditTime: 2021-06-02 14:52:19
  */
 
 /**
@@ -27,18 +27,18 @@ import Response from "../tools/Response"
 import { getUrlQuery } from "../tools/utils"
 
 /**
+ * 关闭控制台安全警告
+ * 除了这种方式，也可以在命令中执行`set ELECTRON_DISABLE_SECURITY_WARNINGS=true`
+ */
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
+
+/**
  * 若存在token参数，则存为sessionStorage缓存
  */
 const { token } = getUrlQuery()
 if (token) {
     window.sessionStorage.setItem("token", token)
 }
-
-/**
- * 关闭控制台安全警告
- * 除了这种方式，也可以在命令中执行`set ELECTRON_DISABLE_SECURITY_WARNINGS=true`
- */
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 /**
  * 将模块暴露给window对象

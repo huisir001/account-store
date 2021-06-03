@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-06-01 18:44:52
+ * @LastEditTime: 2021-06-03 16:08:13
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -38,7 +38,7 @@ class Login {
     async saveLoginData(params: ILoginParams): Promise<any> {
         // 加密
         Object.keys(params).forEach((key) => {
-            if (key !== "id") {
+            if (key !== "id" && key !== "verify_question") {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })
@@ -68,7 +68,7 @@ class Login {
      */
     async getLoginData(): Promise<any> {
         operate("查询软件登陆id")
-        const res = await LoginModel.find({}, { filter: 'id' })
+        const res = await LoginModel.find({}, { filter: 'id verify_question' })
         return Promise.resolve(Response.succ({ data: res.length > 0 ? res[0] : {} }))
     }
 
@@ -82,7 +82,7 @@ class Login {
         operate("验证登陆数据")
         // 加密
         Object.keys(params).forEach((key) => {
-            if (key !== "id") {
+            if (key !== "id" && key !== "verify_question") {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })

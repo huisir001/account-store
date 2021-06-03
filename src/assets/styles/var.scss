@@ -1,0 +1,23 @@
+// base color
+// $dark-blue: #324157;
+// $light-blue: #3a71a8;
+// $red: #c03639;
+// $pink: #e65d6e;
+// $green: #30b08f;
+// $yellow: #fec171;
+/* 改变主题色变量 */
+
+$--color-primary: #854cff !default;
+
+$--font-path: "~element-plus/lib/theme-chalk/fonts";
+@import "~element-plus/packages/theme-chalk/src/index";
+
+/* 改变 icon 字体路径变量，必需 */
+
+// sidebar
+// $menuText: #bfcbd9;
+
+// :export 指令用于 webpack 打包
+// :export {
+//   menuText: $menuText;
+// }

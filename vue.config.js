@@ -2,7 +2,7 @@
  * @Description: vue-cli配置文件
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-23 00:22:44
- * @LastEditTime: 2021-05-24 16:11:07
+ * @LastEditTime: 2021-06-03 23:48:07
  */
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 

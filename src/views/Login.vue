@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-03 18:55:03
+ * @LastEditTime: 2021-06-03 22:51:24
 -->
 <template>
     <div class="login">
@@ -79,7 +79,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, Ref } from 'vue'
-import ElForm from 'element-plus/lib/el-form'
+import { ElForm } from 'element-plus'
 import Api from '@/api'
 
 export default defineComponent({
@@ -113,7 +113,7 @@ export default defineComponent({
             ],
             resetPass: [
                 {
-                    validator: (rule: any, value: string, callback: any) => {
+                    validator: (_: any, value: string, callback: any) => {
                         console.log('resetPass', value)
 
                         if (!value || value === '') {
@@ -219,7 +219,7 @@ export default defineComponent({
         padding: 0 36px;
         .login-divider {
             margin-bottom: 30px;
-            &::v-deep .el-divider__text {
+            &:deep(.el-divider__text) {
                 color: #bcc0c7;
             }
         }

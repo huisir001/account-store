@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-05 02:32:59
+ * @LastEditTime: 2021-06-05 02:35:13
 -->
 <template>
     <div class="login">
@@ -107,7 +107,6 @@ export default defineComponent({
 
             // 有登录数据
             if (ok===1 && id) {
-                Message.success("存储成功")
                 isReg.value = false
                 loginData.id = id
                 loginData.verify_question = verify_question
@@ -173,6 +172,7 @@ export default defineComponent({
                     if(isReg.value){
                         const {ok,data} = await Api('saveLoginData',{core_password,verify_question,verify_answer})
                         if (ok===1) {
+                            Message.success("存储成功")
                             isReg.value = false
                             loginData.id = data.id
                             loginData.verify_question = data.verify_question

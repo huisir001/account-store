@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-03 22:51:24
+ * @LastEditTime: 2021-06-05 02:32:59
 -->
 <template>
     <div class="login">
@@ -41,7 +41,7 @@
         </div>
         <div class="form">
             <el-divider class="login-divider">{{isReg?"请设置验证信息":'Sign In'}}</el-divider>
-            <el-form ref="form"
+            <el-form ref="formEl"
                      :rules="rules"
                      :model="loginData">
                 <el-form-item prop="core_password">
@@ -60,6 +60,7 @@
                 <el-form-item prop="verify_question">
                     <el-input v-model="loginData.verify_question"
                               clearable
+                              :disabled="!isReg"
                               :placeholder="`请${tipStr}验证问题`"></el-input>
                 </el-form-item>
                 <el-form-item prop="verify_answer">
@@ -79,7 +80,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, Ref } from 'vue'
-import { ElForm } from 'element-plus'
+import { ElForm,ElMessage as Message } from 'element-plus'
 import Api from '@/api'
 
 export default defineComponent({
@@ -87,35 +88,51 @@ export default defineComponent({
     setup() {
         // 是否为设置阶段
         const isReg: Ref = ref(true)
-        // 验证问题
-        const loginId: Ref = ref('')
         // 可选状态
-        const disabledBtn: Ref = ref(false)
+        let disabledBtn: Ref = ref(false)
+        // form表单元素
+        const formEl:Ref = ref(null)
         // 登录数据
         const loginData = reactive({
+            id:'',
             core_password: '',
             resetPass: '',
             verify_question: '',
             verify_answer: '',
         })
 
+        // 查询是否已有登录数据
+        ;(async () => {
+            const { ok,data:{id,verify_question} } = await Api('getLoginData')
+
+            // 有登录数据
+            if (ok===1 && id) {
+                Message.success("存储成功")
+                isReg.value = false
+                loginData.id = id
+                loginData.verify_question = verify_question
+            }
+        })()
+
         // 计算属性
-        const tipStr = computed(() => (isReg ? '设置' : '输入'))
+        const tipStr = computed(() => (isReg.value? '设置' : '输入'))
 
         // 规则
         const rules = computed(() => ({
             core_password: [
                 {
                     required: true,
-                    message: `请${tipStr.value}主密码`,
+                    message: `请${tipStr.value}总密码`,
                     trigger: 'blur',
                 },
             ],
             resetPass: [
                 {
                     validator: (_: any, value: string, callback: any) => {
-                        console.log('resetPass', value)
-
+                        if(!isReg.value){
+                             callback()
+                             return
+                        }
                         if (!value || value === '') {
                             callback(new Error(`请再次${tipStr.value}密码`))
                         } else if (value !== loginData.core_password) {
@@ -145,44 +162,45 @@ export default defineComponent({
             ],
         }))
 
-        // 查询是否已有登录数据
-        const getLoginData = async () => {
-            const { id } = await Api('getLoginData')
-
-            // 有登录数据
-            if (id) {
-                loginId.value = id
-                isReg.value = false
-            }
-        }
-
-        return {
-            isReg,
-            loginId,
-            loginData,
-            tipStr,
-            rules,
-            getLoginData,
-            disabledBtn,
-        }
-    },
-    created() {
-        this.getLoginData()
-    },
-    methods: {
-        onSubmit() {
-            this.disabledBtn = true
-            ;(this.$refs.form as typeof ElForm).validate((valid: any) => {
+        // 登陆、提交按钮
+        const onSubmit = ()=>{
+            disabledBtn.value = true
+            ;(formEl.value as typeof ElForm).validate(async (valid: any) => {
                 if (valid) {
-                    this.disabledBtn = false
-                    alert('submit!')
+                    // 保存登陆数据
+                    let {id,core_password,verify_question,verify_answer} = loginData
+
+                    if(isReg.value){
+                        const {ok,data} = await Api('saveLoginData',{core_password,verify_question,verify_answer})
+                        if (ok===1) {
+                            isReg.value = false
+                            loginData.id = data.id
+                            loginData.verify_question = data.verify_question
+                        }
+                    }else{
+                        // 登陆验证
+                        const res = await Api('doLogin',{id,core_password,verify_answer})
+                        console.log(res)
+                    }
+
+                    disabledBtn.value = false
                 } else {
-                    this.disabledBtn = false
-                    console.log('error submit!!')
+                    disabledBtn.value = false
                     return false
                 }
             })
-        },
+        }
+
+        // 暴露数据
+        return {
+            isReg,
+            formEl,
+            loginData,
+            tipStr,
+            rules,
+            disabledBtn,
+            onSubmit
+        }
     },
 })
 </script>
@@ -225,6 +243,7 @@ export default defineComponent({
         }
         .btn-go {
             margin-top: 35px;
+            text-align: center;
             .el-button {
                 padding: 12px 50px;
                 transition: 0.5s;

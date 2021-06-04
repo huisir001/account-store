@@ -1,28 +1,26 @@
 {
   "name": "account-store",
+  "productName": "Account Store",
+  "author": "HuiSir<273250950@qq.com>",
+  "description": "Users store personal account information, such as the account password of a website or application.",
   "version": "0.1.0",
   "private": true,
-  "main": "sys/app.js",
+  "main": "app.js",
   "scripts": {
     "serve": "vue-cli-service serve --port 54321 --mode dev",
     "build": "vue-cli-service build --mode pro",
+    "install:dist":"cd dist && npm install --production",
     "lint": "vue-cli-service lint",
     "tsc:sys": "tsc --build ./sys/tsconfig.json",
-    "build:electron": "set NODE_ENV=production&&　electron-packager ./dist --overwrite --platform=win32 --arch=ia32 --asar --out=output --icon=./dist/favicon.ico",
-    "dev:electron": "chcp 65001 && set NODE_ENV=development&& electron ./sys/app.js",
+    "build:electron": "set NODE_ENV=production&&　electron-packager ./dist AccountStore --overwrite --electron-version=13.0.1 --platform=win32 --arch=x64 --asar --out=output --icon=./dist/favicon.ico",
+    "dev:electron": "chcp 65001 && set NODE_ENV=development&& electron ./app.js",
     "test": "npm-run-all -s tsc:sys -p serve dev:electron",
-    "dist": "run-s tsc:sys build build:electron"
+    "dist": "run-s tsc:sys build install:dist build:electron"
   },
   "dependencies": {
-    "core-js": "^3.6.5",
-    "electron": "^13.0.1",
-    "element-plus": "^1.0.2-beta.45",
     "log4js": "^6.3.0",
     "sqlite3": "^5.0.2",
-    "uuid": "^8.3.2",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0",
-    "vuex": "^4.0.0-0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/request": "^2.48.5",
@@ -34,11 +32,17 @@
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
+    "core-js": "^3.6.5",
+    "electron": "^13.0.1",
     "electron-devtools-installer-bycrx": "^1.1.0",
     "electron-packager": "^15.2.0",
+    "element-plus": "^1.0.2-beta.45",
     "npm-run-all": "^4.1.5",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
-    "typescript": "~4.1.5"
+    "typescript": "~4.1.5",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
   }
 }

@@ -6,6 +6,7 @@ node_modules
 logs
 
 # sys
+/app.js
 /sys/*.js
 /sys/*.map
 /sys/**/*.js

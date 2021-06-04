@@ -2,17 +2,16 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-02 14:57:13
+ * @LastEditTime: 2021-06-04 18:27:19
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
-import router from "./router"
-import { dataPool, cachePool } from "./tools/DBPool"
-import { Print } from './tools/Logger' //日志
-import CONST from './config/const'
+import router from "./sys/router"
+import { dataPool, cachePool } from "./sys/tools/DBPool"
+import { Print } from './sys/tools/Logger' //日志
+import CONST from './sys/config/const'
 import request from 'request'
-import installExtension from 'electron-devtools-installer-bycrx'
-import { obj2Query } from "./tools/utils"
+import { obj2Query } from "./sys/tools/utils"
 
 // 环境变量
 const IsDev: boolean = process.env.NODE_ENV === "development"
@@ -60,7 +59,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
             enableRemoteModule: false, // 关闭渲染进程中使用远程（remote）模块访问主进程方法，若要使用只能使用ipc模块发送消息事件
             // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 
             // 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
-            preload: path.join(__dirname, 'preload/index.js')
+            preload: path.join(__dirname, 'sys/preload/index.js')
         }
     })
 
@@ -68,16 +67,19 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         // 获取端口号
         const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] === "--port")
 
-        // 打开测试页
-        Win.loadURL(`http://127.0.0.1:${Port}#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
-
         // 由于vue-cli-service serve和electron命令同时启动，无法判定哪个先启动完成
         // 所以这里写个定时器，不断加载直到加载成功
+        let reqFlag = false
         const Timer = setInterval(() => {
             request("http://127.0.0.1:" + Port, function (err: any) {
-                if (!err) {
-                    // 刷新页面
-                    Win.reload()
+                if (!err && !reqFlag) {
+                    reqFlag = true
+                    let sto = setTimeout(() => {
+                        Print.info("正在启动Electron项目控制台，请等待...")
+                        clearTimeout(sto)
+                    }, 500)
+                    // 打开测试页
+                    Win.loadURL(`http://127.0.0.1:${Port}#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
                     // 开启调试.
                     Win.webContents.openDevTools()
                     clearInterval(Timer)
@@ -103,6 +105,9 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         // 显示窗口
         Win.show()
 
+        // 打印日志
+        Print.info("Electron项目控制台窗口已启动！")
+
         // 启动回调
         callback && callback()
     })
@@ -122,6 +127,7 @@ app.whenReady().then(async () => {
         // 安装vue-devtools插件
         // 使用try catch避免阻塞后续脚本执行
         try {
+            const installExtension = require('electron-devtools-installer-bycrx')
             const res = await installExtension({
                 id: path.basename(CONST.VUE_DEVTOOLS_CDN_LINK).split(".")[0],
                 path: CONST.VUE_DEVTOOLS_CDN_LINK,

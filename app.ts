@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-04 18:27:19
+ * @LastEditTime: 2021-06-04 22:19:02
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -74,8 +74,8 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
             request("http://127.0.0.1:" + Port, function (err: any) {
                 if (!err && !reqFlag) {
                     reqFlag = true
-                    let sto = setTimeout(() => {
-                        Print.info("正在启动Electron项目控制台，请等待...")
+                    const sto = setTimeout(() => {
+                        Print.info("正在启动窗口，请等待...")
                         clearTimeout(sto)
                     }, 500)
                     // 打开测试页
@@ -88,7 +88,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         }, 500)
     } else {
         // 入口页面
-        Win.loadFile(`./index.html#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
+        Win.loadURL(path.join(__dirname, `index.html#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`))
     }
 
     // 将窗口push到集合中
@@ -106,7 +106,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         Win.show()
 
         // 打印日志
-        Print.info("Electron项目控制台窗口已启动！")
+        Print.info("窗口启动成功")
 
         // 启动回调
         callback && callback()

@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-05 02:35:13
+ * @LastEditTime: 2021-06-06 00:34:48
 -->
 <template>
     <div class="login">
@@ -19,7 +19,41 @@
             </div>
         </div>
         <!-- 关闭按钮 -->
-        <i class="el-icon-close close-icon"></i>
+        <svg t="1622891709537"
+             @click="Api('winClose')"
+             class="icon close-icon"
+             viewBox="0 0 1024 1024"
+             version="1.1"
+             xmlns="http://www.w3.org/2000/svg"
+             p-id="34945"
+             width="20"
+             height="20">
+            <path d="M832.8704 846.2848c-2.6112 0-5.2224-1.024-7.2192-3.0208L183.9104 201.5232c-3.9936-3.9936-3.9936-10.496 0-14.4896 3.9936-3.9936 10.496-3.9936 14.4896 0l641.7408 641.7408c3.9936 3.9936 3.9936 10.496 0 14.4896-2.048 1.9968-4.6592 3.0208-7.2704 3.0208z"
+                  p-id="34946"
+                  fill="#ffffff"></path>
+            <path d="M191.1296 846.2848a10.26048 10.26048 0 0 1-7.2192-17.5104L825.6 187.0848c3.9936-3.9936 10.496-3.9936 14.4896 0 3.9936 3.9936 3.9936 10.496 0 14.4896L198.3488 843.264c-1.9968 1.9968-4.608 3.0208-7.2192 3.0208z"
+                  p-id="34947"
+                  fill="#ffffff"></path>
+        </svg>
+        <!-- 最小化 -->
+        <svg t="1622900690444"
+             @click="minIconNoHover=true;Api('winMinimize')"
+             @mouseenter="bindMinIconMouseenter"
+             :class="{
+                 'icon':true,
+                  'mini-icon':true,
+                  'no-hover':minIconNoHover
+             }"
+             viewBox="0 0 1024 1024"
+             version="1.1"
+             xmlns="http://www.w3.org/2000/svg"
+             p-id="7843"
+             width="20"
+             height="20">
+            <path d="M98.23 451.003l829.685-1.992 0.154 64-829.685 1.992z"
+                  fill="#ffffff"
+                  p-id="7844"></path>
+        </svg>
         <!-- logo -->
         <div class="cont">
             <svg t="1622690592734"
@@ -43,7 +77,8 @@
             <el-divider class="login-divider">{{isReg?"请设置验证信息":'Sign In'}}</el-divider>
             <el-form ref="formEl"
                      :rules="rules"
-                     :model="loginData">
+                     :model="loginData"
+                     size="medium">
                 <el-form-item prop="core_password">
                     <el-input type="password"
                               v-model="loginData.core_password"
@@ -80,8 +115,10 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, Ref } from 'vue'
-import { ElForm,ElMessage as Message } from 'element-plus'
+import { ElForm } from 'element-plus'
 import Api from '@/api'
+
+declare const window: Window & { toast: any }
 
 export default defineComponent({
     name: 'Login',
@@ -92,6 +129,8 @@ export default defineComponent({
         let disabledBtn: Ref = ref(false)
         // form表单元素
         const formEl:Ref = ref(null)
+        // 按钮hover移除
+        const minIconNoHover:Ref = ref(false)
         // 登录数据
         const loginData = reactive({
             id:'',
@@ -172,7 +211,7 @@ export default defineComponent({
                     if(isReg.value){
                         const {ok,data} = await Api('saveLoginData',{core_password,verify_question,verify_answer})
                         if (ok===1) {
-                            Message.success("存储成功")
+                            window.toast("存储成功")
                             isReg.value = false
                             loginData.id = data.id
                             loginData.verify_question = data.verify_question
@@ -191,6 +230,13 @@ export default defineComponent({
             })
         }
 
+        // 鼠标移入
+        const bindMinIconMouseenter = ()=>{
+            if(minIconNoHover.value){
+                minIconNoHover.value = false
+            }
+        }
+
         // 暴露数据
         return {
             isReg,
@@ -199,21 +245,40 @@ export default defineComponent({
             tipStr,
             rules,
             disabledBtn,
-            onSubmit
+            minIconNoHover,
+            bindMinIconMouseenter,
+            onSubmit,
+            Api
         }
     },
 })
 </script>
 <style scoped lang="scss">
 .login {
-    i.close-icon {
+    $iconMargin: 20px;
+    .icon {
         position: absolute;
         z-index: 999;
-        color: #fff;
-        left: 0;
-        top: 0;
-        font-size: 24px;
-        padding: 15px;
+        top: 15px;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+    .close-icon {
+        left: $iconMargin;
+    }
+    .mini-icon {
+        right: $iconMargin;
+        path {
+            transform-origin: center;
+            transform: scaleY(0.8) scaleX(0.9);
+            opacity: 0.7;
+        }
+        &.no-hover {
+            background: none !important;
+        }
     }
     .cont {
         z-index: 99;
@@ -221,7 +286,7 @@ export default defineComponent({
         top: 0;
         left: 0;
         width: 100%;
-        height: 220px;
+        height: 200px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -233,8 +298,12 @@ export default defineComponent({
         }
     }
     .form {
-        margin-top: -240px;
-        padding: 0 36px;
+        padding: 1px 35px 35px 35px;
+        background: #fff;
+        &:deep(.el-input),
+        &:deep(.el-button) {
+            -webkit-app-region: no-drag;
+        }
         .login-divider {
             margin-bottom: 30px;
             &:deep(.el-divider__text) {
@@ -243,6 +312,7 @@ export default defineComponent({
         }
         .btn-go {
             margin-top: 35px;
+            margin-bottom: 0;
             text-align: center;
             .el-button {
                 padding: 12px 50px;
@@ -255,17 +325,16 @@ export default defineComponent({
     }
     .waveWrapper {
         overflow: hidden;
-        height: 500px;
+        height: 235px;
         width: 100%;
-        transform: scaleY(0.5);
-        transform-origin: top;
+        position: relative;
     }
     .waveWrapperInner {
         position: absolute;
         width: 100%;
         overflow: hidden;
         height: 100%;
-        bottom: -1px;
+        top: 0;
         background-image: linear-gradient(to top, #854cff 20%, #663bc1 80%);
     }
     .bgTop {
@@ -289,7 +358,7 @@ export default defineComponent({
         transform-origin: center bottom;
     }
     .waveTop {
-        background-size: 50% 100px;
+        background-size: 50% 40px;
         background-image: url('../assets/imgs/wave-top.png');
     }
     .waveAnimation .waveTop {
@@ -299,14 +368,14 @@ export default defineComponent({
         animation-delay: 1s;
     }
     .waveMiddle {
-        background-size: 50% 120px;
+        background-size: 50% 50px;
         background-image: url('../assets/imgs/wave-mid.png');
     }
     .waveAnimation .waveMiddle {
         animation: move_wave 10s linear infinite;
     }
     .waveBottom {
-        background-size: 50% 100px;
+        background-size: 50% 40px;
         background-image: url('../assets/imgs/wave-bot.png');
     }
     .waveAnimation .waveBottom {

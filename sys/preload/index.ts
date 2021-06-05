@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-06-02 14:52:19
+ * @LastEditTime: 2021-06-05 23:15:32
  */
 
 /**
@@ -23,8 +23,13 @@
  */
 
 import { contextBridge, ipcRenderer as ipc } from 'electron'
+import WinMethods from './Win'
 import Response from "../tools/Response"
 import { getUrlQuery } from "../tools/utils"
+
+interface Iobj {
+    [key: string]: any
+}
 
 /**
  * 关闭控制台安全警告
@@ -47,23 +52,29 @@ contextBridge.exposeInMainWorld("sys", {
     do(something: string, ...parames: any[]): Promise<Response> {
         // 返回一个Promise用于接收执行结果
         return new Promise((resolve, reject) => {
-            // 发送请求
-            const token = window.sessionStorage.getItem("token")
-            ipc.send('todo', something, token, ...parames)
+            if ((WinMethods as Iobj)[something]) {
+                (WinMethods as Iobj)[something]()
+                resolve(Response.succ())
+            } else {
+                // 发送请求
+                const Token = window.sessionStorage.getItem("token")
+                ipc.send('todo', something, Token, ...parames)
 
-            // 接收请求结果
-            ipc.on(something, (_, res) => {
-                if (res.ok === 1) {
-                    // 这里判断，如果返回token，则为登录验证成功
-                    if (res.data.token) {
-                        // 登录成功后启动主窗口，将token传回
-                        ipc.send('todo', "openMainWindow", res.data.token)
+                // 接收请求结果
+                ipc.on(something, (_, res) => {
+                    if (res.ok === 1) {
+                        // 这里判断，如果返回token，则为登录验证成功
+                        if (res.data.token) {
+                            // 登录成功后启动主窗口，将token传回
+                            ipc.send('todo', "openMainWindow", res.data.token)
+                        }
+                        resolve(res)
+                    } else {
+                        reject(res)
                     }
-                    resolve(res)
-                } else {
-                    reject(res)
-                }
-            })
+                })
+            }
+
         })
     }
 })

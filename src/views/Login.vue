@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-06 00:34:48
+ * @LastEditTime: 2021-06-06 10:22:23
 -->
 <template>
     <div class="login">
@@ -114,8 +114,9 @@
     </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, Ref } from 'vue'
+import { computed, defineComponent, reactive, ref, Ref, nextTick } from 'vue'
 import { ElForm } from 'element-plus'
+import { useStore } from 'vuex'
 import Api from '@/api'
 
 declare const window: Window & { toast: any }
@@ -123,17 +124,19 @@ declare const window: Window & { toast: any }
 export default defineComponent({
     name: 'Login',
     setup() {
+        // 使用store
+        const store = useStore()
         // 是否为设置阶段
-        const isReg: Ref = ref(true)
+        const isReg: Ref = ref(false)
         // 可选状态
         let disabledBtn: Ref = ref(false)
         // form表单元素
-        const formEl:Ref = ref(null)
+        const formEl: Ref = ref(null)
         // 按钮hover移除
-        const minIconNoHover:Ref = ref(false)
+        const minIconNoHover: Ref = ref(false)
         // 登录数据
         const loginData = reactive({
-            id:'',
+            id: '',
             core_password: '',
             resetPass: '',
             verify_question: '',
@@ -142,18 +145,29 @@ export default defineComponent({
 
         // 查询是否已有登录数据
         ;(async () => {
-            const { ok,data:{id,verify_question} } = await Api('getLoginData')
+            const {
+                ok,
+                data: { id, verify_question },
+            } = await Api('getLoginData')
 
             // 有登录数据
-            if (ok===1 && id) {
-                isReg.value = false
+            if (ok === 1 && id) {
                 loginData.id = id
                 loginData.verify_question = verify_question
+            } else {
+                isReg.value = true
             }
+
+            nextTick(() => {
+                // 清除数据更新导致自动触发的表单验证
+                formEl.value.clearValidate()
+                // 显示界面，展示滑入动画
+                store.dispatch('showSlideInAnimate')
+            })
         })()
 
         // 计算属性
-        const tipStr = computed(() => (isReg.value? '设置' : '输入'))
+        const tipStr = computed(() => (isReg.value ? '设置' : '输入'))
 
         // 规则
         const rules = computed(() => ({
@@ -167,9 +181,9 @@ export default defineComponent({
             resetPass: [
                 {
                     validator: (_: any, value: string, callback: any) => {
-                        if(!isReg.value){
-                             callback()
-                             return
+                        if (!isReg.value) {
+                            callback()
+                            return
                         }
                         if (!value || value === '') {
                             callback(new Error(`请再次${tipStr.value}密码`))
@@ -201,24 +215,33 @@ export default defineComponent({
         }))
 
         // 登陆、提交按钮
-        const onSubmit = ()=>{
+        const onSubmit = () => {
             disabledBtn.value = true
             ;(formEl.value as typeof ElForm).validate(async (valid: any) => {
                 if (valid) {
                     // 保存登陆数据
-                    let {id,core_password,verify_question,verify_answer} = loginData
+                    let { id, core_password, verify_question, verify_answer } =
+                        loginData
 
-                    if(isReg.value){
-                        const {ok,data} = await Api('saveLoginData',{core_password,verify_question,verify_answer})
-                        if (ok===1) {
-                            window.toast("存储成功")
+                    if (isReg.value) {
+                        const { ok, data } = await Api('saveLoginData', {
+                            core_password,
+                            verify_question,
+                            verify_answer,
+                        })
+                        if (ok === 1) {
+                            window.toast('存储成功')
                             isReg.value = false
                             loginData.id = data.id
                             loginData.verify_question = data.verify_question
                         }
-                    }else{
+                    } else {
                         // 登陆验证
-                        const res = await Api('doLogin',{id,core_password,verify_answer})
+                        const res = await Api('doLogin', {
+                            id,
+                            core_password,
+                            verify_answer,
+                        })
                         console.log(res)
                     }
 
@@ -230,9 +253,9 @@ export default defineComponent({
             })
         }
 
-        // 鼠标移入
-        const bindMinIconMouseenter = ()=>{
-            if(minIconNoHover.value){
+        // 窗口icon鼠标移入显示hover
+        const bindMinIconMouseenter = () => {
+            if (minIconNoHover.value) {
                 minIconNoHover.value = false
             }
         }
@@ -248,7 +271,7 @@ export default defineComponent({
             minIconNoHover,
             bindMinIconMouseenter,
             onSubmit,
-            Api
+            Api,
         }
     },
 })
@@ -258,7 +281,7 @@ export default defineComponent({
     $iconMargin: 20px;
     .icon {
         position: absolute;
-        z-index: 999;
+        z-index: 99999;
         top: 15px;
         cursor: pointer;
         -webkit-app-region: no-drag;

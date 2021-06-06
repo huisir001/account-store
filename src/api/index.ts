@@ -2,7 +2,7 @@
  * @Description: 主线程API调用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-02 16:03:20
- * @LastEditTime: 2021-06-06 00:41:46
+ * @LastEditTime: 2021-06-06 09:11:48
  */
 declare const window: Window & { sys: any, alert: (a: string, b: string, c: string) => void }
 
@@ -12,8 +12,9 @@ export default async (something: string, ...parames: any[]): Promise<any> => {
 
     // loading
     const loading = Loading.service({
-        text: 'Loading',
+        text: '加载中...',
         background: 'rgba(255, 255, 255, 0.6)',
+        target: "#app" // 在app元素内loading，避免遮罩覆盖透明区
     })
 
     try {
@@ -28,7 +29,7 @@ export default async (something: string, ...parames: any[]): Promise<any> => {
     } catch (err) {
 
         // 关闭loading
-        // loading.close()
+        loading.close()
 
         // 错误提示
         window.alert(err.msg || err.toString(), '错误信息', '确认')

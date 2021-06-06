@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-06-05 02:09:37
+ * @LastEditTime: 2021-06-06 16:20:30
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -88,8 +88,10 @@ class Login {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })
+
         // 查询
         const res = await LoginModel.findOne(params, "id")
+
         if (res && res.id) {
             // 这里做简单的登陆验证(使用用户id+时间戳生成token)
             // 此处需要做登陆缓存（将token存于sqlite缓存数据库中，附加登陆时间）
@@ -101,6 +103,8 @@ class Login {
             if (saveToken) {
                 return Promise.resolve(Response.succ({ data: { token } }))
             }
+        } else {
+            return Promise.resolve(Response.fail("密码或答案错误"))
         }
     }
 

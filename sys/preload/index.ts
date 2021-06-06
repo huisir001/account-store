@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-06-05 23:15:32
+ * @LastEditTime: 2021-06-06 16:02:28
  */
 
 /**
@@ -63,11 +63,6 @@ contextBridge.exposeInMainWorld("sys", {
                 // 接收请求结果
                 ipc.on(something, (_, res) => {
                     if (res.ok === 1) {
-                        // 这里判断，如果返回token，则为登录验证成功
-                        if (res.data.token) {
-                            // 登录成功后启动主窗口，将token传回
-                            ipc.send('todo', "openMainWindow", res.data.token)
-                        }
                         resolve(res)
                     } else {
                         reject(res)

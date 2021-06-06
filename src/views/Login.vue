@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-06 10:22:23
+ * @LastEditTime: 2021-06-06 16:23:31
 -->
 <template>
     <div class="login">
@@ -230,7 +230,7 @@ export default defineComponent({
                             verify_answer,
                         })
                         if (ok === 1) {
-                            window.toast('存储成功')
+                            window.toast('提交成功')
                             isReg.value = false
                             loginData.id = data.id
                             loginData.verify_question = data.verify_question
@@ -242,7 +242,11 @@ export default defineComponent({
                             core_password,
                             verify_answer,
                         })
-                        console.log(res)
+                        if (res && res.ok === 1) {
+                            sessionStorage.setItem('token', res.data.token)
+                            window.toast('验证成功')
+                            Api('openMainWindow')
+                        }
                     }
 
                     disabledBtn.value = false

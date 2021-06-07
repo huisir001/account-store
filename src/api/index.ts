@@ -2,7 +2,7 @@
  * @Description: 主线程API调用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-02 16:03:20
- * @LastEditTime: 2021-06-07 12:35:41
+ * @LastEditTime: 2021-06-07 13:58:35
  */
 import { ElLoading as Loading } from 'element-plus'
 
@@ -17,7 +17,7 @@ export default async (something: string, ...parames: any[]): Promise<any> => {
 
     try {
 
-        const res = await window.sys.do(something, ...parames)
+        const res = await (<any>window).sys.do(something, ...parames)
 
         // 关闭loading
         loading.close()
@@ -27,9 +27,9 @@ export default async (something: string, ...parames: any[]): Promise<any> => {
     } catch (err) {
 
         // 关闭loading
-        loading.close()
+        loading.close();
 
         // 错误提示
-        window.alert(err.msg || err.toString(), '错误信息', '确认')
+        (<any>window).alert(err.msg || err.toString(), '错误信息', '确认')
     }
 }

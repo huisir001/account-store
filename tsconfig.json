@@ -36,9 +36,6 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "files":[
-    "src/types/global.d.ts"
-  ],
   "exclude": [
     "sys",
     "node_modules"

@@ -2,33 +2,42 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-07 18:51:24
+ * @LastEditTime: 2021-06-07 21:24:47
 -->
 <template>
     <div class="layout">
         <div class="navs">
-            <div class="actbox"></div>
             <div class="menu-box">
-                <router-link to="/home/createAccount"
-                             class="menu-item">
-                    <i class="el-icon-folder-add"></i>
-                    <span>新增账户</span>
-                </router-link>
-                <router-link to="/home/accountList"
-                             class="menu-item">
-                    <i class="el-icon-folder-add"></i>
-                    <span>账户列表</span>
-                </router-link>
-                <router-link to="/home/operateLogs"
-                             class="menu-item">
-                    <i class="el-icon-folder-add"></i>
-                    <span>操作日志</span>
-                </router-link>
-                <router-link to="/home/options"
-                             class="menu-item">
-                    <i class="el-icon-folder-add"></i>
-                    <span>设置选项</span>
-                </router-link>
+                <div class="routers-box">
+                    <router-link v-for="nav in navList"
+                                 :key="nav.path"
+                                 :to="nav.path"
+                                 class="menu-item"
+                                 @mouseenter="bindNavMouseEnter">
+                        <i :class="nav.icon"></i>
+                        <span>{{nav.title}}</span>
+                    </router-link>
+                    <router-link to="/home/accountList"
+                                 class="menu-item"
+                                 @mouseenter="bindNavMouseEnter">
+                        <i class="el-icon-folder-add"></i>
+                        <span>账户列表</span>
+                    </router-link>
+                    <router-link to="/home/operateLogs"
+                                 class="menu-item"
+                                 @mouseenter="bindNavMouseEnter">
+                        <i class="el-icon-folder-add"></i>
+                        <span>操作日志</span>
+                    </router-link>
+                    <router-link to="/home/options"
+                                 class="menu-item"
+                                 @mouseenter="bindNavMouseEnter">
+                        <i class="el-icon-folder-add"></i>
+                        <span>设置选项</span>
+                    </router-link>
+                </div>
+                <div class="navHoverBox"
+                     :style="{top:navHoverBoxTop+'px'}"></div>
             </div>
         </div>
         <div class="content">
@@ -38,11 +47,32 @@
 </template>
  
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
+import router from '@/router'
 
 export default defineComponent({
     name: 'Layout',
-    setup() {},
+    setup() {
+        // 导航列表
+        const navList: any = router.options.routes
+            .find((route) => route.name == 'Home')!
+            .children?.map(({ path, meta }) => ({
+                path: '/home/' + path,
+                ...meta,
+            }))
+
+        const navHoverBoxTop = ref(10)
+
+        const bindNavMouseEnter = (e: any) => {
+            navHoverBoxTop.value = e.target.offsetTop
+        }
+
+        return {
+            navList,
+            navHoverBoxTop,
+            bindNavMouseEnter,
+        }
+    },
 })
 </script>
  
@@ -65,9 +95,15 @@ export default defineComponent({
             top: 100px;
             left: 0;
             &:hover {
-                .actbox {
+                .navHoverBox {
                     display: block;
                 }
+            }
+            .routers-box {
+                position: absolute;
+                z-index: 2;
+                width: 100%;
+                height: 100%;
             }
             .menu-item {
                 display: block;
@@ -80,15 +116,20 @@ export default defineComponent({
                     margin-right: 10px;
                 }
             }
-        }
-        .actbox {
-            position: absolute;
-            display: none;
-            left: 0;
-            top: 110px;
-            width: 100%;
-            height: 50px;
-            background-image: linear-gradient(to right, #e270ffbf, #e270ff00);
+            .navHoverBox {
+                transition: top 0.5s;
+                position: absolute;
+                z-index: 1;
+                display: none;
+                left: 0;
+                width: 100%;
+                height: 50px;
+                background-image: linear-gradient(
+                    to right,
+                    #e270ffbf,
+                    #e270ff00
+                );
+            }
         }
     }
     .content {

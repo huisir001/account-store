@@ -2,7 +2,7 @@
  * @Description: 路由配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-07 18:13:32
+ * @LastEditTime: 2021-06-07 21:05:54
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Login from '../views/Login.vue'
@@ -32,25 +32,41 @@ const routes: RouteRecordRaw[] = [
     component: Home,
     // redirect: "/home/createAccount",
     children: [
-      // {
-      //   path: 'createAccount',
-      //   name: 'CreateAccount',
-      //   // component: CreateAccount,
-      // },
+      {
+        path: 'createAccount',
+        name: 'CreateAccount',
+        component: Login,
+        meta: {
+          title: '新增账户',
+          icon: 'el-icon-folder-add',
+        },
+      },
       // {
       //   path: 'accountList',
       //   name: 'AccountList',
-      //   component: () => import('../components/AccountList.vue')
+      //   component: () => import('../components/AccountList.vue'),
+      // meta: {
+      //   title: '账户列表',
+      //   icon: 'el-icon-folder-add',
+      // },
       // },
       // {
       //   path: 'operateLogs',
       //   name: 'OperateLogs',
-      //   component: () => import('../components/OperateLogs.vue')
+      //   component: () => import('../components/OperateLogs.vue'),
+      // meta: {
+      //   title: '操作日志',
+      //   icon: 'el-icon-folder-add',
+      // },
       // },
       // {
       //   path: 'options',
       //   name: 'Options',
-      //   component: () => import('../components/Options.vue')
+      //   component: () => import('../components/Options.vue'),
+      // meta: {
+      //   title: '设置选项',
+      //   icon: 'el-icon-folder-add',
+      // },
       // }
     ]
   },

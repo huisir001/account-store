@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-06-03 16:08:13
+ * @LastEditTime: 2021-06-06 16:20:30
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -36,14 +36,16 @@ class Login {
      * @return {*}
      */
     async saveLoginData(params: ILoginParams): Promise<any> {
+        const keys = Object.keys(params)
+
         // 加密
-        Object.keys(params).forEach((key) => {
+        keys.forEach((key) => {
             if (key !== "id" && key !== "verify_question") {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })
 
-        if (params.hasOwnProperty("id")) {
+        if (keys.includes("id")) {
             operate("重设登陆数据")
             const id = params.id
             delete params.id
@@ -55,7 +57,7 @@ class Login {
             operate("初始化登陆数据")
             // 首选项默认数据初始化
             await optionsMethods.initOptions()
-            const res = await LoginModel.create(params)
+            const res = await LoginModel.create(params, 'id verify_question')
             if (res) {
                 return Promise.resolve(Response.succ({ data: res }))
             }
@@ -67,7 +69,7 @@ class Login {
      * @return {Promise<Response>}
      */
     async getLoginData(): Promise<any> {
-        operate("查询软件登陆id")
+        operate("查询登陆数据")
         const res = await LoginModel.find({}, { filter: 'id verify_question' })
         return Promise.resolve(Response.succ({ data: res.length > 0 ? res[0] : {} }))
     }
@@ -86,8 +88,10 @@ class Login {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })
+
         // 查询
         const res = await LoginModel.findOne(params, "id")
+
         if (res && res.id) {
             // 这里做简单的登陆验证(使用用户id+时间戳生成token)
             // 此处需要做登陆缓存（将token存于sqlite缓存数据库中，附加登陆时间）
@@ -99,6 +103,8 @@ class Login {
             if (saveToken) {
                 return Promise.resolve(Response.succ({ data: { token } }))
             }
+        } else {
+            return Promise.resolve(Response.fail("密码或答案错误"))
         }
     }
 

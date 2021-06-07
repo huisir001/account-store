@@ -2,7 +2,7 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-02 14:39:38
+ * @LastEditTime: 2021-06-06 15:59:02
  */
 import methods from "../service"
 import Response from "../tools/Response"
@@ -57,8 +57,8 @@ export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boo
                 // 执行方法
                 res = await methods[something](...params)
             } catch (err) {
-                res = Response.fail("执行错误：" + err.toString())
-                Log.error("执行错误：", err.toString())
+                res = Response.fail("执行错误：" + (err as any).toString())
+                Log.error("执行错误：", (err as any).toString())
             }
 
         } else {

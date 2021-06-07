@@ -2,7 +2,7 @@
  * @Description: 暴露方法
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-01 17:44:18
- * @LastEditTime: 2021-06-01 18:59:18
+ * @LastEditTime: 2021-06-05 22:51:04
  */
 import accounts from "./Accounts"
 import login from "./Login"
@@ -14,24 +14,22 @@ interface IMethods {
     [key: string]: (...arg: any[]) => any
 }
 
-let methods: IMethods = {
+const methods: IMethods = {
     getOperateLogs,
     delOperateLogs
 }
 
 const getProtoMethods = (instance: InstanceType<any>) => {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
-        .filter(m => m != "constructor")
+        .filter((m) => m !== "constructor")
 }
 
 const classMethods = [accounts, login, options]
 
-classMethods.forEach(instance => {
-    getProtoMethods(instance).forEach(key => {
+classMethods.forEach((instance) => {
+    getProtoMethods(instance).forEach((key) => {
         methods[key] = Object.assign(instance)[key]
     })
 })
 
 export default methods
-
-

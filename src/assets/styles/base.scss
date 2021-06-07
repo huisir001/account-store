@@ -1,12 +1,31 @@
+*{
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+  font-weight: 100;
+}
+
 body {
   margin: 0;
-  background: #fff;
+  height: 100vh;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   user-select: none;
+  overflow: hidden;
 }
 
 .login-tooltip .el-popper__arrow {
   left: auto !important;
   right: 25px !important;
+}
+
+.el-loading-mask{
+  -webkit-app-region: drag;
+}
+
+#popup-in,input,button{
+  -webkit-app-region: no-drag;
 }

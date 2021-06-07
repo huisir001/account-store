@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-01 18:42:33
+ * @LastEditTime: 2021-06-06 16:15:07
  */
 
 /**
@@ -79,7 +79,7 @@ export default class SQLAgent {
         } else {
             const curWhere = where.hasOwnProperty('_AND') ? where._AND : where
             for (const key in curWhere) {
-                if (curWhere[key]) { continue }
+                if (curWhere[key] === null || curWhere[key] === undefined) { continue }
                 if (curWhere[key] instanceof Array) {
                     const tempArr = curWhere[key].map(
                         (item: string) => `${key} = '${item}'`
@@ -223,9 +223,9 @@ export default class SQLAgent {
 
                     const querystr = `CREATE TABLE IF NOT EXISTS ${tableName} (${dbQueryStemp});`
 
-                    getDBConn().run(querystr, function (err: any) {
-                        if (err) {
-                            Log.error(`创建数据表${tableName}失败：` + err.toString())
+                    getDBConn().run(querystr, function (err2: any) {
+                        if (err2) {
+                            Log.error(`创建数据表${tableName}失败：` + err2.toString())
                         } else {
                             Log.info(`数据表 ${tableName} 创建成功`)
                         }

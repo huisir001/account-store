@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-04 18:27:19
+ * @LastEditTime: 2021-06-05 22:49:25
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -50,13 +50,14 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         backgroundColor: winBgColor, // 初始化背景
         resizable: IsDev, // 宽高拖拽
         frame: IsDev, // 边框显示
+        transparent: !IsDev, // 窗口透明
         webPreferences: {// web首选项
             // 是否开启Node集成, 并且可以使用像 require 和 process 这样的node APIs 去访问低层系统资源，
             // Electron v5之后的默认为false
             nodeIntegration: false,
             webSecurity: false,  // 关闭窗口跨域,可访问本地绝对路径资源(图片)
             contextIsolation: true, // 上下文隔离（主进程和渲染进程隔离）防止原型污染
-            enableRemoteModule: false, // 关闭渲染进程中使用远程（remote）模块访问主进程方法，若要使用只能使用ipc模块发送消息事件
+            enableRemoteModule: true, // 允许渲染进程中使用远程（remote）模块访问窗口方法
             // 预加载脚本。充当Node.js 和您的网页之间的桥梁。 
             // 它允许将特定的 API 和行为暴露到你的网页上，而不是危险地把整个 Node.js 的 API暴露。
             preload: path.join(__dirname, 'sys/preload/index.js')
@@ -74,8 +75,8 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
             request("http://127.0.0.1:" + Port, function (err: any) {
                 if (!err && !reqFlag) {
                     reqFlag = true
-                    let sto = setTimeout(() => {
-                        Print.info("正在启动Electron项目控制台，请等待...")
+                    const sto = setTimeout(() => {
+                        Print.info("正在启动窗口，请等待...")
                         clearTimeout(sto)
                     }, 500)
                     // 打开测试页
@@ -88,7 +89,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         }, 500)
     } else {
         // 入口页面
-        Win.loadFile(`./index.html#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
+        Win.loadURL(path.join(__dirname, `index.html#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`))
     }
 
     // 将窗口push到集合中
@@ -106,7 +107,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         Win.show()
 
         // 打印日志
-        Print.info("Electron项目控制台窗口已启动！")
+        Print.info("窗口启动成功")
 
         // 启动回调
         callback && callback()

@@ -2,7 +2,7 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2021-05-31 17:25:50
+ * @LastEditTime: 2021-06-06 16:19:58
  */
 import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"
@@ -28,11 +28,13 @@ class Pool implements IPool {
     constructor(dbName: string) {
         this.dbName = dbName
 
-        // 连接池中连接数初始化
-        for (let n = 0; n < BD_POOL_LEN; n++) {
-            this.pool.push(this.createDBConn())
+        if (dbName !== ":memory:") {
+            // 连接池中连接数初始化
+            for (let n = 0; n < BD_POOL_LEN; n++) {
+                this.pool.push(this.createDBConn())
+            }
+            Print.info(`数据库 [${dbName}] 连接池初始化成功`)
         }
-        Print.info(`数据库 [${dbName}] 连接池初始化成功`)
     }
 
     /**
@@ -50,6 +52,17 @@ class Pool implements IPool {
      * 读取连接
      */
     getDBConn(): SQLiteDB {
+        // 缓存数据库直接取出
+        if (this.dbName === ":memory:") {
+            const memorydb = this.pool[0]
+            if (!memorydb) {
+                this.pool.push(this.createDBConn())
+                return this.pool[0]
+            } else {
+                return memorydb
+            }
+        }
+
         // 取出第一个可用db
         const db: SQLiteDB | undefined = this.pool.find((item) => !item.locked)
 
@@ -96,5 +109,8 @@ class Pool implements IPool {
 }
 
 // 初始化数据库连接池,缓存数据库名为“:memory:”
+// 如果使用`./:memory:?cache=shared`打开内存数据库，则允许它们使用共享缓存,可以通过两个或多个数据库连接打开相同的内存数据库
+// 如果使用未加修饰的“:memory:”名称来指定内存数据库，数据库连接关闭后，数据库就不再存在。每一个memory连接数据库彼此不同
+// 所以这里内存数据库不使用连接池
 export const dataPool = new Pool(CONST.DB_NAME)
 export const cachePool = new Pool(':memory:')

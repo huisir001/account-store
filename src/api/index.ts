@@ -2,21 +2,22 @@
  * @Description: 主线程API调用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-02 16:03:20
- * @LastEditTime: 2021-06-03 16:22:53
+ * @LastEditTime: 2021-06-07 12:35:41
  */
-import { ElLoading as Loading, ElMessage as Message } from 'element-plus'
+import { ElLoading as Loading } from 'element-plus'
 
 export default async (something: string, ...parames: any[]): Promise<any> => {
 
     // loading
     const loading = Loading.service({
-        text: 'Loading',
-        background: 'rgba(255, 255, 255, 0.4)',
+        text: '加载中...',
+        background: 'rgba(255, 255, 255, 0.6)',
+        target: "#app" // 在app元素内loading，避免遮罩覆盖透明区
     })
 
     try {
 
-        let res = await window.sys.do(something, ...parames)
+        const res = await window.sys.do(something, ...parames)
 
         // 关闭loading
         loading.close()
@@ -29,6 +30,6 @@ export default async (something: string, ...parames: any[]): Promise<any> => {
         loading.close()
 
         // 错误提示
-        Message.error(err.msg || err.toString())
+        window.alert(err.msg || err.toString(), '错误信息', '确认')
     }
 }

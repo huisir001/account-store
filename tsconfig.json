@@ -34,7 +34,10 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx",
+    "tests/**/*.tsx"
+  ],
+  "files":[
+    "src/types/global.d.ts"
   ],
   "exclude": [
     "sys",

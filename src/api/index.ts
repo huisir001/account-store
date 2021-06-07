@@ -4,8 +4,6 @@
  * @Date: 2021-06-02 16:03:20
  * @LastEditTime: 2021-06-03 16:22:53
  */
-declare const window: Window & { sys: any }
-
 import { ElLoading as Loading, ElMessage as Message } from 'element-plus'
 
 export default async (something: string, ...parames: any[]): Promise<any> => {

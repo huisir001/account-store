@@ -2,7 +2,7 @@
  * @Description: 
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 15:46:37
- * @LastEditTime: 2021-06-07 14:32:44
+ * @LastEditTime: 2021-06-07 16:33:01
 -->
 <template>
     <router-view />
@@ -15,7 +15,6 @@
     border-radius: 20px;
     overflow: hidden;
     -webkit-app-region: drag; // 窗口拖拽
-    visibility: hidden;
     transition: all 0.5s;
     &.slidein {
         box-shadow: 0 0 6px 1px #00000042;

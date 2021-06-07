@@ -18,6 +18,6 @@ $--font-path: "~element-plus/lib/theme-chalk/fonts";
 // $menuText: #bfcbd9;
 
 // :export 指令用于 webpack 打包
-// :export {
-//   menuText: $menuText;
-// }
+:export {
+  primaryColor: $--color-primary;
+}

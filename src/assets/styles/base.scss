@@ -1,7 +1,7 @@
-*{
+* {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
   font-weight: 100;
 }
 
@@ -15,6 +15,9 @@ body {
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   user-select: none;
   overflow: hidden;
+  #app {
+    visibility: hidden;
+  }
 }
 
 .login-tooltip .el-popper__arrow {
@@ -22,10 +25,16 @@ body {
   right: 25px !important;
 }
 
-.el-loading-mask{
+.el-loading-mask {
   -webkit-app-region: drag;
 }
 
-#popup-in,input,button{
+#popup-in,
+input,
+button {
   -webkit-app-region: no-drag;
+}
+
+a {
+  text-decoration: none;
 }

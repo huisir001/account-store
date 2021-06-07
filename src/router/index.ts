@@ -2,10 +2,12 @@
  * @Description: 路由配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-02 15:58:06
+ * @LastEditTime: 2021-06-07 18:13:32
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
+// import CreateAccount from '../components/CreateAccount.vue'
 
 /**
  * 由于是本地桌面应用，用户只有自己一个
@@ -17,13 +19,40 @@ import Home from '../views/Home.vue'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    redirect: '/login',
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue'),
+    component: Login,
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    // redirect: "/home/createAccount",
+    children: [
+      // {
+      //   path: 'createAccount',
+      //   name: 'CreateAccount',
+      //   // component: CreateAccount,
+      // },
+      // {
+      //   path: 'accountList',
+      //   name: 'AccountList',
+      //   component: () => import('../components/AccountList.vue')
+      // },
+      // {
+      //   path: 'operateLogs',
+      //   name: 'OperateLogs',
+      //   component: () => import('../components/OperateLogs.vue')
+      // },
+      // {
+      //   path: 'options',
+      //   name: 'Options',
+      //   component: () => import('../components/Options.vue')
+      // }
+    ]
   },
 ]
 

@@ -2,12 +2,12 @@
  * @Description: 路由配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-07 21:05:54
+ * @LastEditTime: 2021-06-08 14:57:42
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
-// import CreateAccount from '../components/CreateAccount.vue'
+import CreateAccount from '../components/CreateAccount.vue'
 
 /**
  * 由于是本地桌面应用，用户只有自己一个
@@ -30,44 +30,44 @@ const routes: RouteRecordRaw[] = [
     path: '/home',
     name: 'Home',
     component: Home,
-    // redirect: "/home/createAccount",
+    redirect: "/home/createAccount",
     children: [
       {
         path: 'createAccount',
         name: 'CreateAccount',
-        component: Login,
+        component: CreateAccount,
         meta: {
           title: '新增账户',
           icon: 'el-icon-folder-add',
         },
       },
-      // {
-      //   path: 'accountList',
-      //   name: 'AccountList',
-      //   component: () => import('../components/AccountList.vue'),
-      // meta: {
-      //   title: '账户列表',
-      //   icon: 'el-icon-folder-add',
-      // },
-      // },
-      // {
-      //   path: 'operateLogs',
-      //   name: 'OperateLogs',
-      //   component: () => import('../components/OperateLogs.vue'),
-      // meta: {
-      //   title: '操作日志',
-      //   icon: 'el-icon-folder-add',
-      // },
-      // },
-      // {
-      //   path: 'options',
-      //   name: 'Options',
-      //   component: () => import('../components/Options.vue'),
-      // meta: {
-      //   title: '设置选项',
-      //   icon: 'el-icon-folder-add',
-      // },
-      // }
+      {
+        path: 'accountList',
+        name: 'AccountList',
+        component: () => import('../components/AccountList.vue'),
+        meta: {
+          title: '账户列表',
+          icon: 'el-icon-files',
+        },
+      },
+      {
+        path: 'operateLogs',
+        name: 'OperateLogs',
+        component: () => import('../components/OperateLogs.vue'),
+        meta: {
+          title: '操作日志',
+          icon: 'el-icon-chat-line-square',
+        },
+      },
+      {
+        path: 'options',
+        name: 'Options',
+        component: () => import('../components/Options.vue'),
+        meta: {
+          title: '设置选项',
+          icon: 'el-icon-cpu',
+        },
+      }
     ]
   },
 ]

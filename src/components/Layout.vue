@@ -2,7 +2,7 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-08 12:58:56
+ * @LastEditTime: 2021-06-08 14:50:13
 -->
 <template>
     <div class="layout">
@@ -16,24 +16,6 @@
                                  @mouseenter="bindNavMouseEnter">
                         <i :class="nav.icon"></i>
                         <span>{{nav.title}}</span>
-                    </router-link>
-                    <router-link to="/home/accountList"
-                                 class="menu-item"
-                                 @mouseenter="bindNavMouseEnter">
-                        <i class="el-icon-folder-add"></i>
-                        <span>账户列表</span>
-                    </router-link>
-                    <router-link to="/home/operateLogs"
-                                 class="menu-item"
-                                 @mouseenter="bindNavMouseEnter">
-                        <i class="el-icon-folder-add"></i>
-                        <span>操作日志</span>
-                    </router-link>
-                    <router-link to="/home/options"
-                                 class="menu-item"
-                                 @mouseenter="bindNavMouseEnter">
-                        <i class="el-icon-folder-add"></i>
-                        <span>设置选项</span>
                     </router-link>
                 </div>
                 <div class="navHoverBox"
@@ -125,21 +107,24 @@ export default defineComponent({
                 height: 100%;
             }
             .menu-item {
-                display: block;
+                display: flex;
                 height: 50px;
-                line-height: 50px;
                 margin: 10px 0;
-                text-align: center;
                 color: rgba(255, 255, 255, 0.74);
-                font-weight: 700;
+                align-items: center;
+                justify-content: center;
                 i {
                     margin-right: 10px;
+                    font-size: 24px;
+                }
+                span {
+                    font-size: 17px;
                 }
                 &.act {
                     color: #fff;
                     background-image: linear-gradient(
                         to right,
-                        #e270ffbf,
+                        #fa5ee0d7,
                         #e270ff00
                     );
                 }

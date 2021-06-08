@@ -2,7 +2,6 @@
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 100;
 }
 
 body {
@@ -15,6 +14,7 @@ body {
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   user-select: none;
   overflow: hidden;
+  font-weight: 100;
   #app {
     visibility: hidden;
   }

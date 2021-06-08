@@ -2,7 +2,7 @@
  * @Description: 最小化按钮
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-07 18:32:44
- * @LastEditTime: 2021-06-07 18:48:02
+ * @LastEditTime: 2021-06-08 12:58:04
 -->
 <template>
     <svg t="1622900690444"
@@ -13,6 +13,7 @@
                   'mini-icon':true,
                   'no-hover':minIconNoHover
              }"
+         :style="{top,bottom,left,right,'--hover':hoverColor}"
          viewBox="0 0 1024 1024"
          version="1.1"
          xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,7 @@
          :width="size"
          :height="size">
         <path d="M98.23 451.003l829.685-1.992 0.154 64-829.685 1.992z"
-              fill="#ffffff"
+              :fill="color"
               p-id="7844"></path>
     </svg>
 </template>
@@ -36,6 +37,30 @@ export default defineComponent({
             // 像素，长宽尺寸
             type: Number,
             default: 20,
+        },
+        top: {
+            type: String,
+            default: 'auto',
+        },
+        bottom: {
+            type: String,
+            default: 'auto',
+        },
+        left: {
+            type: String,
+            default: 'auto',
+        },
+        right: {
+            type: String,
+            default: 'auto',
+        },
+        color: {
+            type: String,
+            default: '#ffffff',
+        },
+        hoverColor: {
+            type: String,
+            default: '#ffffff1a',
         },
     },
     setup() {
@@ -59,19 +84,14 @@ export default defineComponent({
 </script>
  
 <style scoped lang="scss">
-$iconMargin: 20px;
-.icon {
+.icon.mini-icon {
     position: absolute;
     z-index: 99999;
-    top: 15px;
     cursor: pointer;
     -webkit-app-region: no-drag;
     &:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--hover);
     }
-}
-.mini-icon {
-    right: $iconMargin;
     path {
         transform-origin: center;
         transform: scaleY(0.8) scaleX(0.9);

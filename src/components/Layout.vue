@@ -2,7 +2,7 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-07 21:24:47
+ * @LastEditTime: 2021-06-08 12:58:56
 -->
 <template>
     <div class="layout">
@@ -12,7 +12,7 @@
                     <router-link v-for="nav in navList"
                                  :key="nav.path"
                                  :to="nav.path"
-                                 class="menu-item"
+                                 :class="{'menu-item':true,act:nav.path==curRoute.fullPath}"
                                  @mouseenter="bindNavMouseEnter">
                         <i :class="nav.icon"></i>
                         <span>{{nav.title}}</span>
@@ -37,10 +37,18 @@
                     </router-link>
                 </div>
                 <div class="navHoverBox"
-                     :style="{top:navHoverBoxTop+'px'}"></div>
+                     :style="{transform:'translateY('+navHoverBoxTop+'px)'}"></div>
             </div>
         </div>
         <div class="content">
+            <MinWinBtn color="#4f5d68"
+                       hoverColor="#854cff2e"
+                       right="50px"
+                       top="16px" />
+            <CloseWinBtn color="#4f5d68"
+                         hoverColor="#854cff2e"
+                         right="20px"
+                         top="16px" />
             <slot />
         </div>
     </div>
@@ -48,11 +56,19 @@
  
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+import CloseWinBtn from './CloseWinBtn.vue'
+import MinWinBtn from './MinWinBtn.vue'
 
 export default defineComponent({
     name: 'Layout',
+    components: {
+        CloseWinBtn,
+        MinWinBtn,
+    },
     setup() {
+        const router = useRouter()
+
         // 导航列表
         const navList: any = router.options.routes
             .find((route) => route.name == 'Home')!
@@ -60,6 +76,8 @@ export default defineComponent({
                 path: '/home/' + path,
                 ...meta,
             }))
+
+        const curRoute = router.currentRoute
 
         const navHoverBoxTop = ref(10)
 
@@ -69,6 +87,7 @@ export default defineComponent({
 
         return {
             navList,
+            curRoute,
             navHoverBoxTop,
             bindNavMouseEnter,
         }
@@ -96,7 +115,7 @@ export default defineComponent({
             left: 0;
             &:hover {
                 .navHoverBox {
-                    display: block;
+                    opacity: 1;
                 }
             }
             .routers-box {
@@ -111,17 +130,27 @@ export default defineComponent({
                 line-height: 50px;
                 margin: 10px 0;
                 text-align: center;
-                color: #fff;
+                color: rgba(255, 255, 255, 0.74);
+                font-weight: 700;
                 i {
                     margin-right: 10px;
                 }
+                &.act {
+                    color: #fff;
+                    background-image: linear-gradient(
+                        to right,
+                        #e270ffbf,
+                        #e270ff00
+                    );
+                }
             }
             .navHoverBox {
-                transition: top 0.5s;
+                transition: all 0.5s;
                 position: absolute;
                 z-index: 1;
-                display: none;
+                opacity: 0;
                 left: 0;
+                top: 0;
                 width: 100%;
                 height: 50px;
                 background-image: linear-gradient(

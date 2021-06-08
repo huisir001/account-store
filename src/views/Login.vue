@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-08 15:03:57
+ * @LastEditTime: 2021-06-08 15:53:34
 -->
 <template>
     <div class="login">
@@ -269,4 +269,3 @@ export default defineComponent({
     }
 }
 </style>
-

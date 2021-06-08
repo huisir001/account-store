@@ -2,7 +2,7 @@
  * @Description: 路由配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-08 14:57:42
+ * @LastEditTime: 2021-06-08 18:15:04
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Login from '../views/Login.vue'
@@ -74,7 +74,7 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHashHistory(),
-  // history: createWebHistory(process.env.BASE_URL),
+  // history: createWebHistory(),
   routes,
 })
 

@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-05 22:49:25
+ * @LastEditTime: 2021-06-08 18:16:47
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -80,7 +80,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
                         clearTimeout(sto)
                     }, 500)
                     // 打开测试页
-                    Win.loadURL(`http://127.0.0.1:${Port}#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`)
+                    Win.loadURL(`http://127.0.0.1:${Port}${query ? '?' + obj2Query(query) : ''}#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}`)
                     // 开启调试.
                     Win.webContents.openDevTools()
                     clearInterval(Timer)
@@ -89,7 +89,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         }, 500)
     } else {
         // 入口页面
-        Win.loadURL(path.join(__dirname, `index.html#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}${query ? '?' + obj2Query(query) : ''}`))
+        Win.loadURL(path.join(__dirname, `index.html${query ? '?' + obj2Query(query) : ''}#${WINS.size === 0 || isLoginWin ? 'login' : 'home'}`))
     }
 
     // 将窗口push到集合中

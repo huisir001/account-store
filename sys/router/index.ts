@@ -2,7 +2,7 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-06 15:59:02
+ * @LastEditTime: 2021-06-08 17:49:33
  */
 import methods from "../service"
 import Response from "../tools/Response"
@@ -28,7 +28,7 @@ export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boo
                 // 验证token
                 if (!Permission.verify(something)) {
                     if (!token) {
-                        event.reply(something, Response.fail("Token验证失败"))
+                        event.reply(something, Response.fail("Token验证失败，请重新登录"))
                         // 重新登录
                         createWindow(true)
                         return
@@ -39,12 +39,12 @@ export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boo
                         await methods.getTokenCache(token)
 
                     if (!userid || userid !== id || cacheToken !== token) {
-                        event.reply(something, Response.fail("Token验证失败"))
+                        event.reply(something, Response.fail("Token验证失败，请重新登录"))
                         // 重新登录
                         createWindow(true)
                         return
                     } else if (Date.now() - new Date(act_time).getTime() >= CONST.LOGIN_TIMEOUT) {
-                        event.reply(something, Response.fail("Token失效"))
+                        event.reply(something, Response.fail("登录超时，请重新登录"))
                         // 重新登录
                         createWindow(true)
                         return

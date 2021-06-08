@@ -38,3 +38,12 @@ button {
 a {
   text-decoration: none;
 }
+
+.el-button {
+  &.el-button--primary {
+    box-shadow: 0 10px 10px -8px #7844e6d4 !important;
+  }
+  &.el-button--warning {
+    box-shadow: 0 10px 10px -8px #e6a23cd4 !important;
+  }
+}

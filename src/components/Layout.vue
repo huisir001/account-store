@@ -2,7 +2,7 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-08 14:50:13
+ * @LastEditTime: 2021-06-08 16:46:01
 -->
 <template>
     <div class="layout">
@@ -152,6 +152,7 @@ export default defineComponent({
         float: left;
         background: #fff;
         border-radius: 16px;
+        padding: 60px 40px 40px 40px;
     }
 }
 </style>

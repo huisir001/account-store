@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-05-31 23:29:09
+ * @LastEditTime: 2021-06-09 17:24:46
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -108,7 +108,7 @@ class Accounts implements IAccunts {
     async getAccountList(params: IGetListParams): Promise<any> {
         operate("账户列表分页查询")
         const { name = "", page, limit } = params
-        const list = await AccountModel.find({ name }, { page, limit })
+        const list = await AccountModel.find({ name }, { page, limit, sort: "-create_time" })
         const { count: total } = await AccountModel.count({ name })
         if (list) {
             const data: IAccountListByPage = {
@@ -116,7 +116,7 @@ class Accounts implements IAccunts {
                 page,
                 limit,
                 total, // 总条数
-                pageTotal: total % limit > 0 ? total / limit : total / limit + 1
+                pageTotal: total % limit > 0 ? Math.floor(total / limit) + 1 : total / limit
             }
             return Promise.resolve(Response.succ({ data }))
         }

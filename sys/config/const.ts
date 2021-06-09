@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-06-07 16:30:21
+ * @LastEditTime: 2021-06-09 11:43:21
  */
 
 export default {
@@ -13,7 +13,7 @@ export default {
     SKEY: "ABC..123", // 总密码加密私钥
 
     // api白名单（允许不带token）
-    API_WHITE_LIST: ["doLogin", "clearAllTable", "getLoginData", "saveLoginData"],
+    API_WHITE_LIST: ["doLogin", "clearAllTable", "getLoginData", "saveLoginData", "openMainWindow", "openLoginWindow"],
 
     DB_NAME: "data.db", // 数据库名称
     BD_POOL_LEN: 6, // 数据库连接池默认初始化容量

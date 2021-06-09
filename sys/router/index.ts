@@ -2,7 +2,7 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-08 17:49:33
+ * @LastEditTime: 2021-06-09 12:45:50
  */
 import methods from "../service"
 import Response from "../tools/Response"
@@ -23,30 +23,42 @@ export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boo
             return
         }
 
+        // 重新登录
+        if (something === "openLoginWindow") {
+            createWindow(true)
+            return
+        }
+
+        const failLogin = (msg: string = "Token验证失败，请重新登录") => {
+            event.reply(something, Response.fail({ ok: 401, msg }))
+        }
+
         if (Object.keys(methods).includes(something)) {
             try {
                 // 验证token
                 if (!Permission.verify(something)) {
                     if (!token) {
-                        event.reply(something, Response.fail("Token验证失败，请重新登录"))
-                        // 重新登录
-                        createWindow(true)
+                        failLogin()
                         return
                     }
                     const userid = decodeToken(token)
                     const { data: { id } } = await methods.getLoginData()
-                    const { data: { id: tokenId, act_time, token: cacheToken } } =
-                        await methods.getTokenCache(token)
+
+                    // 查询缓存中的token数据
+                    const tokenCacheRes = await methods.getTokenCache(token)
+
+                    if (!tokenCacheRes) {
+                        failLogin()
+                        return
+                    }
+
+                    const { data: { id: tokenId, act_time, token: cacheToken } } = tokenCacheRes
 
                     if (!userid || userid !== id || cacheToken !== token) {
-                        event.reply(something, Response.fail("Token验证失败，请重新登录"))
-                        // 重新登录
-                        createWindow(true)
+                        failLogin()
                         return
                     } else if (Date.now() - new Date(act_time).getTime() >= CONST.LOGIN_TIMEOUT) {
-                        event.reply(something, Response.fail("登录超时，请重新登录"))
-                        // 重新登录
-                        createWindow(true)
+                        failLogin("登录超时，请重新登录")
                         return
                     } else {
                         // 更新token时间

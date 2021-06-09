@@ -2,7 +2,7 @@
  * @Description: element UI 按需引入
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-03 14:26:05
- * @LastEditTime: 2021-06-08 16:29:10
+ * @LastEditTime: 2021-06-09 16:07:20
  */
 import { App } from '@vue/runtime-core'
 
@@ -17,7 +17,8 @@ import {
     ElMessage,
     ElMessageBox,
     ElDivider,
-    ElAlert
+    ElAlert,
+    ElPagination
 } from 'element-plus'
 
 const components = [
@@ -28,7 +29,8 @@ const components = [
     ElTable,
     ElTableColumn,
     ElDivider,
-    ElAlert
+    ElAlert,
+    ElPagination
 ]
 
 const plugins = [

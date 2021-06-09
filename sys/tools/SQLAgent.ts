@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-06 16:15:07
+ * @LastEditTime: 2021-06-09 15:12:05
  */
 
 /**
@@ -73,7 +73,9 @@ export default class SQLAgent {
         let joinStr = ' AND '
         if (where.hasOwnProperty('_OR')) {
             Object.keys(where._OR!).forEach((key) => {
-                whereStrArr.push(`${key} = '${where._OR![key]}'`)
+                if (where._OR![key].trim() !== "") {
+                    whereStrArr.push(`${key} = '${where._OR![key]}'`)
+                }
             })
             joinStr = ' OR '
         } else {
@@ -82,12 +84,14 @@ export default class SQLAgent {
                 if (curWhere[key] === null || curWhere[key] === undefined) { continue }
                 if (curWhere[key] instanceof Array) {
                     const tempArr = curWhere[key].map(
-                        (item: string) => `${key} = '${item}'`
+                        (item: string) => (item.trim() !== "" ? `${key} = '${item}'` : '')
                     )
                     const tempStr = tempArr.join(' OR ')
                     whereStrArr.push(tempStr)
                 } else {
-                    whereStrArr.push(`${key} = '${curWhere[key]}'`)
+                    if (curWhere[key].trim() !== "") {
+                        whereStrArr.push(`${key} = '${curWhere[key]}'`)
+                    }
                 }
             }
         }
@@ -104,7 +108,7 @@ export default class SQLAgent {
         const keys = Object.keys(setObj)
         let str = ""
         keys.map((key, index) => {
-            str += `${key}=${setObj[key]}${index !== (keys.length - 1) ? ',' : ''}`
+            str += `${key}='${setObj[key]}'${index !== (keys.length - 1) ? ',' : ''}`
         })
         return str
     }
@@ -396,7 +400,6 @@ export default class SQLAgent {
         const updateStr = SQLAgent.obj2SetStr(updateSlot)
         return new Promise((resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ${updateStr} WHERE ${whereStr}`
-
             getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)

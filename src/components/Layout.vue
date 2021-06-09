@@ -2,7 +2,7 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-08 16:46:01
+ * @LastEditTime: 2021-06-09 16:57:07
 -->
 <template>
     <div class="layout">
@@ -78,13 +78,12 @@ export default defineComponent({
 </script>
  
 <style scoped lang="scss">
-@import '@/assets/styles/var.scss';
 .layout {
     position: relative;
     width: 100%;
     height: 100%;
     padding: 8px 8px 8px 0;
-    background: $--color-primary;
+    background: #854cff;
     .navs {
         position: relative;
         width: 180px;

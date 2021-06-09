@@ -46,4 +46,10 @@ a {
   &.el-button--warning {
     box-shadow: 0 10px 10px -8px #e6a23cd4 !important;
   }
+  &.el-button--danger {
+    box-shadow: 0 10px 10px -8px #f56c6cd4 !important;
+  }
+  &.el-button--success {
+    box-shadow: 0 10px 10px -8px #67c23ad4 !important;
+  }
 }

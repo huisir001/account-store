@@ -2,12 +2,13 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-08 17:47:12
+ * @LastEditTime: 2021-06-09 14:32:35
 -->
 <template>
     <div class="formbox">
         <el-form ref="formRef"
                  size="medium"
+                 :rules="rules"
                  :model="formdata"
                  label-width="50px">
             <el-form-item label="名称"
@@ -80,14 +81,80 @@ export default defineComponent({
             ;(<any>formRef.value).resetFields()
         }
 
+        // 表单验证
+        const rules = {
+            name: [
+                {
+                    required: true,
+                    message: '请输入账户名称',
+                    trigger: 'blur',
+                },
+            ],
+            account: [
+                {
+                    required: true,
+                    message: '请输入登录账号',
+                    trigger: 'blur',
+                },
+            ],
+            password: [
+                {
+                    required: true,
+                    message: '请输入登录密码',
+                    trigger: 'blur',
+                },
+            ],
+            phone: [
+                {
+                    required: false,
+                    validator: (_: any, value: string, callback: any) => {
+                        if (
+                            value.trim() == '' ||
+                            /^1[3|4|5|6|7|8|9][0-9]{9}$/.test(value)
+                        ) {
+                            callback()
+                        } else {
+                            callback(new Error('手机号格式错误'))
+                        }
+                    },
+                    trigger: 'blur',
+                },
+            ],
+            email: [
+                {
+                    required: false,
+                    validator: (_: any, value: string, callback: any) => {
+                        if (
+                            value.trim() == '' ||
+                            /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(value)
+                        ) {
+                            callback()
+                        } else {
+                            callback(new Error('邮箱格式错误'))
+                        }
+                    },
+                    trigger: 'blur',
+                },
+            ],
+        }
+
         // 新增
-        const onSubmit = async () => {
-            let res = await Api('saveAccount', toRaw(formdata))
+        const onSubmit = () => {
+            ;(<any>formRef.value).validate(async (valid: any) => {
+                if (valid) {
+                    const res = await Api('saveAccount', toRaw(formdata))
+                    if (res && res.ok === 1) {
+                        ;(window as any).toast(res.msg)
+                        reset()
+                    }
+                }
+            })
         }
 
         return {
             formRef,
             formdata,
+            rules,
             onSubmit,
             reset,
         }
@@ -106,6 +173,7 @@ export default defineComponent({
     &:deep(.el-textarea__inner) {
         border: 1px solid #c6d8e6;
         font-family: auto;
+        max-height: 70px;
     }
 }
 .infobox {

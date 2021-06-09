@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-09 18:58:44
+ * @LastEditTime: 2021-06-10 01:00:05
 -->
 <template>
     <div class="accountList">
@@ -18,8 +18,6 @@
                       @clear="doSearch" />
             <el-table :data="tableData"
                       style="width: 100%;">
-                <el-table-column type="index"
-                                 label="序号" />
                 <el-table-column prop="name"
                                  label="账户名称" />
                 <!-- <el-table-column prop="account"
@@ -38,15 +36,17 @@
                          label="备注">
         </el-table-column> -->
                 <el-table-column label="账号信息"
-                                 width="110">
+                                 width="100">
                     <template #default="scope">
                         <span class="see-detail-btn"
                               @click="handleClick(scope.row)">查看详情</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="create_time"
-                                 label="存表时间" />
-                <el-table-column align="right">
+                                 label="存表时间"
+                                 width="150" />
+                <el-table-column align="right"
+                                 width="160">
                     <template #default="scope">
                         <el-button type="primary"
                                    @click="handleClick(scope.row)"
@@ -131,6 +131,9 @@ export default defineComponent({
     .table {
         width: 100%;
         height: 335px;
+        &:deep(.el-table .cell) {
+            word-break: keep-all;
+        }
     }
     span.see-detail-btn {
         padding: 10px 0;

@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-09 15:12:05
+ * @LastEditTime: 2021-06-10 00:45:55
  */
 
 /**
@@ -28,6 +28,7 @@ interface IListParams {
     sort?: string
     page?: number
     limit?: number
+    fuzzy?: boolean //模糊查询
 }
 
 export default class SQLAgent {
@@ -60,10 +61,11 @@ export default class SQLAgent {
     /**
      * 多条件查询条件对象转义
      * @param where  String/Object
-     * 注：where为Object类型时仅支持单个AND子句或OR子句，不支持混合子句，且仅支持相等`=`条件
+     * 注：where为Object类型时仅支持单个AND子句或OR子句，不支持混合子句，支持相等`=`条件和模糊查询`LIKE`
      * 注：where为Object类型时,若where某个字段为数组，则该字段数组中的值为OR子句，与其他字段用AND连接
+     * fuzzy=true时为模糊查询
      */
-    static obj2whereStr(where: IWhere | string): string {
+    static obj2whereStr(where: IWhere | string, fuzzy = false): string {
         //字符串直接返回
         if (typeof where === 'string') {
             return where
@@ -71,10 +73,12 @@ export default class SQLAgent {
         //对象类型
         const whereStrArr = []
         let joinStr = ' AND '
+        const operatChar = fuzzy ? ' LIKE ' : ' = ' //运算符
         if (where.hasOwnProperty('_OR')) {
             Object.keys(where._OR!).forEach((key) => {
                 if (where._OR![key].trim() !== "") {
-                    whereStrArr.push(`${key} = '${where._OR![key]}'`)
+                    const val = fuzzy ? `%${where._OR![key]}%` : where._OR![key]
+                    whereStrArr.push(`${key}${operatChar}'${val}'`)
                 }
             })
             joinStr = ' OR '
@@ -84,13 +88,17 @@ export default class SQLAgent {
                 if (curWhere[key] === null || curWhere[key] === undefined) { continue }
                 if (curWhere[key] instanceof Array) {
                     const tempArr = curWhere[key].map(
-                        (item: string) => (item.trim() !== "" ? `${key} = '${item}'` : '')
+                        (item: string) => {
+                            const val = fuzzy ? `%${item}%` : item
+                            return item.trim() !== "" ? `${key}${operatChar}'${val}'` : ''
+                        }
                     )
                     const tempStr = tempArr.join(' OR ')
                     whereStrArr.push(tempStr)
                 } else {
                     if (curWhere[key].trim() !== "") {
-                        whereStrArr.push(`${key} = '${curWhere[key]}'`)
+                        const val = fuzzy ? `%${curWhere[key]}%` : curWhere[key]
+                        whereStrArr.push(`${key}${operatChar}'${val}'`)
                     }
                 }
             }
@@ -270,12 +278,12 @@ export default class SQLAgent {
      */
     find(slot: object | string, listParams: IListParams = {}): Promise<any> {
         const { tableName, getDBConn, schema } = this
-        const { filter = "", sort = "", page = 1, limit } = listParams
+        const { filter = "", sort = "", page = 1, limit, fuzzy = false } = listParams
         const { fieldFilter, obj2whereStr, sort2QueryStr } = SQLAgent
         //返回字段过滤
         const resFields = fieldFilter(filter, schema)
         //条件转义
-        const whereStr = obj2whereStr(slot)
+        const whereStr = obj2whereStr(slot, fuzzy)
         //升降序，带-号为降序
         const sortQueryStr = sort2QueryStr(sort)
         // 分页

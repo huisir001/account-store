@@ -2,24 +2,16 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-10 11:18:45
+ * @LastEditTime: 2021-06-10 19:12:42
 -->
 <template>
     <div class="accountList">
-        <div class="table"
-             v-loading="loading">
-            <el-input class="searchInput"
-                      v-model="search"
-                      clearable
-                      size="small"
-                      placeholder="输入名称关键字回车搜索"
-                      @blur="doSearch"
-                      @keydown.enter="$event.currentTarget.blur()"
-                      @clear="doSearch" />
-            <el-table :data="tableData"
-                      style="width: 100%;">
-                <el-table-column prop="name"
-                                 label="账户名称" />
+        <div class="table" v-loading="loading">
+            <el-input class="searchInput" v-model="search" clearable size="small"
+                placeholder="输入名称关键字回车搜索" @blur="doSearch"
+                @keydown.enter="$event.currentTarget.blur()" @clear="doSearch" />
+            <el-table :data="tableData" style="width: 100%;">
+                <el-table-column prop="name" label="账户名称" />
                 <!-- <el-table-column prop="account"
                          label="登录账号">
         </el-table-column>
@@ -38,44 +30,33 @@
         <el-table-column prop="remark"
                          label="备注">
         </el-table-column> -->
-                <el-table-column label="账号信息"
-                                 width="100">
+                <el-table-column label="账号信息" width="100">
                     <template #default="scope">
-                        <span class="see-detail-btn"
-                              @click="detail(scope.row.id)">查看详情</span>
+                        <span class="see-detail-btn" @click="detail(scope.row.id)">查看详情</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="create_time"
-                                 label="存表时间"
-                                 width="150" />
-                <el-table-column align="right"
-                                 width="160">
+                <el-table-column prop="create_time" label="存表时间" width="150" />
+                <el-table-column align="right" width="160">
                     <template #default="scope">
-                        <el-button type="primary"
-                                   @click="edit(scope.row)"
-                                   size="small">编辑</el-button>
-                        <el-button type="danger"
-                                   @click="detele(scope.row.id)"
-                                   size="small">删除</el-button>
+                        <el-button type="primary" @click="edit(scope.row)" size="small">编辑
+                        </el-button>
+                        <el-button type="danger" @click="detele(scope.row.id)" size="small">删除
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <el-pagination v-show="pageTotal>1"
-                       class="pageNav"
-                       small
-                       background
-                       layout="prev, pager, next"
-                       :current-page="curPage"
-                       :page-count="pageTotal"
-                       @current-change="bindPageChange">
+        <el-pagination v-show="pageTotal>1" class="pageNav" small background
+            layout="prev, pager, next" :current-page="curPage" :page-count="pageTotal"
+            @current-change="bindPageChange">
         </el-pagination>
     </div>
 </template>
  
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import Api from '@/api'
+import { delAccount, getAccountList } from '@/api/account'
+import { showMessageBoxSync } from '@/api/win'
 
 export default defineComponent({
     name: 'AccountList',
@@ -89,7 +70,7 @@ export default defineComponent({
         // 查询列表
         const getList = async (page = 1, name = '') => {
             loading.value = true
-            const res = await Api('getAccountList', { page, limit: 5, name })
+            const res = await getAccountList({ page, limit: 5, name })
             // 有登录数据
             if (res && res.ok === 1) {
                 const { list, page, pageTotal: pt } = res.data
@@ -114,23 +95,22 @@ export default defineComponent({
         }
 
         // 删除
-        const detele = (id: string) => {
-            ;(window as any).confirm(
-                '确认删除？删除后无法恢复。',
-                '提示',
-                async (e: boolean) => {
-                    if (e) {
-                        const res = await Api('delAccount', id)
-                        if (res && res.ok && res.ok === 1) {
-                            ;(window as any).toast(res.msg)
-                            // 刷新当前页
-                            getList(curPage.value, search.value)
-                        } else {
-                            ;(window as any).toast('删除失败')
-                        }
-                    }
+        const detele = async (id: string) => {
+            const res = await showMessageBoxSync({
+                title: '提示',
+                msg: '确认删除？删除后无法恢复!',
+            })
+
+            if (res === 0) {
+                const res = await delAccount(id)
+                if (res && res.ok && res.ok === 1) {
+                    window.toast(res.msg)
+                    // 刷新当前页
+                    getList(curPage.value, search.value)
+                } else {
+                    window.toast('删除失败')
                 }
-            )
+            }
         }
 
         return {

@@ -2,7 +2,7 @@
  * @Description: element UI 按需引入
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-03 14:26:05
- * @LastEditTime: 2021-06-10 11:00:48
+ * @LastEditTime: 2021-06-10 15:05:41
  */
 import { App } from '@vue/runtime-core'
 
@@ -15,7 +15,6 @@ import {
     ElTableColumn,
     ElLoading,
     ElDivider,
-    ElAlert,
     ElPagination
 } from 'element-plus'
 
@@ -27,7 +26,6 @@ const components = [
     ElTable,
     ElTableColumn,
     ElDivider,
-    ElAlert,
     ElPagination
 ]
 

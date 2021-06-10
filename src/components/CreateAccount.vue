@@ -2,7 +2,7 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-10 10:40:13
+ * @LastEditTime: 2021-06-10 18:19:15
 -->
 <template>
     <div class="formbox">
@@ -61,7 +61,7 @@
  
 <script lang="ts">
 import { defineComponent, reactive, ref, toRaw } from 'vue'
-import Api from '@/api'
+import { saveAccount } from '@/api/account'
 
 export default defineComponent({
     name: 'CreateAccount',
@@ -109,10 +109,7 @@ export default defineComponent({
                 {
                     required: false,
                     validator: (_: any, value: string, callback: any) => {
-                        if (
-                            value.trim() == '' ||
-                            /^1[3|4|5|6|7|8|9][0-9]{9}$/.test(value)
-                        ) {
+                        if (value.trim() == '' || /^1[3|4|5|6|7|8|9][0-9]{9}$/.test(value)) {
                             callback()
                         } else {
                             callback(new Error('手机号格式错误'))
@@ -143,9 +140,9 @@ export default defineComponent({
         const onSubmit = () => {
             ;(<any>formRef.value).validate(async (valid: any) => {
                 if (valid) {
-                    const res = await Api('saveAccount', toRaw(formdata))
+                    const res = await saveAccount(toRaw(formdata))
                     if (res && res.ok === 1) {
-                        ;(window as any).toast(res.msg)
+                        window.toast(res.msg)
                         reset()
                     }
                 }

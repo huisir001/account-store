@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-06-10 10:50:44
+ * @LastEditTime: 2021-06-10 17:47:37
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -15,18 +15,6 @@ import { formatDate } from '../tools/utils' //工具
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
 import optionsMethods from "./Options"
-
-interface Index {
-    [key: string]: any
-}
-
-interface ILoginParams extends Index {
-    id?: string
-    core_password: string
-    verify_question: string
-    verify_answer: string
-}
-
 
 class Login {
 

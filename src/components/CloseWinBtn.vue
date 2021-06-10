@@ -2,11 +2,11 @@
  * @Description: 关闭窗口按钮
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-07 18:32:02
- * @LastEditTime: 2021-06-08 12:59:32
+ * @LastEditTime: 2021-06-10 18:12:43
 -->
 <template>
     <svg t="1622891709537"
-         @click="Api('winClose')"
+         @click="close"
          class="icon close-icon"
          :style="{top,bottom,left,right,'--hover':hoverColor}"
          viewBox="0 0 1024 1024"
@@ -26,7 +26,7 @@
  
 <script lang="ts">
 import { defineComponent } from 'vue'
-import Api from '@/api'
+import { close } from '@/api/win'
 
 export default defineComponent({
     name: 'CloseWinBtn',
@@ -63,7 +63,7 @@ export default defineComponent({
     },
     setup() {
         return {
-            Api,
+            close,
         }
     },
 })

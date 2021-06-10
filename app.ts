@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-08 18:16:47
+ * @LastEditTime: 2021-06-10 12:11:45
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -41,7 +41,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
         winBgColor = CONST.LOGIN_WIN_BG_COLOR
     }
 
-    // 你通过调用 createWindow方法，在 electron app 第一次被初始化时创建了一个新的窗口
+    // 创建了一个新的窗口
     let Win: any = new BrowserWindow({
         show: false, // 默认先隐藏，等待渲染进程完全启动后再显示窗口，可避免窗口闪烁
         fullscreen: false, // 是否全屏

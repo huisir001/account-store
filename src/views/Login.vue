@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-08 15:53:34
+ * @LastEditTime: 2021-06-10 18:06:10
 -->
 <template>
     <div class="login">
@@ -61,14 +61,12 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, Ref, nextTick } from 'vue'
-import WaveWrapper from '../components/WaveWrapper.vue'
-import CloseWinBtn from '../components/CloseWinBtn.vue'
-import MinWinBtn from '../components/MinWinBtn.vue'
+import WaveWrapper from '@/components/WaveWrapper.vue'
+import CloseWinBtn from '@/components/CloseWinBtn.vue'
+import MinWinBtn from '@/components/MinWinBtn.vue'
 import { ElForm } from 'element-plus'
 import { useStore } from 'vuex'
-import Api from '@/api'
-
-declare const window: Window & { toast: any }
+import { getLoginData, saveLoginData, doLogin, openMainWindow } from '@/api/login'
 
 export default defineComponent({
     name: 'Login',
@@ -100,7 +98,7 @@ export default defineComponent({
             const {
                 ok,
                 data: { id, verify_question },
-            } = await Api('getLoginData')
+            } = await getLoginData()
 
             // 有登录数据
             if (ok === 1 && id) {
@@ -140,9 +138,7 @@ export default defineComponent({
                         if (!value || value === '') {
                             callback(new Error(`请再次${tipStr.value}密码`))
                         } else if (value !== loginData.core_password) {
-                            callback(
-                                new Error(`两次${tipStr.value}的密码不一致`)
-                            )
+                            callback(new Error(`两次${tipStr.value}的密码不一致`))
                         } else {
                             callback()
                         }
@@ -172,15 +168,15 @@ export default defineComponent({
             ;(formEl.value as typeof ElForm).validate(async (valid: any) => {
                 if (valid) {
                     // 保存登陆数据
-                    let { id, core_password, verify_question, verify_answer } =
-                        loginData
+                    let { id, core_password, verify_question, verify_answer } = loginData
 
                     if (isReg.value) {
-                        const { ok, data } = await Api('saveLoginData', {
+                        const { ok, data } = await saveLoginData({
                             core_password,
                             verify_question,
                             verify_answer,
                         })
+
                         if (ok === 1) {
                             window.toast('提交成功')
                             isReg.value = false
@@ -189,15 +185,12 @@ export default defineComponent({
                         }
                     } else {
                         // 登陆验证
-                        const res = await Api('doLogin', {
-                            id,
-                            core_password,
-                            verify_answer,
-                        })
+                        const res = await doLogin({ id, core_password, verify_answer })
+
                         if (res && res.ok === 1) {
                             sessionStorage.setItem('token', res.data.token)
                             window.toast('验证成功')
-                            Api('openMainWindow')
+                            openMainWindow()
                         }
                     }
 

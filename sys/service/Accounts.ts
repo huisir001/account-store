@@ -2,36 +2,13 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-10 10:53:40
+ * @LastEditTime: 2021-06-10 18:20:42
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
 import { formatDate } from "../tools/utils"
-
-interface Index {
-    [key: string]: any
-}
-
-interface IAddAccountParams extends Index {
-    id?: string // 若有id 为修改原数据，若无，则为新增
-    name?: string // 名称
-    account?: string // 登录账号
-    password?: string // 登录密码
-    email?: string // 绑定邮箱
-    phone?: string // 绑定手机
-    remark?: string // 备注
-}
-
-/**
- * 分页列表入参
- */
-interface IGetListParams {
-    name?: string // 名称
-    page: number // 当前页码
-    limit: number // 每页条数
-}
 
 /**
  * 查询列表返回数据类型

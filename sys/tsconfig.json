@@ -26,7 +26,8 @@
     },
     "include": [
       "./",
-      "../app.ts"
+      "../app.ts",
+      "../lib.d.ts"
     ],
     "exclude": [
       "../node_modules"

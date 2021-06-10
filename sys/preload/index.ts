@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-06-06 16:02:28
+ * @LastEditTime: 2021-06-10 19:01:16
  */
 
 /**
@@ -23,13 +23,8 @@
  */
 
 import { contextBridge, ipcRenderer as ipc } from 'electron'
-import WinMethods from './Win'
 import Response from "../tools/Response"
-import { getUrlQuery } from "../tools/utils"
-
-interface Iobj {
-    [key: string]: any
-}
+import winMethods from './winMethods'
 
 /**
  * 关闭控制台安全警告
@@ -38,38 +33,56 @@ interface Iobj {
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 /**
- * 若存在token参数，则存为sessionStorage缓存
+ * 定义请求后台主线程方法 
  */
-const { token } = getUrlQuery()
-if (token) {
-    window.sessionStorage.setItem("token", token)
-}
-
-/**
- * 将模块暴露给window对象
- */
-contextBridge.exposeInMainWorld("sys", {
+const oSYS: ISys = {
+    /**
+     * @description: 底层请求
+     * @param {string} something 方法名
+     * @param {array} parames 参数
+     * @return {*}
+     */
     do(something: string, ...parames: any[]): Promise<Response> {
         // 返回一个Promise用于接收执行结果
         return new Promise((resolve, reject) => {
-            if ((WinMethods as Iobj)[something]) {
-                (WinMethods as Iobj)[something]()
-                resolve(Response.succ())
+            // 发送请求
+            const Token = window.sessionStorage.getItem("token")
+            ipc.send('todo', something, Token, ...parames)
+
+            // 接收请求结果
+            ipc.on(something, (_, res) => {
+                if (res.ok === 1) {
+                    resolve(res)
+                } else {
+                    reject(res)
+                }
+            })
+        })
+    },
+
+    /**
+     * @description: 窗口层方法
+     * @param {string} something 方法名
+     * @param {array} parames 参数
+     * @return {*}
+     */
+    win(something: string, ...parames: any[]): Promise<Response> {
+        return new Promise(async (resolve, reject) => {
+            if (winMethods[something]) {
+                try {
+                    const res = await winMethods[something](...parames)
+                    resolve(res)
+                } catch (error) {
+                    reject(error)
+                }
             } else {
-                // 发送请求
-                const Token = window.sessionStorage.getItem("token")
-                ipc.send('todo', something, Token, ...parames)
-
-                // 接收请求结果
-                ipc.on(something, (_, res) => {
-                    if (res.ok === 1) {
-                        resolve(res)
-                    } else {
-                        reject(res)
-                    }
-                })
+                reject(Response.fail(`不存在“${something}”方法或此方法被禁用！`))
             }
-
         })
     }
-})
+}
+
+/**
+ * 将模块暴露给window的sys对象
+ */
+contextBridge.exposeInMainWorld("sys", oSYS)

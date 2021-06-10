@@ -2,11 +2,11 @@
  * @Description: 最小化按钮
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-07 18:32:44
- * @LastEditTime: 2021-06-08 12:58:04
+ * @LastEditTime: 2021-06-10 18:11:21
 -->
 <template>
     <svg t="1622900690444"
-         @click="minIconNoHover=true;Api('winMinimize')"
+         @click="minIconNoHover=true;minimize()"
          @mouseenter="bindMinIconMouseenter"
          :class="{
                  'icon':true,
@@ -28,7 +28,7 @@
  
 <script lang="ts">
 import { defineComponent, ref, Ref } from 'vue'
-import Api from '@/api'
+import { minimize } from '@/api/win'
 
 export default defineComponent({
     name: 'MinWinBtn',
@@ -77,7 +77,7 @@ export default defineComponent({
         return {
             minIconNoHover,
             bindMinIconMouseenter,
-            Api,
+            minimize,
         }
     },
 })

@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-10 19:12:42
+ * @LastEditTime: 2021-06-11 02:27:42
 -->
 <template>
     <div class="accountList">
@@ -38,7 +38,7 @@
                 <el-table-column prop="create_time" label="存表时间" width="150" />
                 <el-table-column align="right" width="160">
                     <template #default="scope">
-                        <el-button type="primary" @click="edit(scope.row)" size="small">编辑
+                        <el-button type="primary" @click="edit(scope.row.id)" size="small">编辑
                         </el-button>
                         <el-button type="danger" @click="detele(scope.row.id)" size="small">删除
                         </el-button>
@@ -94,6 +94,16 @@ export default defineComponent({
             getList(1, search.value)
         }
 
+        // 编辑
+        const edit = (id: string) => {
+            // 打开子窗口
+            let editWindow = window.open(
+                `#/edit?id=${id}&token=${sessionStorage.getItem('token')}`,
+                'editWindow',
+                "width=360,height=400,frame=true,transparent=false,backgroundColor='#ffffff'"
+            )
+        }
+
         // 删除
         const detele = async (id: string) => {
             const res = await showMessageBoxSync({
@@ -122,6 +132,7 @@ export default defineComponent({
             doSearch,
             bindPageChange,
             detele,
+            edit,
         }
     },
 })

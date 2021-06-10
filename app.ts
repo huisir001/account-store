@@ -2,7 +2,7 @@
  * @Description: 主进程
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-10 12:11:45
+ * @LastEditTime: 2021-06-11 01:15:20
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'

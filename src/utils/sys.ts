@@ -2,7 +2,7 @@
  * @Description: 主线程API调用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-02 16:03:20
- * @LastEditTime: 2021-06-10 19:10:21
+ * @LastEditTime: 2021-06-10 21:26:43
  */
 import { ElLoading as Loading } from 'element-plus'
 const noLoadings = ["getAccountList"]
@@ -13,7 +13,7 @@ const noLoadings = ["getAccountList"]
 export const todo = async (something: string, ...parames: any[]): Promise<any> => {
 
     // loading
-    let loading: any;
+    let loading: any
     if (!noLoadings.includes(something)) {
         loading = Loading.service({
             text: 'Loading...',
@@ -31,13 +31,13 @@ export const todo = async (something: string, ...parames: any[]): Promise<any> =
 
         return Promise.resolve(res)
 
-    } catch (err) {
+    } catch (err: any) {
 
         // 关闭loading
-        loading && loading.close();
+        loading && loading.close()
 
         // 错误提示
-        if (err.ok === 401) {
+        if (err.ok && err.ok === 401) {
 
             window.sys.win('showMessageBoxSync', {
                 type: 'error',
@@ -68,7 +68,7 @@ export const winTodo = async (something: string, ...parames: any[]): Promise<any
         const res = await window.sys.win(something, ...parames)
         return Promise.resolve(res)
 
-    } catch (err) {
+    } catch (err: any) {
 
         window.sys.win('showErrorBox', {
             title: '错误信息',

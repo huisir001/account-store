@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-10 18:20:42
+ * @LastEditTime: 2021-06-11 00:27:12
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -77,6 +77,19 @@ class Accounts implements IAccunts {
         const res = await AccountModel.remove({ id })
         if (res) {
             return Promise.resolve(Response.succ({ msg: "删除成功" }))
+        }
+    }
+
+    /**
+     * @description: 查询单个账户
+     * @param {string} id
+     * @return {*}
+     */
+    async getAccountById(id: string): Promise<any> {
+        operate("查询单个账户数据")
+        const data = await AccountModel.findOne({ id })
+        if (data) {
+            return Promise.resolve(Response.succ({ data }))
         }
     }
 

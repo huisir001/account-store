@@ -2,7 +2,7 @@
  * @Description: 
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 15:46:37
- * @LastEditTime: 2021-06-07 16:33:01
+ * @LastEditTime: 2021-06-11 01:34:50
 -->
 <template>
     <router-view />
@@ -20,6 +20,11 @@
         box-shadow: 0 0 6px 1px #00000042;
         visibility: visible;
         animation: slide-in-anim 2.5s ease;
+    }
+    &.show {
+        transition: none !important;
+        visibility: visible !important;
+        border-radius: 0 !important;
     }
 }
 @keyframes slide-in-anim {

@@ -2,58 +2,41 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-10 18:19:15
+ * @LastEditTime: 2021-06-11 02:38:18
 -->
 <template>
-    <div class="formbox">
-        <el-form ref="formRef"
-                 size="medium"
-                 :rules="rules"
-                 :model="formdata"
-                 label-width="50px">
-            <el-form-item label="名称"
-                          prop="name">
-                <el-input v-model="formdata.name"
-                          placeholder="请输入账户名称，如网站名称"
-                          clearable></el-input>
+    <div :class="{formbox:true,edit:isEdit}">
+        <el-form ref="formRef" :size="isEdit?'mini':'medium'" :rules="rules" :model="formdata"
+            label-width="50px">
+            <el-form-item label="名称" prop="name">
+                <el-input v-model="formdata.name" placeholder="请输入账户名称，如网站名称" clearable></el-input>
             </el-form-item>
-            <el-form-item label="账号"
-                          prop="account">
-                <el-input v-model="formdata.account"
-                          placeholder="请输入登录账号"
-                          clearable
-                          show-password></el-input>
+            <el-form-item label="账号" prop="account">
+                <el-input v-model="formdata.account" placeholder="请输入登录账号" clearable show-password>
+                </el-input>
             </el-form-item>
-            <el-form-item label="密码"
-                          prop="password">
-                <el-input v-model="formdata.password"
-                          placeholder="请输入登录密码"
-                          clearable
-                          show-password></el-input>
+            <el-form-item label="密码" prop="password">
+                <el-input v-model="formdata.password" placeholder="请输入登录密码" clearable show-password>
+                </el-input>
             </el-form-item>
-            <el-form-item label="邮箱"
-                          prop="email">
-                <el-input v-model="formdata.email"
-                          placeholder="请输入绑定邮箱"
-                          clearable></el-input>
+            <el-form-item label="邮箱" prop="email">
+                <el-input v-model="formdata.email" placeholder="请输入绑定邮箱" clearable></el-input>
             </el-form-item>
-            <el-form-item label="手机"
-                          prop="phone">
-                <el-input v-model="formdata.phone"
-                          placeholder="请输入绑定手机号码"
-                          clearable></el-input>
+            <el-form-item label="手机" prop="phone">
+                <el-input v-model="formdata.phone" placeholder="请输入绑定手机号码" clearable></el-input>
             </el-form-item>
-            <el-form-item label="备注"
-                          prop="remark">
-                <el-input type="textarea"
-                          v-model="formdata.remark"
-                          placeholder="备注信息，如网址"></el-input>
+            <el-form-item label="备注" prop="remark">
+                <el-input type="textarea" v-model="formdata.remark" placeholder="备注信息，如网址">
+                </el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary"
-                           @click="onSubmit"
-                           style="padding:10px 30px;">立即新增</el-button>
-                <el-button @click="reset">重置</el-button>
+                <el-button :type="isEdit?'':'primary'" @click="onSubmit">
+                    {{isEdit?'保存':'立即新增'}}
+                </el-button>
+                <el-button v-if="isEdit" :type="isEdit?'':'primary'">
+                    取消
+                </el-button>
+                <el-button v-if="!isEdit" @click="reset">重置</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -61,7 +44,9 @@
  
 <script lang="ts">
 import { defineComponent, reactive, ref, toRaw } from 'vue'
-import { saveAccount } from '@/api/account'
+import { saveAccount, getAccountById } from '@/api/account'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default defineComponent({
     name: 'CreateAccount',
@@ -75,7 +60,29 @@ export default defineComponent({
             remark: '',
         })
 
+        const $route = useRoute()
+        const isEdit = ref($route.name == 'Edit')
         const formRef = ref(null)
+
+        // 编辑页
+        if (isEdit.value) {
+            // 标题
+            document.title = '编辑账户'
+            // 取消隐藏动画
+            useStore().dispatch('showApp')
+            // 获取参数
+            const { id: _id, token } = $route.query
+            // 保存token
+            sessionStorage.setItem('token', token as string)
+            // 请求当前账户数据
+            ;(async () => {
+                const res = await getAccountById(_id as string)
+                alert(JSON.stringify(res.data))
+                if (res && res.ok === 1) {
+                    formdata = res.data
+                }
+            })()
+        }
 
         // 重置
         const reset = () => {
@@ -150,6 +157,7 @@ export default defineComponent({
         }
 
         return {
+            isEdit,
             formRef,
             formdata,
             rules,
@@ -164,6 +172,45 @@ export default defineComponent({
 .formbox {
     float: left;
     width: 70%;
+    &.edit {
+        width: calc(100% - 5px);
+        &:deep(.el-form > .el-form-item):last-child {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background: #f5f5f5;
+            margin: 0 -10px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            .el-form-item__content {
+                margin-left: 0 !important;
+                .el-button {
+                    padding: 0 20px;
+                    background-color: #eae9e9;
+                    border: 1px solid #d4d4d4;
+                    border-radius: 0;
+                    color: #000;
+                    min-height: 24px;
+                    font-size: 12px;
+                    &:hover,
+                    &:focus {
+                        color: #2f2f2f;
+                        border-color: #5589ff;
+                        background: #83a9ff29;
+                    }
+                }
+            }
+        }
+        &:deep(.el-form-item__label) {
+            font-size: 12px;
+            font-weight: 400;
+        }
+        &:deep(.el-input__inner),
+        &:deep(.el-textarea__inner) {
+            border: 1px solid #bdbdbd;
+        }
+    }
     &:deep(.el-form-item__label) {
         color: #000;
     }
@@ -173,9 +220,8 @@ export default defineComponent({
         font-family: auto;
         max-height: 70px;
     }
-}
-.infobox {
-    float: right;
-    width: 26%;
+    &:deep(.el-button) {
+        padding: 10px 30px;
+    }
 }
 </style>

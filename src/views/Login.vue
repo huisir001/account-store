@@ -2,18 +2,16 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-10 18:06:10
+ * @LastEditTime: 2021-06-11 00:30:37
 -->
 <template>
     <div class="login">
         <!-- 波浪背景 -->
         <WaveWrapper />
         <!-- 关闭按钮 -->
-        <CloseWinBtn left="20px"
-                     top="15px" />
+        <CloseWinBtn left="20px" top="15px" />
         <!-- 最小化 -->
-        <MinWinBtn right="20px"
-                   top="15px" />
+        <MinWinBtn right="20px" top="15px" />
         <!-- logo -->
         <div class="cont">
             <img src="../assets/imgs/logo.svg">
@@ -21,39 +19,26 @@
         </div>
         <div class="form">
             <el-divider class="login-divider">{{isReg?"请设置验证信息":'Sign In'}}</el-divider>
-            <el-form ref="formEl"
-                     :rules="rules"
-                     :model="loginData"
-                     size="medium">
+            <el-form ref="formEl" :rules="rules" :model="loginData" size="medium">
                 <el-form-item prop="core_password">
-                    <el-input type="password"
-                              v-model="loginData.core_password"
-                              clearable
-                              :placeholder="`请${tipStr}总密码`"></el-input>
+                    <el-input type="password" v-model="loginData.core_password" clearable
+                        :placeholder="`请${tipStr}总密码`"></el-input>
                 </el-form-item>
-                <el-form-item v-if="isReg"
-                              prop="resetPass">
-                    <el-input type="password"
-                              v-model="loginData.resetPass"
-                              clearable
-                              placeholder="请再次输入密码，确保两次输入一致"></el-input>
+                <el-form-item v-if="isReg" prop="resetPass">
+                    <el-input type="password" v-model="loginData.resetPass" clearable
+                        placeholder="请再次输入密码，确保两次输入一致"></el-input>
                 </el-form-item>
                 <el-form-item prop="verify_question">
-                    <el-input v-model="loginData.verify_question"
-                              clearable
-                              :disabled="!isReg"
-                              :placeholder="`请${tipStr}验证问题`"></el-input>
+                    <el-input v-model="loginData.verify_question" clearable :disabled="!isReg"
+                        :placeholder="`请${tipStr}验证问题`"></el-input>
                 </el-form-item>
                 <el-form-item prop="verify_answer">
-                    <el-input v-model="loginData.verify_answer"
-                              clearable
-                              :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
+                    <el-input v-model="loginData.verify_answer" clearable
+                        :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
                 </el-form-item>
                 <el-form-item class="btn-go">
-                    <el-button type="primary"
-                               round
-                               :disabled="disabledBtn"
-                               @click="onSubmit">立即{{isReg?'提交':'进入'}}</el-button>
+                    <el-button type="primary" round :disabled="disabledBtn" @click="onSubmit">
+                        立即{{isReg?'提交':'进入'}}</el-button>
                 </el-form-item>
             </el-form>
         </div>

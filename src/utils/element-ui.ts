@@ -2,7 +2,7 @@
  * @Description: element UI 按需引入
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-03 14:26:05
- * @LastEditTime: 2021-06-09 16:07:20
+ * @LastEditTime: 2021-06-10 11:00:48
  */
 import { App } from '@vue/runtime-core'
 
@@ -14,8 +14,6 @@ import {
     ElTable,
     ElTableColumn,
     ElLoading,
-    ElMessage,
-    ElMessageBox,
     ElDivider,
     ElAlert,
     ElPagination
@@ -35,8 +33,6 @@ const components = [
 
 const plugins = [
     ElLoading,
-    ElMessage,
-    ElMessageBox,
 ]
 
 export default (app: App<any>) => {

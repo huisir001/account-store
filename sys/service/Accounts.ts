@@ -2,12 +2,13 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-10 00:46:21
+ * @LastEditTime: 2021-06-10 10:53:40
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
+import { formatDate } from "../tools/utils"
 
 interface Index {
     [key: string]: any
@@ -73,6 +74,8 @@ class Accounts implements IAccunts {
             // 这里不需要捕获错误，因为router处统一捕获了
             const id = params.id
             delete params.id
+            // 更新时间
+            params.update_time = formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
             const res = await AccountModel.update({ id }, params)
             if (res) {
                 return Promise.resolve(Response.succ())

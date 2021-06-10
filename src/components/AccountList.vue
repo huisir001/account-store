@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-10 01:00:05
+ * @LastEditTime: 2021-06-10 11:18:45
 -->
 <template>
     <div class="accountList">
@@ -14,7 +14,7 @@
                       size="small"
                       placeholder="输入名称关键字回车搜索"
                       @blur="doSearch"
-                      @keydown.enter="doSearch"
+                      @keydown.enter="$event.currentTarget.blur()"
                       @clear="doSearch" />
             <el-table :data="tableData"
                       style="width: 100%;">
@@ -32,6 +32,9 @@
         <el-table-column prop="phone"
                          label="绑定手机">
         </el-table-column>
+        <el-table-column prop="update_time"
+                         label="修改时间">
+        </el-table-column>
         <el-table-column prop="remark"
                          label="备注">
         </el-table-column> -->
@@ -39,7 +42,7 @@
                                  width="100">
                     <template #default="scope">
                         <span class="see-detail-btn"
-                              @click="handleClick(scope.row)">查看详情</span>
+                              @click="detail(scope.row.id)">查看详情</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="create_time"
@@ -49,10 +52,10 @@
                                  width="160">
                     <template #default="scope">
                         <el-button type="primary"
-                                   @click="handleClick(scope.row)"
+                                   @click="edit(scope.row)"
                                    size="small">编辑</el-button>
                         <el-button type="danger"
-                                   @click="handleClick(scope.$index)"
+                                   @click="detele(scope.row.id)"
                                    size="small">删除</el-button>
                     </template>
                 </el-table-column>
@@ -110,6 +113,26 @@ export default defineComponent({
             getList(1, search.value)
         }
 
+        // 删除
+        const detele = (id: string) => {
+            ;(window as any).confirm(
+                '确认删除？删除后无法恢复。',
+                '提示',
+                async (e: boolean) => {
+                    if (e) {
+                        const res = await Api('delAccount', id)
+                        if (res && res.ok && res.ok === 1) {
+                            ;(window as any).toast(res.msg)
+                            // 刷新当前页
+                            getList(curPage.value, search.value)
+                        } else {
+                            ;(window as any).toast('删除失败')
+                        }
+                    }
+                }
+            )
+        }
+
         return {
             search,
             loading,
@@ -118,6 +141,7 @@ export default defineComponent({
             pageTotal,
             doSearch,
             bindPageChange,
+            detele,
         }
     },
 })

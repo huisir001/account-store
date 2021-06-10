@@ -2,7 +2,7 @@
  * @Description:
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:34:20
- * @LastEditTime: 2021-05-31 23:20:09
+ * @LastEditTime: 2021-06-10 10:51:29
  */
 import SQLAgent from '../tools/SQLAgent' //配置文件
 
@@ -28,6 +28,11 @@ const AccountSchema = {
     },
     remark: {
         type: 'VARCHAR(255)',
+    },
+    update_time: {
+        type: 'DATETIME',
+        default: "(datetime('now','localtime'))", //默认当前时间
+        notNull: true,
     },
     create_time: {
         type: 'DATETIME',

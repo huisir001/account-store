@@ -2,7 +2,7 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-09 14:32:35
+ * @LastEditTime: 2021-06-10 10:40:13
 -->
 <template>
     <div class="formbox">
@@ -21,14 +21,15 @@
                           prop="account">
                 <el-input v-model="formdata.account"
                           placeholder="请输入登录账号"
-                          clearable></el-input>
+                          clearable
+                          show-password></el-input>
             </el-form-item>
             <el-form-item label="密码"
                           prop="password">
-                <el-input type="password"
-                          v-model="formdata.password"
+                <el-input v-model="formdata.password"
                           placeholder="请输入登录密码"
-                          clearable></el-input>
+                          clearable
+                          show-password></el-input>
             </el-form-item>
             <el-form-item label="邮箱"
                           prop="email">

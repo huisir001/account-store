@@ -2,7 +2,7 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-11 01:06:40
+ * @LastEditTime: 2021-06-11 10:27:11
 -->
 <template>
     <div class="layout">
@@ -39,20 +39,23 @@ export default defineComponent({
         MinWinBtn,
     },
     setup() {
-        const router = useRouter()
+        const $router = useRouter()
 
         // 导航列表
-        const navList: any = router.options.routes
+        const navList: any = $router.options.routes
             .find((route) => route.name == 'Home')!
             .children?.map(({ path, meta }) => ({
                 path: '/home/' + path,
                 ...meta,
             }))
 
-        const curRoute = router.currentRoute
+        // 当前路由
+        const curRoute = $router.currentRoute
 
+        // 滑块位置
         const navHoverBoxTop = ref(10)
 
+        // 滑块动画
         const bindNavMouseEnter = (e: any) => {
             navHoverBoxTop.value = e.target.offsetTop
         }

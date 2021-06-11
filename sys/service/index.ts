@@ -2,12 +2,13 @@
  * @Description: 暴露方法
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-01 17:44:18
- * @LastEditTime: 2021-06-05 22:51:04
+ * @LastEditTime: 2021-06-11 14:23:08
  */
 import accounts from "./Accounts"
 import login from "./Login"
 import options from "./Options"
 import { getOperateLogs, delOperateLogs } from "./operationLog"
+import { openChildWindow } from "./ChildWin"
 
 // 定义可索引类型的接口
 interface IMethods {
@@ -16,7 +17,8 @@ interface IMethods {
 
 const methods: IMethods = {
     getOperateLogs,
-    delOperateLogs
+    delOperateLogs,
+    openChildWindow
 }
 
 const getProtoMethods = (instance: InstanceType<any>) => {

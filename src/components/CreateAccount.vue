@@ -2,7 +2,7 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-11 02:38:18
+ * @LastEditTime: 2021-06-11 18:32:07
 -->
 <template>
     <div :class="{formbox:true,edit:isEdit}">
@@ -30,10 +30,10 @@
                 </el-input>
             </el-form-item>
             <el-form-item>
-                <el-button :type="isEdit?'':'primary'" @click="onSubmit">
+                <el-button :type="isEdit?'default':'primary'" @click="onSubmit">
                     {{isEdit?'保存':'立即新增'}}
                 </el-button>
-                <el-button v-if="isEdit" :type="isEdit?'':'primary'">
+                <el-button v-if="isEdit" :type="isEdit?'default':'primary'" @click="close">
                     取消
                 </el-button>
                 <el-button v-if="!isEdit" @click="reset">重置</el-button>
@@ -43,46 +43,16 @@
 </template>
  
 <script lang="ts">
-import { defineComponent, reactive, ref, toRaw } from 'vue'
-import { saveAccount, getAccountById } from '@/api/account'
-import { useRoute } from 'vue-router'
-import { useStore } from 'vuex'
+import { defineComponent, ref, toRaw } from 'vue'
+import { saveAccount } from '@/api/account'
+import { postChildMsg } from '@/api/win'
+import useAccountInfoScript from '@/hooks/useAccountInfoScript'
 
 export default defineComponent({
     name: 'CreateAccount',
     setup() {
-        let formdata = reactive({
-            name: '',
-            account: '',
-            password: '',
-            email: '',
-            phone: '',
-            remark: '',
-        })
-
-        const $route = useRoute()
-        const isEdit = ref($route.name == 'Edit')
         const formRef = ref(null)
-
-        // 编辑页
-        if (isEdit.value) {
-            // 标题
-            document.title = '编辑账户'
-            // 取消隐藏动画
-            useStore().dispatch('showApp')
-            // 获取参数
-            const { id: _id, token } = $route.query
-            // 保存token
-            sessionStorage.setItem('token', token as string)
-            // 请求当前账户数据
-            ;(async () => {
-                const res = await getAccountById(_id as string)
-                alert(JSON.stringify(res.data))
-                if (res && res.ok === 1) {
-                    formdata = res.data
-                }
-            })()
-        }
+        let { formdata, isEdit, close } = useAccountInfoScript()
 
         // 重置
         const reset = () => {
@@ -143,14 +113,24 @@ export default defineComponent({
             ],
         }
 
-        // 新增
+        // 提交
         const onSubmit = () => {
             ;(<any>formRef.value).validate(async (valid: any) => {
                 if (valid) {
+                    // 保存数据
                     const res = await saveAccount(toRaw(formdata))
                     if (res && res.ok === 1) {
                         window.toast(res.msg)
-                        reset()
+                        // 编辑模式
+                        if (isEdit.value) {
+                            // 保存成功给父窗口传消息
+                            const res = await postChildMsg({ msg: 'saved' })
+                            if (res && res.ok === 1) {
+                                window.close()
+                            }
+                        } else {
+                            reset()
+                        }
                     }
                 }
             })
@@ -163,6 +143,7 @@ export default defineComponent({
             rules,
             onSubmit,
             reset,
+            close,
         }
     },
 })

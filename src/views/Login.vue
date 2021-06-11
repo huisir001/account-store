@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-11 00:30:37
+ * @LastEditTime: 2021-06-11 15:50:41
 -->
 <template>
     <div class="login">
@@ -61,6 +61,8 @@ export default defineComponent({
         MinWinBtn,
     },
     setup() {
+        // 改标题
+        document.title = '密码验证'
         // 使用store
         const store = useStore()
         // 是否为设置阶段

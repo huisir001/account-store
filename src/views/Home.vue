@@ -2,7 +2,7 @@
  * @Description: 首页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-11 01:23:58
+ * @LastEditTime: 2021-06-11 15:49:20
 -->
 <template>
     <div class="home">
@@ -24,6 +24,9 @@ export default defineComponent({
         Layout,
     },
     setup() {
+        // 改标题
+        document.title = '账号仓库'
+
         // 存token
         const { token } = getUrlQuery()
         sessionStorage.setItem('token', token)

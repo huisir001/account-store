@@ -2,7 +2,7 @@
  * @Description: 窗口相关api
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-05 22:06:05
- * @LastEditTime: 2021-06-10 19:07:42
+ * @LastEditTime: 2021-06-11 10:38:05
  */
 import { remote } from 'electron'
 
@@ -47,7 +47,9 @@ const winMethods: Iobj = {
      * @param {IshowMessageBoxArgs} param1
      * @return {*}
      */
-    showErrorBox: ({ title = 'error', msg = '' }: IshowMessageBoxArgs): any => remote.dialog.showErrorBox(title, msg),
+    showErrorBox: ({ title = 'error', msg = '' }: IshowMessageBoxArgs): number => {
+        return winMethods.showMessageBoxSync({ title, msg, type: 'error' })
+    },
 
 
 

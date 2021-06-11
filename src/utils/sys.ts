@@ -2,7 +2,7 @@
  * @Description: 主线程API调用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-02 16:03:20
- * @LastEditTime: 2021-06-10 21:26:43
+ * @LastEditTime: 2021-06-11 17:35:43
  */
 import { ElLoading as Loading } from 'element-plus'
 const noLoadings = ["getAccountList"]
@@ -76,4 +76,30 @@ export const winTodo = async (something: string, ...parames: any[]): Promise<any
         })
 
     }
+}
+
+/**
+ * 窗口通信->发消息
+ */
+export const postMsg = async (content: IWinMessage): Promise<any> => {
+    try {
+
+        const res = await window.sys.postMsg(content)
+        return Promise.resolve(res)
+
+    } catch (err: any) {
+
+        window.sys.win('showErrorBox', {
+            title: '错误信息',
+            msg: err.msg || err.toString()
+        })
+
+    }
+}
+
+/**
+ * 窗口通信->收消息
+ */
+export const on = async (wid: string, callback: (content: IWinMessage) => void) => {
+    window.sys.on(wid, callback)
 }

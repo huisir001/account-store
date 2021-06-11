@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-06-10 19:01:16
+ * @LastEditTime: 2021-06-11 17:35:20
  */
 
 /**
@@ -31,6 +31,7 @@ import winMethods from './winMethods'
  * 除了这种方式，也可以在命令中执行`set ELECTRON_DISABLE_SECURITY_WARNINGS=true`
  */
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
+
 
 /**
  * 定义请求后台主线程方法 
@@ -78,6 +79,40 @@ const oSYS: ISys = {
             } else {
                 reject(Response.fail(`不存在“${something}”方法或此方法被禁用！`))
             }
+        })
+    },
+
+    /**
+     * @description: 窗口传参
+     * @param {any} data 数据
+     * @return {*}
+     */
+    postMsg(content: IWinMessage): Promise<Response> {
+        return new Promise((resolve, reject) => {
+            // 发送消息
+            ipc.send('message', content)
+
+            // 接收请求结果
+            ipc.on('message', (_, res) => {
+                if (res.ok === 1) {
+                    resolve(res)
+                } else {
+                    reject(res)
+                }
+            })
+        })
+    },
+
+    /**
+     * @description: 收消息
+     * @param {string} wid
+     * @param {function} callback
+     * @return {*}
+     */
+    on(wid: string, callback: (content: IWinMessage) => void): void {
+        // 接收请求结果
+        ipc.on('msg_' + wid, (_, res) => {
+            callback && callback(res)
         })
     }
 }

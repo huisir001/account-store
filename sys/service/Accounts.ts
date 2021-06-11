@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-11 00:27:12
+ * @LastEditTime: 2021-06-11 17:18:07
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -55,7 +55,7 @@ class Accounts implements IAccunts {
             params.update_time = formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
             const res = await AccountModel.update({ id }, params)
             if (res) {
-                return Promise.resolve(Response.succ())
+                return Promise.resolve(Response.succ({ msg: "保存成功" }))
             }
         } else {
             operate("新增账户数据")

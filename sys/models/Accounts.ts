@@ -2,7 +2,7 @@
  * @Description:
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:34:20
- * @LastEditTime: 2021-06-10 10:51:29
+ * @LastEditTime: 2021-06-11 17:55:47
  */
 import SQLAgent from '../tools/SQLAgent' //配置文件
 
@@ -13,21 +13,21 @@ const AccountSchema = {
         notNull: true, //NOT NULL
     },
     account: {
-        type: 'VARCHAR(64)',
+        type: 'VARCHAR(255)',
         notNull: true,
     },
     password: {
-        type: 'VARCHAR(128)',
+        type: 'VARCHAR(255)',
         notNull: true,
     },
     email: {
         type: 'VARCHAR(128)',
     },
     phone: {
-        type: 'VARCHAR(24)',
+        type: 'VARCHAR(128)',
     },
     remark: {
-        type: 'VARCHAR(255)',
+        type: 'VARCHAR(800)',
     },
     update_time: {
         type: 'DATETIME',

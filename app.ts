@@ -1,8 +1,8 @@
 /*
- * @Description: 主进程
+ * @Description: 主进程(主窗口创建，不含子窗口)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-11 01:15:20
+ * @LastEditTime: 2021-06-11 15:50:30
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -45,12 +45,14 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
     let Win: any = new BrowserWindow({
         show: false, // 默认先隐藏，等待渲染进程完全启动后再显示窗口，可避免窗口闪烁
         fullscreen: false, // 是否全屏
+        title: '加载中...', // 窗口标题
         width: winWidth,
         height: winHeight,
         backgroundColor: winBgColor, // 初始化背景
         resizable: IsDev, // 宽高拖拽
         frame: IsDev, // 边框显示
         transparent: !IsDev, // 窗口透明
+        icon: path.join(__dirname, 'favicon.ico'),
         webPreferences: {// web首选项
             // 是否开启Node集成, 并且可以使用像 require 和 process 这样的node APIs 去访问低层系统资源，
             // Electron v5之后的默认为false

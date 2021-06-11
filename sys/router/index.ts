@@ -2,8 +2,9 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-09 12:45:50
+ * @LastEditTime: 2021-06-11 15:08:35
  */
+import { BrowserWindow } from 'electron'
 import methods from "../service"
 import Response from "../tools/Response"
 import Permission from "../tools/Permission"
@@ -12,23 +13,38 @@ import { Log } from '../tools/Logger' //日志
 import CONST from "../config/const"
 
 export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boolean, query?: object) => any) => {
-    // 接收渲染进程（操作系统模块）,将模块返回
+
+    // 缓存当前主窗口
+    let mainWindow: BrowserWindow
+
+    // 接收渲染进程事件（操作系统模块）,将模块返回
     ipcMain.on('todo', async (event: Electron.IpcMainEvent, something: string, token?: string, ...params: any[]) => {
         let res: object
 
         // 登录成功启动主窗口
         if (something === "openMainWindow") {
             // 启动主窗口，将token以query方式传回
-            createWindow(false, { token })
+            mainWindow = createWindow(false, { token })
             return
         }
 
         // 重新登录
         if (something === "openLoginWindow") {
-            createWindow(true)
+            mainWindow = createWindow(true)
             return
         }
 
+        // 子窗口创建
+        if (something === "openChildWindow") {
+            if (mainWindow && params && params[0] && params[0].url) {
+                params[0].parent = mainWindow
+            } else {
+                event.reply(something, Response.fail("参数错误或父窗口未创建"))
+                return
+            }
+        }
+
+        // token验证
         const failLogin = (msg: string = "Token验证失败，请重新登录") => {
             event.reply(something, Response.fail({ ok: 401, msg }))
         }

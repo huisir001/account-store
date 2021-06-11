@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-11 02:27:42
+ * @LastEditTime: 2021-06-11 19:04:23
 -->
 <template>
     <div class="accountList">
@@ -32,7 +32,8 @@
         </el-table-column> -->
                 <el-table-column label="账号信息" width="100">
                     <template #default="scope">
-                        <span class="see-detail-btn" @click="detail(scope.row.id)">查看详情</span>
+                        <span class="see-detail-btn"
+                            @click="detail(scope.row.id,scope.row.name)">查看详情</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="create_time" label="存表时间" width="150" />
@@ -56,7 +57,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { delAccount, getAccountList } from '@/api/account'
-import { showMessageBoxSync } from '@/api/win'
+import { showMessageBoxSync, openChildWindow } from '@/api/win'
 
 export default defineComponent({
     name: 'AccountList',
@@ -94,13 +95,44 @@ export default defineComponent({
             getList(1, search.value)
         }
 
-        // 编辑
-        const edit = (id: string) => {
+        // 详情
+        const detail = async (aid: string, aName: string) => {
             // 打开子窗口
-            let editWindow = window.open(
-                `#/edit?id=${id}&token=${sessionStorage.getItem('token')}`,
-                'editWindow',
-                "width=360,height=400,frame=true,transparent=false,backgroundColor='#ffffff'"
+            // wid-窗口唯一标识
+            const { origin, pathname } = location
+            await openChildWindow({
+                wid: 'editWindow',
+                url: `${origin + pathname}#/detail?aid=${aid}&token=${sessionStorage.getItem(
+                    'token'
+                )}`,
+                width: 660,
+                height: 350,
+                title: aName,
+            })
+        }
+
+        // 编辑,aid-账户id
+        const edit = async (aid: string) => {
+            // 打开子窗口
+            // wid-窗口唯一标识
+            const { origin, pathname } = location
+            await openChildWindow(
+                {
+                    wid: 'editWindow',
+                    url: `${origin + pathname}#/edit?aid=${aid}&token=${sessionStorage.getItem(
+                        'token'
+                    )}`,
+                    width: 360,
+                    height: 390,
+                    title: '编辑账户',
+                },
+                ({ msg }) => {
+                    // 接收消息
+                    if (msg == 'saved') {
+                        // 修改数据成功，刷新列表
+                        getList(curPage.value, search.value)
+                    }
+                }
             )
         }
 
@@ -132,6 +164,7 @@ export default defineComponent({
             doSearch,
             bindPageChange,
             detele,
+            detail,
             edit,
         }
     },
@@ -154,6 +187,7 @@ export default defineComponent({
         padding: 10px 0;
         cursor: pointer;
         color: #3e5eff;
+        cursor: pointer;
     }
     .pageNav {
         width: 100%;

@@ -54,3 +54,8 @@ a {
     box-shadow: 0 10px 10px -8px #67c23ad4 !important;
   }
 }
+
+.el-descriptions--medium.is-bordered th,
+.el-descriptions--medium.is-bordered td {
+  word-break: break-all;
+}

@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-06-10 18:42:33
+ * @LastEditTime: 2021-06-11 16:19:37
  */
 
 /**
@@ -31,6 +31,21 @@ declare interface ISys {
      * @return {*}
      */
     win: (something: string, ...parames: any[]) => Promise<any>
+
+    /**
+     * @description: 窗口传参
+     * @param {string} wid 窗口唯一id、标识符,wid作为url的query参数传入到窗口页面
+     * @param {any} data 发送消息内容
+     * @return {*}
+     */
+    postMsg: (content: IWinMessage) => Promise<any>
+
+    /**
+     * @description: 接收消息
+     * @param {string} wid
+     * @return {function} callback
+     */
+    on(wid: string, callback: (content: IWinMessage) => void): void
 }
 
 /**
@@ -39,7 +54,7 @@ declare interface ISys {
 declare interface IToastArg {
     msg?: string
     delay?: number // 延迟时间，毫秒数
-    type?: string // 类型icon，succ\err\warn
+    type?: ('succ' | 'err' | 'warn') // 类型icon
 }
 
 /**
@@ -88,6 +103,27 @@ declare interface IGetListParams {
 declare interface IshowMessageBoxArgs {
     title?: string // 标题
     msg?: string // 内容
-    type?: string // 类型,默认为'info',如"none", "info", "error", "question" or "warning"
+    type?: ('info' | 'info' | 'error' | 'question' | 'warning')
     btns?: string[] // 按钮数组
+}
+
+/**
+ * 创建子窗口入参
+ */
+declare interface IOpenChildWinArgs {
+    wid: string //窗口唯一标识
+    url: string
+    title?: string // 窗口标题
+    width?: number
+    height?: number
+    backgroundColor?: string
+    parent?: BrowserWindow
+}
+
+/**
+ * 窗口通信协议
+ */
+declare interface IWinMessage {
+    msg: string // 消息字符
+    data?: object | any[]  // 消息数据
 }

@@ -1,8 +1,8 @@
 /*
- * @Description:
+ * @Description: 日志列表模块
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 18:49:16
- * @LastEditTime: 2021-05-31 23:20:19
+ * @LastEditTime: 2021-06-11 22:15:19
  */
 import SQLAgent from '../tools/SQLAgent'
 

@@ -2,7 +2,7 @@
  * @Description: element UI 按需引入
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-03 14:26:05
- * @LastEditTime: 2021-06-11 18:08:43
+ * @LastEditTime: 2021-06-11 23:52:24
  */
 import { App } from '@vue/runtime-core'
 
@@ -15,6 +15,8 @@ import {
     ElTableColumn,
     ElLoading,
     ElDivider,
+    ElPopover,
+    ElDatePicker,
     ElPagination,
     ElDescriptions,
     ElDescriptionsItem
@@ -28,6 +30,8 @@ const components = [
     ElTable,
     ElTableColumn,
     ElDivider,
+    ElPopover,
+    ElDatePicker,
     ElPagination,
     ElDescriptions,
     ElDescriptionsItem

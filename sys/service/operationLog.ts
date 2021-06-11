@@ -2,18 +2,11 @@
  * @Description: 操作日志存表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 18:46:12
- * @LastEditTime: 2021-06-09 17:15:40
+ * @LastEditTime: 2021-06-11 23:46:58
  */
 import Response from "../tools/Response"
 import OperateLogModel from '../models/OperateLog'
 import { Log } from '../tools/Logger' //日志
-
-interface IGetOperateLogsParams {
-    beginTime?: string // 开始日期 格式:"2020-02-11"
-    endTime?: string // 结束日期 格式:"2020-02-11"
-    page: number // 当前页码
-    limit: number // 每页条数
-}
 
 interface IOperateLogsByPage {
     list: object[]  // 数据集
@@ -26,7 +19,6 @@ interface IOperateLogsByPage {
 interface IdelParam {
     ids: string // 使用逗号分隔字符串
 }
-
 
 /**
  * @description: 保存操作日志(装饰器)
@@ -47,10 +39,10 @@ const operate = (log: string): any => {
  * @author: HuiSir
  */
 const getOperateLogs = async (params: IGetOperateLogsParams): Promise<any> => {
-    operate("查询操作记录")
+    // operate("查询操作记录")
     const { beginTime, endTime, page, limit } = params
-    const whereStr = `create_time BETWEEN '${beginTime} 00:00:00' AND '${endTime} 00:00:00'`
-    const list = await OperateLogModel.find(whereStr, { page, limit })
+    const whereStr = beginTime && endTime ? `create_time BETWEEN '${beginTime} 00:00:00' AND '${endTime} 00:00:00'` : ''
+    const list = await OperateLogModel.find(whereStr, { page, limit, sort: '-create_time' })
     const { count: total } = await OperateLogModel.count(whereStr)
     if (list) {
         const data: IOperateLogsByPage = {

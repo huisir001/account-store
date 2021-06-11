@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-11 19:04:23
+ * @LastEditTime: 2021-06-11 23:16:50
 -->
 <template>
     <div class="accountList">
@@ -194,6 +194,9 @@ export default defineComponent({
         text-align: center;
         position: absolute;
         bottom: 0;
+        :deep(*) {
+            font-weight: 100;
+        }
     }
     .searchInput {
         position: absolute;

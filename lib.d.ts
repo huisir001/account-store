@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-06-11 16:19:37
+ * @LastEditTime: 2021-06-11 22:28:39
  */
 
 /**
@@ -126,4 +126,14 @@ declare interface IOpenChildWinArgs {
 declare interface IWinMessage {
     msg: string // 消息字符
     data?: object | any[]  // 消息数据
+}
+
+/**
+ * 日志列表入参
+ */
+declare interface IGetOperateLogsParams {
+    beginTime?: string // 开始日期 格式:"2020-02-11"
+    endTime?: string // 结束日期 格式:"2020-02-11"
+    page: number // 当前页码
+    limit: number // 每页条数
 }

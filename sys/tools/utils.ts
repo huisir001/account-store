@@ -2,7 +2,7 @@
  * @Description: 工具
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 17:12:49
- * @LastEditTime: 2021-06-09 14:09:45
+ * @LastEditTime: 2021-06-12 00:37:03
  */
 
 interface IObject {
@@ -16,7 +16,7 @@ interface IObject {
  * @return {*}
  * @author: HuiSir
  */
-export const formatDate = (timeStamp: Date | string | number, timeType: string) => {
+export const formatDate = (timeStamp: Date | string | number, timeType?: string) => {
     const date =
         timeStamp instanceof Date ? timeStamp : new Date(timeStamp)
     const getFullNum = (num: number) => (num < 10 ? '0' + num : num) //小于两位补零
@@ -56,7 +56,7 @@ export const getUrlQuery = (): IObject => {
     var query: IObject = {}
     var params = window.location.search[1] ? window.location.search.slice(1).split("&") : []	//参数内容
     for (var i = 0; i < params.length; i++) {	//将query转换为json
-        var item = params[i].split("=");
+        var item = params[i].split("=")
         query[item[0]] = item[1]
     }
     return query
@@ -66,16 +66,16 @@ export const getUrlQuery = (): IObject => {
  * 对象转query
  */
 export const obj2Query = (data: IObject) => {
-    var _result = [];
+    var _result = []
     for (var key in data) {
-        var value = data[key];
+        var value = data[key]
         if (value.constructor == Array) {
             value.forEach(function (_value) {
-                _result.push(key + "=" + _value);
-            });
+                _result.push(key + "=" + _value)
+            })
         } else {
-            _result.push(key + '=' + value);
+            _result.push(key + '=' + value)
         }
     }
-    return _result.join('&');
+    return _result.join('&')
 }

@@ -59,3 +59,15 @@ a {
 .el-descriptions--medium.is-bordered td {
   word-break: break-all;
 }
+
+.date-picker {
+  &.el-date-editor.el-range-editor.el-input__inner {
+      width: 220px !important;
+  }
+  &.el-date-editor .el-range-input {
+      width: 88px !important;
+  }
+  &.el-date-editor .el-range-separator {
+      width: 20px !important;
+  }
+}

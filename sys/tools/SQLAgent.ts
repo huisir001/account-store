@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-11 00:25:43
+ * @LastEditTime: 2021-06-11 23:44:25
  */
 
 /**
@@ -474,7 +474,8 @@ export default class SQLAgent {
     removeMany(key: string, values: string): Promise<any> {
         const { tableName, getDBConn } = this
         return new Promise((resolve, reject) => {
-            const sqlMod = `DELETE FROM ${tableName} WHERE ${key} IN (${values})`
+            values = values.split(",").join("','")
+            const sqlMod = `DELETE FROM ${tableName} WHERE ${key} IN ('${values}')`
             getDBConn().run(sqlMod, function (err: any) {
                 if (err) {
                     reject(err)

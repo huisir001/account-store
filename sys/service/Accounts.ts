@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-12 01:14:19
+ * @LastEditTime: 2021-06-12 01:22:59
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -47,7 +47,7 @@ class Accounts implements IAccunts {
 
         // 修改
         if (params.hasOwnProperty("id")) {
-            operate(`更新${params.name}的账户数据`)
+            operate(`更新【${params.name}】账户数据`)
             // 这里不需要捕获错误，因为router处统一捕获了
             const id = params.id
             delete params.id
@@ -58,7 +58,7 @@ class Accounts implements IAccunts {
                 return Promise.resolve(Response.succ({ msg: "保存成功" }))
             }
         } else {
-            operate(`新增${params.name}账户数据`)
+            operate(`新增【${params.name}】账户数据`)
             // 新增账户
             const res = await AccountModel.create(params)
             if (res) {
@@ -86,9 +86,9 @@ class Accounts implements IAccunts {
      * @return {*}
      */
     async getAccountById(id: string): Promise<any> {
-        operate(`查询id为${id}的账户数据`)
         const data = await AccountModel.findOne({ id })
         if (data) {
+            operate(`查询【${data.name}】账户数据`)
             return Promise.resolve(Response.succ({ data }))
         }
     }

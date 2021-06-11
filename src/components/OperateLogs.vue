@@ -2,7 +2,7 @@
  * @Description: 日志列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:41
- * @LastEditTime: 2021-06-12 01:10:27
+ * @LastEditTime: 2021-06-12 01:24:55
 -->
 <template>
     <div class="operateLogs">
@@ -10,8 +10,8 @@
             <el-table :data="tableData" style="width: 100%;" size="small"
                 @selection-change="handleSelectionChange">
                 <el-table-column type="selection" />
-                <el-table-column type="index" label="序号" />
-                <el-table-column prop="create_time">
+                <!-- <el-table-column type="index" label="序号" /> -->
+                <el-table-column prop="create_time" width="150">
                     <template #header>
                         时间
                         <el-popover placement="bottom" :width="246" v-model:visible="searchVisible">
@@ -178,7 +178,7 @@ export default defineComponent({
     .searchBtn {
         position: absolute;
         display: inline-block;
-        padding: 4px;
+        padding: 5px;
         top: 0;
         left: 53px;
         z-index: 1;

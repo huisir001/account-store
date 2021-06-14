@@ -2,7 +2,7 @@
  * @Description: 账号查看、编辑弹窗公共hook
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-11 18:14:44
- * @LastEditTime: 2021-06-11 18:27:51
+ * @LastEditTime: 2021-06-14 18:00:26
  */
 import { reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -35,12 +35,13 @@ export default () => {
         sessionStorage.setItem('token', token as string);
         // 请求当前账户数据
         (async () => {
-            let res = await getAccountById(aid as string)
+            const res = await getAccountById(aid as string)
             if (res && res.ok === 1) {
                 if (isEdit.value) {
                     delete res.data.create_time
                     delete res.data.update_time
                 }
+                console.log(res)
                 Object.assign(formdata, res.data)
             }
         })()

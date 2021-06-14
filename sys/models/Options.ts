@@ -2,7 +2,7 @@
  * @Description: 配置项
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 18:21:14
- * @LastEditTime: 2021-05-31 22:41:26
+ * @LastEditTime: 2021-06-14 17:17:00
  */
 import SQLAgent from '../tools/SQLAgent'
 import os from "os"
@@ -15,8 +15,8 @@ const OptionsSchema = {
         default: `'${path.join(os.homedir(), "AccountStore")}'`,
         notNull: true,
     },
-    auto_backup: {  // 自动备份时机
-        type: 'TINYINT', //0启动时，1为结束时
+    auto_backup: {  // 是否开启自动备份
+        type: 'TINYINT', //0不开启，1开启
         default: 0, //默认值
         notNull: true,
     },

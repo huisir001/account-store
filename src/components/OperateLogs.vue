@@ -2,12 +2,12 @@
  * @Description: 日志列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:41
- * @LastEditTime: 2021-06-12 01:24:55
+ * @LastEditTime: 2021-06-14 20:06:22
 -->
 <template>
     <div class="operateLogs">
         <div class="table" v-loading="loading">
-            <el-table :data="tableData" style="width: 100%;" size="small"
+            <el-table :data="tableData" size="small" height="370"
                 @selection-change="handleSelectionChange">
                 <el-table-column type="selection" />
                 <!-- <el-table-column type="index" label="序号" /> -->
@@ -150,7 +150,6 @@ export default defineComponent({
     position: relative;
     .table {
         width: 100%;
-        height: 335px;
     }
     .delbtn {
         position: absolute;

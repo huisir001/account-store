@@ -71,3 +71,30 @@ a {
       width: 20px !important;
   }
 }
+
+.el-table--scrollable-y .el-table__body-wrapper{
+  &:hover{
+    	&::-webkit-scrollbar{
+        display: block;
+	    }
+  }
+  /* 设置滚动条的样式 */
+	&::-webkit-scrollbar{
+			width: 2px;
+      display: none;
+	}
+	/*滚动槽*/
+	&::-webkit-scrollbar-track{
+			-webkit-box-shadow:inset 0 0 6px #0000004d ;
+			border-radius: 2px;
+	}
+	/* 滚动条滑块 */
+	&::-webkit-scrollbar-thumb {
+			border-radius: 2px;
+			background: rgba(0, 0, 0, 0.1);
+			-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
+	}
+	&::-webkit-scrollbar-thumb:window-inactive {
+			background: #0000004d;
+	}
+}

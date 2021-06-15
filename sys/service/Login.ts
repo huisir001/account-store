@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-06-11 22:40:18
+ * @LastEditTime: 2021-06-15 14:43:57
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -114,15 +114,23 @@ class Login {
     }
 
     /**
-     * @description: 登出
+     * @description: 登出（点击关闭按钮时会执行）
      * @return {Promise<Response>}
      * @author: HuiSir
      */
     async logout(): Promise<any> {
-        operate("登出")
+        operate("退出系统")
         const res = await TokenModel.clearTable()
 
         if (res) {
+            // 这里判断是否需要备份数据，若为自动备份，则执行备份
+            // 只有点击关闭按钮时才能捕获到用户操作，而删除进程或其他方式关闭软件时不会执行
+            // 请求首选项设置数据
+            const res = await optionsMethods.getOptionsData()
+            if (res.data.auto_backup === 1) {
+                await optionsMethods.doBackup()
+            }
+
             return Promise.resolve(Response.succ())
         }
     }

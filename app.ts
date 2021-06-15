@@ -2,7 +2,7 @@
  * @Description: 主进程(主窗口创建，不含子窗口)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-11 15:50:30
+ * @LastEditTime: 2021-06-15 14:42:25
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -11,7 +11,7 @@ import { dataPool, cachePool } from "./sys/tools/DBPool"
 import { Print } from './sys/tools/Logger' //日志
 import CONST from './sys/config/const'
 import request from 'request'
-import { obj2Query } from "./sys/tools/utils"
+import { obj2Query } from './sys/tools/utils'
 
 // 环境变量
 const IsDev: boolean = process.env.NODE_ENV === "development"
@@ -161,7 +161,7 @@ app.whenReady().then(async () => {
  * 由于有两个窗口，所以要保证两个窗口不能同时关闭
  * 所以若登录成功后不能立即关闭登录窗口，需要等待主窗口打开后再关闭
  */
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
     // 当应用程序不再有任何打开窗口时试图退出
     if (process.platform !== 'darwin') {
         // 关闭数据库连接

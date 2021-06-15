@@ -2,7 +2,7 @@
  * @Description: 配置项
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 18:21:14
- * @LastEditTime: 2021-06-14 19:59:24
+ * @LastEditTime: 2021-06-15 11:13:21
  */
 import SQLAgent from '../tools/SQLAgent'
 import os from "os"
@@ -13,6 +13,11 @@ const OptionsSchema = {
     backup_path: { // 备份路径
         type: 'VARCHAR(255)',
         default: `'${path.join(os.homedir(), "AccountStore")}'`,
+        notNull: true,
+    },
+    backup_file_num: { // 备份文件保留个数
+        type: 'INTEGER',
+        default: 5,
         notNull: true,
     },
     auto_backup: {  // 是否开启自动备份

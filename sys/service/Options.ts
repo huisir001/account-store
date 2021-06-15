@@ -2,12 +2,17 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-06-15 10:37:14
+ * @LastEditTime: 2021-06-15 14:31:37
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
 import Response from "../tools/Response"
 import { operate } from "./operationLog"
+import { mkdir, readdir, unlink, copyFile } from 'fs/promises'
+import path from 'path'
+import { formatDate } from '../tools/utils'
+import CONST from "../config/const"
+const { DB_NAME } = CONST
 
 class Options {
     async getOptionsData(): Promise<any> {
@@ -39,8 +44,34 @@ class Options {
         }
     }
 
-    // 执行备份
-
+    // 执行备份(若设置为自动备份，则在执行退出Login.ts中的logout时会执行此备份方法)
+    async doBackup(): Promise<any> {
+        operate("执行数据备份")
+        // 请求首选项设置数据
+        const res = await this.getOptionsData()
+        // 查询已有备份文件数量，超量删除最前文件
+        try {
+            const backupfiles = await readdir(res.data.backup_path)
+            // 删除超量文件
+            if (backupfiles.length >= res.data.backup_file_num) {
+                // 找到最旧的文件
+                const earliestFile = backupfiles.sort((a, b) => parseInt(a) - parseInt(b))[0]
+                await unlink(path.join(res.data.backup_path, earliestFile))
+                Log.trace("删除超量备份文件：" + earliestFile)
+            }
+        } catch ({ errno }) {
+            if (errno == -4058) {
+                // 路径不存在时创建备份目录
+                await mkdir(res.data.backup_path)
+                Log.trace("备份目录创建成功")
+            }
+        }
+        // 组装备份路径
+        const copytopath = path.join(res.data.backup_path, formatDate(Date.now(), 'yyyyMMddhhmmss') + '.db.bak')
+        // 拷贝
+        await copyFile(DB_NAME, copytopath);
+        return Promise.resolve(Response.succ())
+    }
 }
 
 export default new Options()

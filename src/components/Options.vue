@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-06-15 10:27:02
+ * @LastEditTime: 2021-06-15 14:22:33
 -->
 <template>
     <div class="option">
@@ -24,7 +24,7 @@
  
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { getOptionsData, saveOptionsData } from '@/api/option'
+import { getOptionsData, saveOptionsData, backup } from '@/api/option'
 import { showOpenDirBox } from '@/api/win'
 
 export default defineComponent({
@@ -62,8 +62,11 @@ export default defineComponent({
         }
 
         // 立即备份
-        const doBackup = () => {
-            console.log('备份')
+        const doBackup = async () => {
+            const res = await backup()
+            if (res && res.ok) {
+                window.toast('备份成功')
+            }
         }
 
         // 自动备份开关

@@ -2,7 +2,7 @@
  * @Description: 登录相关API
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:29:10
- * @LastEditTime: 2021-06-14 21:01:12
+ * @LastEditTime: 2021-06-15 14:44:40
  */
 import { todo } from "@/utils/sys"
 
@@ -17,3 +17,6 @@ export const doLogin = (data: ILoginParams) => todo('doLogin', data)
 
 // 打开主窗口
 export const openMainWindow = () => todo('openMainWindow')
+
+// 退出
+export const logout = () => todo('logout')

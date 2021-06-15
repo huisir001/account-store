@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-06-11 22:28:39
+ * @LastEditTime: 2021-06-15 10:12:38
  */
 
 /**
@@ -136,4 +136,13 @@ declare interface IGetOperateLogsParams {
     endTime?: string // 结束日期 格式:"2020-02-11"
     page: number // 当前页码
     limit: number // 每页条数
+}
+
+/**
+ * 设置选项入参
+ */
+interface IOptionsParams {
+    id: string
+    backup_path?: string
+    auto_backup?: number
 }

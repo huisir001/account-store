@@ -2,22 +2,16 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-06-05 22:07:05
+ * @LastEditTime: 2021-06-15 09:54:01
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
 import Response from "../tools/Response"
 import { operate } from "./operationLog"
 
-interface IOptionsParams {
-    id: string
-    backup_path?: string
-    auto_backup?: number
-}
-
 class Options {
     async getOptionsData(): Promise<any> {
-        operate("请求首选项设置数据")
+        // operate("请求首选项设置数据")
         const res = await OptionsModel.find({})
         if (res) {
             return Promise.resolve(Response.succ({ data: res[0] }))
@@ -25,7 +19,7 @@ class Options {
     }
 
     async saveOptionsData(params: IOptionsParams): Promise<any> {
-        operate("保存首选项设置数据")
+        operate("设置选项保存")
         const { id, ...rest } = params
         const res = await OptionsModel.update({ id }, { ...rest })
         if (res) {

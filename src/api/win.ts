@@ -2,7 +2,7 @@
  * @Description: 窗口api
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:30:12
- * @LastEditTime: 2021-06-11 18:53:39
+ * @LastEditTime: 2021-06-15 10:07:24
  */
 import { winTodo, todo, on, postMsg } from "@/utils/sys"
 
@@ -14,6 +14,9 @@ export const close = () => winTodo('close')
 
 // 消息弹框
 export const showMessageBoxSync = (params: IshowMessageBoxArgs) => winTodo('showMessageBoxSync', params)
+
+// 选择文件夹
+export const showOpenDirBox = () => winTodo('showOpenDirBox', { multi: false })
 
 
 /**

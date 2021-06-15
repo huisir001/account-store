@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-11 23:46:32
+ * @LastEditTime: 2021-06-15 23:49:50
 -->
 <template>
     <div class="login">
@@ -33,7 +33,7 @@
                         :placeholder="`请${tipStr}验证问题`"></el-input>
                 </el-form-item>
                 <el-form-item prop="verify_answer">
-                    <el-input v-model="loginData.verify_answer" clearable
+                    <el-input type="password" v-model="loginData.verify_answer" clearable
                         :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
                 </el-form-item>
                 <el-form-item class="btn-go">

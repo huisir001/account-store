@@ -2,7 +2,7 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-11 18:32:07
+ * @LastEditTime: 2021-06-16 00:25:44
 -->
 <template>
     <div :class="{formbox:true,edit:isEdit}">
@@ -20,10 +20,12 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="邮箱" prop="email">
-                <el-input v-model="formdata.email" placeholder="请输入绑定邮箱" clearable></el-input>
+                <el-input v-model="formdata.email" placeholder="请输入绑定邮箱" clearable show-password>
+                </el-input>
             </el-form-item>
             <el-form-item label="手机" prop="phone">
-                <el-input v-model="formdata.phone" placeholder="请输入绑定手机号码" clearable></el-input>
+                <el-input v-model="formdata.phone" placeholder="请输入绑定手机号码" clearable show-password>
+                </el-input>
             </el-form-item>
             <el-form-item label="备注" prop="remark">
                 <el-input type="textarea" v-model="formdata.remark" placeholder="备注信息，如网址">

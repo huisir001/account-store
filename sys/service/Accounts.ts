@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-12 01:22:59
+ * @LastEditTime: 2021-06-16 00:26:05
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
@@ -31,6 +31,8 @@ interface IAccunts {
 }
 
 class Accounts implements IAccunts {
+    // 需要加密的字段
+    private needEncryptKeys: string[] = ['account', 'password', 'email', 'phone']
 
     /**
      * @description: 修改或新增账户数据
@@ -40,7 +42,7 @@ class Accounts implements IAccunts {
     async saveAccount(params: IAddAccountParams): Promise<any> {
         // 加密
         Object.keys(params).forEach((key) => {
-            if (key !== "id" && key !== "name") {
+            if (this.needEncryptKeys.includes(key)) {
                 params[key] = Encrypt.encrypt(params[key])
             }
         })
@@ -91,6 +93,17 @@ class Accounts implements IAccunts {
             operate(`查询【${data.name}】账户数据`)
             return Promise.resolve(Response.succ({ data }))
         }
+    }
+
+    /**
+     * @description: 解密字符串
+     * @param {string} val
+     * @return {*}
+     * @author: HuiSir
+     */
+    async decryptByVal(val: string): Promise<any> {
+        operate(`解密账户数据`)
+        return Promise.resolve(Response.succ({ data: Encrypt.decrypt(val) }))
     }
 
     /**

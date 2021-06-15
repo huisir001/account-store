@@ -2,7 +2,7 @@
  * @Description: 账号查看、编辑弹窗公共hook
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-11 18:14:44
- * @LastEditTime: 2021-06-14 18:00:26
+ * @LastEditTime: 2021-06-16 00:12:25
  */
 import { reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -15,7 +15,7 @@ export default () => {
     const isEdit = ref($route.name == 'Edit')
     const isDetail = $route.name == 'Detail'
     let close = null
-    let formdata = reactive({
+    const formdata = reactive({
         name: '',
         account: '',
         password: '',
@@ -41,7 +41,6 @@ export default () => {
                     delete res.data.create_time
                     delete res.data.update_time
                 }
-                console.log(res)
                 Object.assign(formdata, res.data)
             }
         })()

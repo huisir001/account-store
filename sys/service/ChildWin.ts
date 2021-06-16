@@ -2,7 +2,7 @@
  * @Description: 子窗口创建
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-11 11:25:57
- * @LastEditTime: 2021-06-16 15:32:12
+ * @LastEditTime: 2021-06-16 22:03:49
  */
 
 import { BrowserWindow, ipcMain } from 'electron'
@@ -22,6 +22,7 @@ export const openChildWindow = (options: IOpenChildWinArgs): Promise<any> => {
 
         const { wid, url, title = "加载中...", width = 400, height = 500, backgroundColor = '#ffffff', parent } = options
 
+        // tslint:disable-next-line:variable-name
         const _options: Electron.BrowserWindowConstructorOptions = {
             title,
             width,
@@ -65,6 +66,8 @@ export const openChildWindow = (options: IOpenChildWinArgs): Promise<any> => {
 
         //监听窗口关闭
         cWin.on('closed', () => {
+            // 修改缓存窗口
+            curWin.set(parent)
             // 向父窗口传递消息
             parent.webContents.send('msg_' + wid, { msg: 'closed' } as IWinMessage)
         })

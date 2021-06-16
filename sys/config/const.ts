@@ -13,7 +13,22 @@ export default {
     SKEY: "ABC..123", // 总密码加密私钥
 
     // api白名单（允许不带token）
-    API_WHITE_LIST: ["doLogin", "clearAllTable", "getLoginData", "saveLoginData", "openMainWindow", "openLoginWindow"],
+    API_WHITE_LIST: [
+        "doLogin",
+        "clearAllTable",
+        "getLoginData",
+        "saveLoginData",
+        "openMainWindow",
+        "openLoginWindow",
+        "minimize",
+        "maximize",
+        "close",
+        "showErrorBox",
+        "showMessageBoxSync",
+        "showOpenFileBox",
+        "showOpenDirBox",
+        "showSaveDialog",
+    ],
 
     DB_NAME: "data.db", // 数据库名称
     BD_POOL_LEN: 6, // 数据库连接池默认初始化容量

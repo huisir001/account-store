@@ -2,11 +2,12 @@
  * @Description: 暴露方法
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-01 17:44:18
- * @LastEditTime: 2021-06-11 14:23:08
+ * @LastEditTime: 2021-06-16 21:12:02
  */
 import accounts from "./Accounts"
 import login from "./Login"
 import options from "./Options"
+import winMethods from "./Win"
 import { getOperateLogs, delOperateLogs } from "./operationLog"
 import { openChildWindow } from "./ChildWin"
 
@@ -18,8 +19,10 @@ interface IMethods {
 const methods: IMethods = {
     getOperateLogs,
     delOperateLogs,
-    openChildWindow
+    openChildWindow,
 }
+
+Object.assign(methods, winMethods)
 
 const getProtoMethods = (instance: InstanceType<any>) => {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(instance))

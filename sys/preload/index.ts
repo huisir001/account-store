@@ -2,7 +2,7 @@
  * @Description: 预加载脚本
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:22:25
- * @LastEditTime: 2021-06-11 17:35:20
+ * @LastEditTime: 2021-06-16 22:20:35
  */
 
 /**
@@ -24,7 +24,6 @@
 
 import { contextBridge, ipcRenderer as ipc } from 'electron'
 import Response from "../tools/Response"
-import winMethods from './winMethods'
 
 /**
  * 关闭控制台安全警告
@@ -69,16 +68,16 @@ const oSYS: ISys = {
      */
     win(something: string, ...parames: any[]): Promise<Response> {
         return new Promise(async (resolve, reject) => {
-            if (winMethods[something]) {
-                try {
-                    const res = await winMethods[something](...parames)
+            ipc.send('todo', something, null, ...parames)
+
+            // 接收请求结果
+            ipc.on(something, (_, res) => {
+                if (res && res.ok && res.ok !== 1) {
+                    reject(res)
+                } else {
                     resolve(res)
-                } catch (error) {
-                    reject(error)
                 }
-            } else {
-                reject(Response.fail(`不存在“${something}”方法或此方法被禁用！`))
-            }
+            })
         })
     },
 

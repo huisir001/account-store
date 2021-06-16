@@ -2,10 +2,9 @@
  * @Description: 窗口相关api
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-05 22:06:05
- * @LastEditTime: 2021-06-11 10:38:05
+ * @LastEditTime: 2021-06-16 15:52:55
  */
 import { remote } from 'electron'
-
 
 interface IshowOpenFileBoxArgs {
     multi?: boolean // 是否可多选
@@ -15,7 +14,6 @@ interface IshowOpenFileBoxArgs {
 interface Iobj extends Object {
     [key: string]: any
 }
-
 
 const winMethods: Iobj = {
     /**
@@ -62,6 +60,9 @@ const winMethods: Iobj = {
         // showMessageBoxSync方法的第一个参数传当前的窗口对象
         // 可以作为当前窗口的附属模态框，那么模态框弹出时，不允许再操作主窗口
         // 若不传当前窗口对象，那么msgbox会作为新的窗口弹出，那么无法阻止用户操作主窗口
+
+        console.log(remote.getCurrentWindow())
+
         return remote.dialog.showMessageBoxSync(remote.getCurrentWindow(), {
             type,
             title,
@@ -78,7 +79,7 @@ const winMethods: Iobj = {
      * @return {Promise<any>}
      */
     showOpenFileBox({ multi = false, filters = ['*'] }: IshowOpenFileBoxArgs): Promise<any> {
-        return remote.dialog.showOpenDialog({
+        return remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
             properties: multi ? ['openFile', 'multiSelections'] : ['openFile'],
             filters: [
                 { name: '可选文件类型', extensions: filters }
@@ -94,7 +95,7 @@ const winMethods: Iobj = {
      * @return {Promise<any>}
      */
     showOpenDirBox({ multi = false }: IshowOpenFileBoxArgs): Promise<any> {
-        return remote.dialog.showOpenDialog({
+        return remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
             properties: multi ? ['openDirectory', 'multiSelections'] : ['openDirectory']
         })
     },
@@ -104,7 +105,7 @@ const winMethods: Iobj = {
      * 打开保存文件对话框
      */
     showSaveDialog(): Promise<any> {
-        return remote.dialog.showSaveDialog({
+        return remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
             properties: ['createDirectory']
         })
     }

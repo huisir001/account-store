@@ -2,12 +2,13 @@
  * @Description: 子窗口创建
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-11 11:25:57
- * @LastEditTime: 2021-06-11 16:45:39
+ * @LastEditTime: 2021-06-16 15:32:12
  */
 
 import { BrowserWindow, ipcMain } from 'electron'
 import Response from "../tools/Response"
 import path from 'path'
+import curWin from '../tools/curWin'
 const IsDev: boolean = process.env.NODE_ENV === "development" // 环境变量
 
 /**
@@ -44,6 +45,9 @@ export const openChildWindow = (options: IOpenChildWinArgs): Promise<any> => {
         }
 
         const cWin = new BrowserWindow(_options)
+
+        // 缓存窗口对象
+        curWin.set(cWin)
 
         // 开启调试.
         IsDev && cWin.webContents.openDevTools()

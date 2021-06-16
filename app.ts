@@ -2,7 +2,7 @@
  * @Description: 主进程(主窗口创建，不含子窗口)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-15 14:42:25
+ * @LastEditTime: 2021-06-16 15:24:06
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -12,6 +12,7 @@ import { Print } from './sys/tools/Logger' //日志
 import CONST from './sys/config/const'
 import request from 'request'
 import { obj2Query } from './sys/tools/utils'
+import curWin from './sys/tools/curWin'
 
 // 环境变量
 const IsDev: boolean = process.env.NODE_ENV === "development"
@@ -65,6 +66,9 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
             preload: path.join(__dirname, 'sys/preload/index.js')
         }
     })
+
+    // 缓存窗口对象
+    curWin.set(Win)
 
     if (IsDev) {
         // 获取端口号

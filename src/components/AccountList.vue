@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-11 23:16:50
+ * @LastEditTime: 2021-06-16 14:19:20
 -->
 <template>
     <div class="accountList">
@@ -96,11 +96,11 @@ export default defineComponent({
         }
 
         // 详情
-        const detail = async (aid: string, aName: string) => {
+        const detail = (aid: string, aName: string) => {
             // 打开子窗口
             // wid-窗口唯一标识
             const { origin, pathname } = location
-            await openChildWindow({
+            openChildWindow({
                 wid: 'editWindow',
                 url: `${origin + pathname}#/detail?aid=${aid}&token=${sessionStorage.getItem(
                     'token'
@@ -112,11 +112,11 @@ export default defineComponent({
         }
 
         // 编辑,aid-账户id
-        const edit = async (aid: string) => {
+        const edit = (aid: string) => {
             // 打开子窗口
             // wid-窗口唯一标识
             const { origin, pathname } = location
-            await openChildWindow(
+            openChildWindow(
                 {
                     wid: 'editWindow',
                     url: `${origin + pathname}#/edit?aid=${aid}&token=${sessionStorage.getItem(
@@ -131,6 +131,8 @@ export default defineComponent({
                     if (msg == 'saved') {
                         // 修改数据成功，刷新列表
                         getList(curPage.value, search.value)
+                        // 提示
+                        window.toast('修改成功')
                     }
                 }
             )

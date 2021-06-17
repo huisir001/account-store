@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-16 21:31:14
+ * @LastEditTime: 2021-06-18 00:38:18
 -->
 <template>
     <div class="login">
@@ -18,29 +18,44 @@
             <h2>账号仓库</h2>
         </div>
         <div class="form">
-            <el-divider class="login-divider">{{isReg?"请设置验证信息":'Sign In'}}</el-divider>
-            <el-form ref="formEl" :rules="rules" :model="loginData" size="medium">
-                <el-form-item prop="core_password">
-                    <el-input type="password" v-model="loginData.core_password" clearable
-                        :placeholder="`请${tipStr}总密码`"></el-input>
-                </el-form-item>
-                <el-form-item v-if="isReg" prop="resetPass">
-                    <el-input type="password" v-model="loginData.resetPass" clearable
-                        placeholder="请再次输入密码，确保两次输入一致"></el-input>
-                </el-form-item>
-                <el-form-item prop="verify_question">
-                    <el-input v-model="loginData.verify_question" clearable :disabled="!isReg"
-                        :placeholder="`请${tipStr}验证问题`"></el-input>
-                </el-form-item>
-                <el-form-item prop="verify_answer">
-                    <el-input v-model="loginData.verify_answer" clearable
-                        :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
-                </el-form-item>
-                <el-form-item class="btn-go">
-                    <el-button type="primary" round :disabled="disabledBtn" @click="onSubmit">
-                        立即{{isReg?'提交':'进入'}}</el-button>
-                </el-form-item>
-            </el-form>
+            <template v-if="step1">
+                <el-divider class="login-divider">设置数据加密私钥</el-divider>
+                <el-form size="medium">
+                    <el-form-item class="skey-form-item">
+                        <el-input v-model="skey" placeholder="请输入数据加密私钥"></el-input>
+                        <el-button type="text" class="create-skey-btn" @click="createSkey">生成
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item class="btn-go">
+                        <el-button type="primary" round @click="toNextStep">下一步</el-button>
+                    </el-form-item>
+                </el-form>
+            </template>
+            <template v-else>
+                <el-divider class="login-divider">{{isReg?"请设置验证信息":'Sign In'}}</el-divider>
+                <el-form ref="formEl" :rules="rules" :model="loginData" size="medium">
+                    <el-form-item prop="core_password">
+                        <el-input type="password" v-model="loginData.core_password" clearable
+                            :placeholder="`请${tipStr}总密码`"></el-input>
+                    </el-form-item>
+                    <el-form-item v-if="isReg" prop="resetPass">
+                        <el-input type="password" v-model="loginData.resetPass" clearable
+                            placeholder="请再次输入密码，确保两次输入一致"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="verify_question">
+                        <el-input v-model="loginData.verify_question" clearable :disabled="!isReg"
+                            :placeholder="`请${tipStr}验证问题`"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="verify_answer">
+                        <el-input v-model="loginData.verify_answer" clearable
+                            :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
+                    </el-form-item>
+                    <el-form-item class="btn-go">
+                        <el-button type="primary" round :disabled="disabledBtn" @click="onSubmit">
+                            立即{{isReg?'提交':'进入'}}</el-button>
+                    </el-form-item>
+                </el-form>
+            </template>
         </div>
     </div>
 </template>
@@ -65,6 +80,9 @@ export default defineComponent({
         document.title = '密码验证'
         // 使用store
         const store = useStore()
+        // 是否需要设置加密私钥（第一步）
+        const step1: Ref = ref(false)
+        const skey: Ref = ref('')
         // 是否为设置阶段
         const isReg: Ref = ref(false)
         // 可选状态
@@ -79,6 +97,11 @@ export default defineComponent({
             verify_question: '',
             verify_answer: '',
         })
+
+        // 生成skey
+        const createSkey = () => {
+            skey.value = parseInt((Math.random() * Date.now()).toString()).toString(16)
+        }
 
         // 查询是否已有登录数据
         ;(async () => {
@@ -191,6 +214,9 @@ export default defineComponent({
 
         // 暴露数据
         return {
+            step1,
+            skey,
+            createSkey,
             isReg,
             formEl,
             loginData,
@@ -244,6 +270,18 @@ export default defineComponent({
                 &:hover {
                     opacity: 0.6;
                 }
+            }
+        }
+        .skey-form-item {
+            .create-skey-btn {
+                position: absolute;
+                right: 15px;
+                top: 0;
+                color: #999;
+                display: none;
+            }
+            &:hover .create-skey-btn {
+                display: inline-block;
             }
         }
     }

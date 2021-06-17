@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-06-09 11:43:21
+ * @LastEditTime: 2021-06-17 22:18:28
  */
 
 export default {
@@ -11,6 +11,9 @@ export default {
     LOGIN_TIMEOUT: 60 * 1000 * 5,
 
     SKEY: "ABC..123", // 总密码加密私钥
+
+    regDir: "AccountStore", // 注册表路径
+    regSkeyName: "SKEY", // 加密私钥键名
 
     // api白名单（允许不带token）
     API_WHITE_LIST: [

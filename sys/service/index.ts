@@ -2,11 +2,12 @@
  * @Description: 暴露方法
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-01 17:44:18
- * @LastEditTime: 2021-06-16 21:12:02
+ * @LastEditTime: 2021-06-17 22:29:53
  */
 import accounts from "./Accounts"
 import login from "./Login"
 import options from "./Options"
+import skey from "./Skey"
 import winMethods from "./Win"
 import { getOperateLogs, delOperateLogs } from "./operationLog"
 import { openChildWindow } from "./ChildWin"
@@ -29,7 +30,7 @@ const getProtoMethods = (instance: InstanceType<any>) => {
         .filter((m) => m !== "constructor")
 }
 
-const classMethods = [accounts, login, options]
+const classMethods = [accounts, login, options, skey]
 
 classMethods.forEach((instance) => {
     getProtoMethods(instance).forEach((key) => {

@@ -2,7 +2,7 @@
  * @Description: 注册表操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-17 15:59:18
- * @LastEditTime: 2021-06-17 17:57:34
+ * @LastEditTime: 2021-06-17 23:58:30
  */
 import process from 'child_process'
 
@@ -15,42 +15,6 @@ interface IRegArgs {
 }
 
 export default class RegAgent {
-    type: string
-    rootDir: string
-    childDir: string
-
-    constructor(childDir: string)
-    constructor(args: IRegArgs)
-    constructor(arg: IRegArgs | string) {
-        if (typeof arg == 'string') {
-            this.type = 'REG_SZ'
-            this.rootDir = 'HKCU'
-            this.childDir = arg
-        } else {
-            this.type = arg.type || 'REG_SZ'
-            this.rootDir = arg.rootDir || 'HKCU'
-            this.childDir = arg.childDir
-        }
-    }
-
-    /**
-     * @description: 子进程执行回调
-     * @param {*} error 执行出错
-     * @param {*} stdout 标准输出
-     * @param {*} stderr 标准错误
-     * @return {*}
-     */
-    static doReg(regQuery: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            process.exec(regQuery, (error: any, stdout: any, stderr: any) => {
-                if (error || stderr) {
-                    reject(error || stderr)
-                } else {
-                    resolve(stdout)
-                }
-            })
-        })
-    }
 
     /**
      * @description: 全路径
@@ -63,15 +27,54 @@ export default class RegAgent {
     }
 
     /**
+     * @description: 子进程执行回调
+     * @param {*} error 执行出错
+     * @param {*} stdout 标准输出
+     * @param {*} stderr 标准错误
+     * @return {*}
+     */
+    static doReg(regQuery: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            process.exec(regQuery, (error: any, stdout: string, stderr: any) => {
+                if (error || stderr) {
+                    reject(error || stderr)
+                } else {
+                    const matchRes = stdout.match(/@@(.*?)@@/)
+                    resolve(matchRes ? matchRes[1] : stdout)
+                }
+            })
+        })
+    }
+    type: string
+    rootDir: string
+    childDir: string
+
+    constructor(childDir: string)
+    // tslint:disable-next-line:unified-signatures
+    constructor(args: IRegArgs)
+    constructor(arg: IRegArgs | string) {
+        if (typeof arg === 'string') {
+            this.type = 'REG_SZ'
+            this.rootDir = 'HKCU'
+            this.childDir = arg
+        } else {
+            this.type = arg.type || 'REG_SZ'
+            this.rootDir = arg.rootDir || 'HKCU'
+            this.childDir = arg.childDir
+        }
+    }
+
+    /**
      * @description: 增
      * @param {string} key
      * @param {string} val
      * @param {boolean} isReset
      * @return {*}
      */
-    add(key: string, val: string | number, isReset: boolean = false): any {
+    add(key: string, val: string, isReset: boolean = false): any {
         const { type, regdir } = this
-        val = typeof val == "string" ? `"${val}"` : val
+        // ps:@@为占位符
+        val = `"@@${val}@@"`
         const regQuery = `REG ADD ${regdir} /v ${key} /t ${type} /d ${val}${isReset ? ' /f' : ''}`
 
         // 执行
@@ -96,7 +99,7 @@ export default class RegAgent {
      * @param {string} val
      * @return {*}
      */
-    update(key: string, val: string | number): any {
+    update(key: string, val: string): any {
         this.add(key, val, true)
     }
 

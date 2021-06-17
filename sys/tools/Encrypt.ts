@@ -2,15 +2,17 @@
  * @Description: 对称加密
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 18:09:58
- * @LastEditTime: 2021-06-16 00:17:08
+ * @LastEditTime: 2021-06-18 00:28:00
  */
 import CONST from "../config/const"
-import { Print } from './Logger' //日志
-import os from "os"
+// import Skey from "../service/Skey"
 
-const netInfo: NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces()
-const MAC = Object.keys(netInfo).map((key) => netInfo[key]![0]).find((item) => item.mac !== "00:00:00:00:00:00")!.mac
-Print.info("本机MAC地址为" + MAC)
+// Skey.getSkey().then((res2: any) => {
+//     console.log("res2", res2)
+// }).catch((err2: any) => {
+//     console.log('err2', err2)
+// })
+
 
 class Encrypt {
     private skey: string
@@ -27,7 +29,7 @@ class Encrypt {
      * @author: HuiSir
      */
     encrypt(str: string): string {
-        const strArr: string[] = Buffer.from(str + this.skey + MAC)
+        const strArr: string[] = Buffer.from(str + this.skey)
             .toString('base64')
             .split('') //Base64
         strArr.reverse() //逆序

@@ -2,7 +2,7 @@
  * @Description: Token生成和解码
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 12:46:46
- * @LastEditTime: 2021-06-06 14:51:13
+ * @LastEditTime: 2021-06-17 15:57:48
  */
 
 import Encrypt from "./Encrypt"
@@ -15,7 +15,7 @@ export const creatToken = (userid: string): string => {
     return Encrypt.encrypt(`${userid},${curTime36}`)
 }
 
-//解析token，搭配redis
+//解析token
 export const decodeToken = (token: string): string | null => {
     try {
         const [userid, curTime36] = Encrypt.decrypt(token).split(',')

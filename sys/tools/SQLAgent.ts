@@ -2,14 +2,14 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-11 23:44:25
+ * @LastEditTime: 2021-06-17 16:31:06
  */
 
 /**
  * SQLite语句中 带特殊符号的字符串要加单引号
  */
 
-
+import SQLiteDB from "./SQLiteDB"
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
 import { IPool, dataPool, cachePool } from "./DBPool"
@@ -145,7 +145,7 @@ export default class SQLAgent {
 
         return ' ORDER BY ' + orderArr2.join(',')
     }
-    getDBConn: () => any
+    getDBConn: () => SQLiteDB
 
     private pool: IPool
     private tableName: string
@@ -179,7 +179,9 @@ export default class SQLAgent {
      */
     run(sqlMod: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.getDBConn().run(sqlMod, function (err: any) {
+            const DB = this.getDBConn()
+            DB.run(sqlMod, function (err: any) {
+                DB.release() // 释放连接
                 if (err) {
                     reject(err)
                 } else {
@@ -197,7 +199,9 @@ export default class SQLAgent {
      */
     exec(sqlMod: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.getDBConn().run(sqlMod, function (err: any) {
+            const DB = this.getDBConn()
+            DB.run(sqlMod, function (err: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {
@@ -216,8 +220,10 @@ export default class SQLAgent {
 
         // 判断表是否存在
         const tableExistSql = `SELECT count(*) as count FROM sqlite_master WHERE type = 'table' AND name = '${tableName}'`
-        getDBConn().get(tableExistSql, function (err: any, { count }: any) {
+        const DB = getDBConn()
+        DB.get(tableExistSql, function (err: any, { count }: any) {
             if (err) {
+                DB.release()
                 Log.error(`数据库查询出错：` + err.toString())
             } else {
                 //表不存在创建表
@@ -235,13 +241,16 @@ export default class SQLAgent {
 
                     const querystr = `CREATE TABLE IF NOT EXISTS ${tableName} (${dbQueryStemp});`
 
-                    getDBConn().run(querystr, function (err2: any) {
+                    DB.run(querystr, function (err2: any) {
+                        DB.release()
                         if (err2) {
                             Log.error(`创建数据表${tableName}失败：` + err2.toString())
                         } else {
                             Log.info(`数据表 ${tableName} 创建成功`)
                         }
                     })
+                } else {
+                    DB.release()
                 }
             }
         })
@@ -261,7 +270,9 @@ export default class SQLAgent {
         const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} limit 1;`
-            getDBConn().get(sqlMod, function (err: any, row: any) {
+            const DB = getDBConn()
+            DB.get(sqlMod, function (err: any, row: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {
@@ -290,7 +301,9 @@ export default class SQLAgent {
         const pageLimitStr = limit ? `limit ${(page - 1) * limit},${limit}` : ""
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr} ${pageLimitStr};`
-            getDBConn().all(sqlMod, function (err: any, rows: any) {
+            const DB = getDBConn()
+            DB.all(sqlMod, function (err: any, rows: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {
@@ -318,17 +331,18 @@ export default class SQLAgent {
             const slotVals = slotKeys.map((key) => slot[key])
             const sqlMod1 = `INSERT INTO ${tableName} (${slotKeys.join(',')}) VALUES ('${slotVals.join('\',\'')}');`
             const sqlMod2 = `SELECT ${resFields} FROM ${tableName} WHERE id = '${slot.id}';`
-            const db = getDBConn()
+            const DB = getDBConn()
 
             // 串行
-            db.serialize(function () {
-                db.run(sqlMod1, function (err: any) {
+            DB.serialize(function () {
+                DB.run(sqlMod1, function (err: any) {
                     if (err) {
                         reject(err)
                     }
                 })
 
-                db.get(sqlMod2, function (err: any, row: any) {
+                DB.get(sqlMod2, function (err: any, row: any) {
+                    DB.release()
                     if (err) {
                         reject(err)
                     } else {
@@ -374,17 +388,18 @@ export default class SQLAgent {
             const sqlMod1 = `INSERT INTO ${tableName} (${insertKeys.join(',')}) VALUES ('${insertValuesStr}');`
             const sqlMod2 = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''};`
 
-            const db = getDBConn()
+            const DB = getDBConn()
 
             // 串行
-            db.serialize(function () {
-                db.run(sqlMod1, function (err: any) {
+            DB.serialize(function () {
+                DB.run(sqlMod1, function (err: any) {
                     if (err) {
                         reject(err)
                     }
                 })
 
-                db.all(sqlMod2, function (err: any, rows: any) {
+                DB.all(sqlMod2, function (err: any, rows: any) {
+                    DB.release()
                     if (err) {
                         reject(err)
                     } else {
@@ -408,7 +423,9 @@ export default class SQLAgent {
         const updateStr = SQLAgent.obj2SetStr(updateSlot)
         return new Promise((resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ${updateStr} WHERE ${whereStr}`
-            getDBConn().run(sqlMod, function (err: any) {
+            const DB = getDBConn()
+            DB.run(sqlMod, function (err: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {
@@ -437,15 +454,16 @@ export default class SQLAgent {
             //返回被删数据
             const sqlMod = `SELECT ${resFields} FROM ${tableName} WHERE ${whereStr};`
 
-            const db = getDBConn()
+            const DB = getDBConn()
 
             if (returnData) {
                 // 串行
-                db.get(sqlMod, function (err: any, row: any) {
+                DB.get(sqlMod, function (err: any, row: any) {
                     if (err) {
                         reject(err)
                     } else {
-                        db.run(sqlDelMod, function (err2: any) {
+                        DB.run(sqlDelMod, function (err2: any) {
+                            DB.release()
                             if (err2) {
                                 reject(err)
                             } else {
@@ -455,7 +473,8 @@ export default class SQLAgent {
                     }
                 })
             } else {
-                db.run(sqlDelMod, function (err: any) {
+                DB.run(sqlDelMod, function (err: any) {
+                    DB.release()
                     if (err) {
                         reject(err)
                     } else {
@@ -476,7 +495,9 @@ export default class SQLAgent {
         return new Promise((resolve, reject) => {
             values = values.split(",").join("','")
             const sqlMod = `DELETE FROM ${tableName} WHERE ${key} IN ('${values}')`
-            getDBConn().run(sqlMod, function (err: any) {
+            const DB = getDBConn()
+            DB.run(sqlMod, function (err: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {
@@ -497,7 +518,9 @@ export default class SQLAgent {
         const whereStr = SQLAgent.obj2whereStr(slot)
         return new Promise((resolve, reject) => {
             const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
-            getDBConn().get(sqlMod, function (err: any, row: any) {
+            const DB = getDBConn()
+            DB.get(sqlMod, function (err: any, row: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {
@@ -516,7 +539,9 @@ export default class SQLAgent {
         const { tableName, getDBConn } = this
         return new Promise((resolve, reject) => {
             const sqlMod = `DELETE FROM ${tableName};`
-            getDBConn().run(sqlMod, function (err: any) {
+            const DB = getDBConn()
+            DB.run(sqlMod, function (err: any) {
+                DB.release()
                 if (err) {
                     reject(err)
                 } else {

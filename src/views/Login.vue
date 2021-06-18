@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-18 16:22:58
+ * @LastEditTime: 2021-06-18 22:23:04
 -->
 <template>
     <div class="login">
@@ -51,7 +51,10 @@
                             :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
                     </el-form-item>
                     <el-form-item class="btn-go">
-                        <el-button type="primary" round :disabled="disabledBtn" @click="onSubmit">
+                        <el-button v-if="isReg && hasStep1" type="primary" round
+                            @click="step1 = true">上一步
+                        </el-button>
+                        <el-button type="primary" round @click="onSubmit">
                             立即{{isReg?'提交':'进入'}}</el-button>
                     </el-form-item>
                 </el-form>
@@ -66,7 +69,7 @@ import CloseWinBtn from '@/components/CloseWinBtn.vue'
 import MinWinBtn from '@/components/MinWinBtn.vue'
 import { ElForm } from 'element-plus'
 import { useStore } from 'vuex'
-import { getLoginData, saveLoginData, doLogin, openMainWindow } from '@/api/login'
+import { getLoginData, saveLoginData, doLogin, openMainWindow, haskey, addSkey } from '@/api/login'
 
 export default defineComponent({
     name: 'Login',
@@ -82,11 +85,12 @@ export default defineComponent({
         const store = useStore()
         // 是否需要设置加密私钥（第一步）
         const step1: Ref = ref(false)
+        // 是否存在密钥
+        const hasStep1: Ref = ref(false)
+        // 私钥
         const skey: Ref = ref('')
         // 是否为设置阶段
         const isReg: Ref = ref(false)
-        // 可选状态
-        let disabledBtn: Ref = ref(false)
         // form表单元素
         const formEl: Ref = ref(null)
         // 登录数据
@@ -98,9 +102,30 @@ export default defineComponent({
             verify_answer: '',
         })
 
+        // 查询是否已有密钥
+        ;(async () => {
+            const res = await haskey()
+            if (res && !res.data) {
+                step1.value = true
+                hasStep1.value = true
+            }
+        })()
+
         // 生成skey
         const createSkey = () => {
             skey.value = parseInt((Math.random() * Date.now()).toString()).toString(36)
+        }
+
+        // 下一步
+        const toNextStep = async () => {
+            if (skey.value.trim() == '') {
+                window.sys.win('showErrorBox', {
+                    title: '错误信息',
+                    msg: '密钥不能为空',
+                })
+                return
+            }
+            step1.value = false
         }
 
         // 查询是否已有登录数据
@@ -120,7 +145,7 @@ export default defineComponent({
 
             nextTick(() => {
                 // 清除数据更新导致自动触发的表单验证
-                formEl.value.clearValidate()
+                formEl.value && formEl.value.clearValidate()
                 // 显示界面，展示滑入动画
                 store.dispatch('showSlideInAnimate')
             })
@@ -174,13 +199,20 @@ export default defineComponent({
 
         // 登陆、提交按钮
         const onSubmit = () => {
-            disabledBtn.value = true
             ;(formEl.value as typeof ElForm).validate(async (valid: any) => {
                 if (valid) {
                     // 保存登陆数据
                     let { id, core_password, verify_question, verify_answer } = loginData
 
                     if (isReg.value) {
+                        // 保存密钥
+                        if (skey.value.trim() !== '') {
+                            const res = await addSkey(skey.value)
+                            if (!res || !res.ok) {
+                                return
+                            }
+                        }
+
                         const { ok, data } = await saveLoginData({
                             core_password,
                             verify_question,
@@ -203,10 +235,7 @@ export default defineComponent({
                             openMainWindow()
                         }
                     }
-
-                    disabledBtn.value = false
                 } else {
-                    disabledBtn.value = false
                     return false
                 }
             })
@@ -215,14 +244,15 @@ export default defineComponent({
         // 暴露数据
         return {
             step1,
+            hasStep1,
             skey,
+            toNextStep,
             createSkey,
             isReg,
             formEl,
             loginData,
             tipStr,
             rules,
-            disabledBtn,
             onSubmit,
         }
     },

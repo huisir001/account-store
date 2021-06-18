@@ -2,7 +2,7 @@
  * @Description: 注册表操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-17 15:59:18
- * @LastEditTime: 2021-06-17 23:58:30
+ * @LastEditTime: 2021-06-18 21:23:51
  */
 import process from 'child_process'
 
@@ -33,18 +33,12 @@ export default class RegAgent {
      * @param {*} stderr 标准错误
      * @return {*}
      */
-    static doReg(regQuery: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            process.exec(regQuery, (error: any, stdout: string, stderr: any) => {
-                if (error || stderr) {
-                    reject(error || stderr)
-                } else {
-                    const matchRes = stdout.match(/@@(.*?)@@/)
-                    resolve(matchRes ? matchRes[1] : stdout)
-                }
-            })
-        })
+    static doReg(regQuery: string): string {
+        const stdout = process.execSync(regQuery).toString('utf-8')
+        const matchRes = stdout.match(/@@(.*?)@@/)
+        return matchRes ? matchRes[1] : stdout
     }
+
     type: string
     rootDir: string
     childDir: string

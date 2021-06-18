@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-18 22:23:04
+ * @LastEditTime: 2021-06-18 23:46:43
 -->
 <template>
     <div class="login">
@@ -25,6 +25,11 @@
                         <el-input v-model="skey" placeholder="请输入数据加密私钥"></el-input>
                         <el-button type="text" class="create-skey-btn" @click="createSkey">生成
                         </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <div class="tips">
+                            一台电脑只能设置一次私钥<br>请备份自己的私钥<br>在数据恢复时可能用得到
+                        </div>
                     </el-form-item>
                     <el-form-item class="btn-go">
                         <el-button type="primary" round @click="toNextStep">下一步</el-button>
@@ -283,6 +288,12 @@ export default defineComponent({
         &:deep(.el-input),
         &:deep(.el-button) {
             -webkit-app-region: no-drag;
+        }
+        .tips {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 2;
+            text-align: center;
         }
         .login-divider {
             margin-bottom: 30px;

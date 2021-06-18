@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-18 00:38:18
+ * @LastEditTime: 2021-06-18 16:22:58
 -->
 <template>
     <div class="login">
@@ -100,7 +100,7 @@ export default defineComponent({
 
         // 生成skey
         const createSkey = () => {
-            skey.value = parseInt((Math.random() * Date.now()).toString()).toString(16)
+            skey.value = parseInt((Math.random() * Date.now()).toString()).toString(36)
         }
 
         // 查询是否已有登录数据

@@ -2,13 +2,14 @@
  * @Description: 子窗口创建
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-11 11:25:57
- * @LastEditTime: 2021-06-16 22:03:49
+ * @LastEditTime: 2021-06-20 00:22:01
  */
 
 import { BrowserWindow, ipcMain } from 'electron'
 import Response from "../tools/Response"
 import path from 'path'
 import curWin from '../tools/curWin'
+import { Log } from '../tools/Logger'
 const IsDev: boolean = process.env.NODE_ENV === "development" // 环境变量
 
 /**
@@ -69,7 +70,10 @@ export const openChildWindow = (options: IOpenChildWinArgs): Promise<any> => {
             // 修改缓存窗口
             curWin.set(parent)
             // 向父窗口传递消息
-            parent.webContents.send('msg_' + wid, { msg: 'closed' } as IWinMessage)
+            try {
+                parent.webContents.send('msg_' + wid, { msg: 'closed' } as IWinMessage)
+                // tslint:disable-next-line:no-empty
+            } catch (e) { }
         })
 
         // 监听窗口消息

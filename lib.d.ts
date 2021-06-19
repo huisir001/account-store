@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-06-19 17:02:03
+ * @LastEditTime: 2021-06-19 17:39:23
  */
 
 /**
@@ -144,5 +144,6 @@ declare interface IGetOperateLogsParams {
 interface IOptionsParams {
     id: string
     backup_path?: string
+    backup_file_num?: number
     auto_backup?: number
 }

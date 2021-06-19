@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-06-19 17:19:16
+ * @LastEditTime: 2021-06-19 17:44:50
 -->
 <template>
     <div class="option">
@@ -14,6 +14,11 @@
                 <el-button @click="resetBackupPath">重设路径</el-button>
                 <el-button @click="doBackup">立即备份</el-button>
                 <el-button @click="dataRecover">数据恢复</el-button>
+            </el-form-item>
+            <el-form-item label="备份保留">
+                <el-input-number v-model="backup_file_num" :step="1" :min="1"
+                    controls-position="right" @change="backupNumChange"></el-input-number>
+                <span class="line-intro">只保留最近的{{backup_file_num}}个备份文件</span>
             </el-form-item>
             <el-form-item label="自动备份">
                 <el-switch v-model="auto_backup" @change="setAutoBackup"></el-switch>
@@ -51,6 +56,7 @@ export default defineComponent({
     name: '',
     setup() {
         const backup_path = ref('')
+        const backup_file_num = ref(1)
         const auto_backup = ref(false)
         const optionId = ref('')
 
@@ -59,6 +65,7 @@ export default defineComponent({
             const res = await getOptionsData()
             if (res && res.ok) {
                 backup_path.value = res.data.backup_path
+                backup_file_num.value = res.data.backup_file_num
                 auto_backup.value = !!res.data.auto_backup
                 optionId.value = res.data.id
             }
@@ -115,6 +122,18 @@ export default defineComponent({
             }
         }
 
+        // 设置备份保留数量
+        const backupNumChange = async (n: number) => {
+            // 保存数量到数据库
+            const saveRes = await saveOptionsData({
+                backup_file_num: n,
+                id: optionId.value,
+            })
+            if (saveRes && saveRes.ok) {
+                window.toast('设置成功')
+            }
+        }
+
         // 自动备份开关
         const setAutoBackup = async (e: any) => {
             // 保存到数据库
@@ -129,6 +148,8 @@ export default defineComponent({
 
         return {
             backup_path,
+            backup_file_num,
+            backupNumChange,
             auto_backup,
             dataRecover,
             resetBackupPath,

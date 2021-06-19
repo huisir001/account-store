@@ -2,12 +2,12 @@
  * @Description: 重设总密码
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-19 18:25:22
- * @LastEditTime: 2021-06-19 21:53:02
+ * @LastEditTime: 2021-06-19 23:15:40
 -->
 <template>
     <div class="reset">
         <template v-if="step1">
-            <el-form size="small">
+            <el-form size="mini">
                 <h2 class="label">请输入 的账号密码</h2>
                 <el-form-item class="skey-form-item">
                     <el-input v-model="skey" placeholder="请输入账号"></el-input>
@@ -28,7 +28,7 @@
             </el-form>
         </template>
         <template v-else>
-            <el-form ref="formEl" :rules="rules" :model="loginData" size="small">
+            <el-form ref="formEl" :rules="rules" :model="loginData" size="mini">
                 <el-form-item v-if="from=='home'" prop="core_password">
                     <el-input type="password" v-model="loginData.core_password" clearable
                         :placeholder="`请输入旧密码`"></el-input>
@@ -98,7 +98,7 @@ export default defineComponent({
         margin: 0 0 9px;
         font-weight: 500;
     }
-    .el-form-item--small.el-form-item {
+    .el-form-item {
         margin-bottom: 10px;
     }
     .btn-go {

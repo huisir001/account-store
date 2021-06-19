@@ -2,7 +2,7 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-16 00:25:44
+ * @LastEditTime: 2021-06-19 23:14:32
 -->
 <template>
     <div :class="{formbox:true,edit:isEdit}">
@@ -192,6 +192,7 @@ export default defineComponent({
         &:deep(.el-input__inner),
         &:deep(.el-textarea__inner) {
             border: 1px solid #bdbdbd;
+            border-radius: 0 !important;
         }
     }
     &:deep(.el-form-item__label) {

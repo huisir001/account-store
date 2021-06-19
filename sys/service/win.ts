@@ -2,14 +2,17 @@
  * @Description: 窗口操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-16 15:50:07
- * @LastEditTime: 2021-06-16 21:50:09
+ * @LastEditTime: 2021-06-19 16:44:26
  */
-import { dialog } from 'electron'
+import path from 'path'
+import { dialog, shell } from 'electron'
 import curWin from '../tools/curWin'
 
 interface IshowOpenFileBoxArgs {
+    title?: string // 对话框标题
     multi?: boolean // 是否可多选
     filters?: string[] // 可选文件类型后缀
+    defaultPath?: string //默认打开的文件夹路径
 }
 
 interface Iobj extends Object {
@@ -77,9 +80,15 @@ const winMethods: Iobj = {
      * @param {IshowOpenFileBoxArgs}
      * @return {Promise<any>}
      */
-    showOpenFileBox({ multi = false, filters = ['*'] }: IshowOpenFileBoxArgs): Promise<any> {
+    showOpenFileBox({
+        title = "选择文件",
+        multi = false,
+        filters = ['*'],
+        defaultPath = "" }: IshowOpenFileBoxArgs): Promise<any> {
         return dialog.showOpenDialog(curWin.get(), {
+            title,
             properties: multi ? ['openFile', 'multiSelections'] : ['openFile'],
+            defaultPath,
             filters: [
                 { name: '可选文件类型', extensions: filters }
             ]
@@ -107,6 +116,23 @@ const winMethods: Iobj = {
         return dialog.showSaveDialog(curWin.get(), {
             properties: ['createDirectory']
         })
+    },
+
+
+    /**
+     * 使用浏览器打开网页
+     */
+    openExternal(url: string): void {
+        shell.openExternal(url)
+    },
+
+
+    /**
+     * 打开文件
+     */
+    openFile(file: string): void {
+        const basePath = path.resolve(__dirname, "../../")
+        shell.openPath(path.join(basePath, file))
     }
 }
 

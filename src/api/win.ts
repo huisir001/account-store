@@ -2,7 +2,7 @@
  * @Description: 窗口api
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:30:12
- * @LastEditTime: 2021-06-18 21:33:23
+ * @LastEditTime: 2021-06-19 17:00:13
  */
 import { winTodo, todo, on, postMsg } from "@/utils/sys"
 
@@ -17,6 +17,15 @@ export const showMessageBoxSync = (params: IshowMessageBoxArgs) => winTodo('show
 
 // 选择文件夹
 export const showOpenDirBox = () => winTodo('showOpenDirBox', { multi: false })
+
+/**
+ * @description: 选择文件对话框
+ * @param {string} filters 选择文件的后缀限制
+ * @return {*}
+ * @author: HuiSir
+ */
+export const showOpenFileBox = (title: string, filters: string[], defaultPath = ""): any =>
+    winTodo('showOpenFileBox', { title, filters, defaultPath })
 
 
 /**
@@ -39,3 +48,13 @@ export const openChildWindow = (() => {
  * 子窗口发消息
  */
 export const postChildMsg = (content: IWinMessage) => postMsg(content)
+
+/**
+ * 外部打开网页
+ */
+export const openExternal = (url: string) => winTodo('openExternal', url)
+
+/**
+ * 打开文件
+ */
+export const openFile = (path: string) => winTodo('openFile', path)

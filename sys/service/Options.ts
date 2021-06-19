@@ -2,7 +2,7 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-06-19 14:24:07
+ * @LastEditTime: 2021-06-19 17:07:28
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
@@ -55,7 +55,7 @@ class Options {
             // 删除超量文件
             if (backupfiles.length >= res.data.backup_file_num) {
                 // 找到最旧的文件
-                const earliestFile = backupfiles.sort((a, b) => parseInt(a) - parseInt(b))[0]
+                const earliestFile = backupfiles.sort((a, b) => parseInt(a, 10) - parseInt(b, 10))[0]
                 await unlink(path.join(res.data.backup_path, earliestFile))
                 Log.trace("删除超量备份文件：" + earliestFile)
             }
@@ -72,6 +72,20 @@ class Options {
         await copyFile(DB_NAME, copytopath)
         return Promise.resolve(Response.succ())
     }
+
+    /**
+     * @description: 数据恢复
+     * @param {string} filePath
+     * @return {*}
+     * @author: HuiSir
+     */
+    async doRecover(filePath: string): Promise<any> {
+        operate("执行数据恢复")
+        // 拷贝
+        await copyFile(filePath, DB_NAME)
+        return Promise.resolve(Response.succ())
+    }
+
 }
 
 export default new Options()

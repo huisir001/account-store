@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-06-19 17:44:50
+ * @LastEditTime: 2021-06-19 18:32:16
 -->
 <template>
     <div class="option">
@@ -23,6 +23,10 @@
             <el-form-item label="自动备份">
                 <el-switch v-model="auto_backup" @change="setAutoBackup"></el-switch>
                 <span class="line-intro">开启后每次退出时将会备份数据库</span>
+            </el-form-item>
+            <el-form-item label="密码重设">
+                <el-button @click="passReset">立即重设</el-button>
+                <span class="line-intro">重设总密码及验证问题和答案</span>
             </el-form-item>
             <el-form-item label="进程日志">
                 <el-button @click="openFile('./logs/output.log')" type="text" style="color:green">
@@ -108,7 +112,11 @@ export default defineComponent({
                 const confirmRes = await showMessageBoxSync({
                     title: '警告',
                     type: 'warning',
-                    msg: '1. 恢复后当前数据将会被覆盖！\n2. 数据包不合法将导致程序故障！\n请谨慎操作，确保已选择的备份文件安全有效！',
+                    msg:
+                        '1. 数据恢复后当前数据将会被覆盖！\n' +
+                        '2. 数据包不合法将导致程序故障！\n' +
+                        '3. 若在之前有重设总密码，则在恢复数据后密码会还原！\n' +
+                        '4. 请谨慎操作，确保已选择的备份文件安全有效！',
                 })
 
                 if (confirmRes === 0) {
@@ -146,6 +154,16 @@ export default defineComponent({
             }
         }
 
+        // 密码重设
+        const passReset = async () => {
+            const confirmRes = await showMessageBoxSync({
+                title: '提示',
+                msg: '确认要重设密码？',
+            })
+            if (confirmRes === 0) {
+            }
+        }
+
         return {
             backup_path,
             backup_file_num,
@@ -157,6 +175,7 @@ export default defineComponent({
             setAutoBackup,
             openExternal,
             openFile,
+            passReset,
         }
     },
 })

@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-18 23:46:43
+ * @LastEditTime: 2021-06-19 20:55:26
 -->
 <template>
     <div class="login">
@@ -56,11 +56,14 @@
                             :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
                     </el-form-item>
                     <el-form-item class="btn-go">
-                        <el-button v-if="isReg && hasStep1" type="primary" round
-                            @click="step1 = true">上一步
+                        <el-button type="primary" round @click="onSubmit">立即{{isReg?'提交':'进入'}}
                         </el-button>
-                        <el-button type="primary" round @click="onSubmit">
-                            立即{{isReg?'提交':'进入'}}</el-button>
+                    </el-form-item>
+                    <el-form-item v-if="!isReg" class="sub-btn">
+                        <el-button type="text" @click="passReset">忘记密码</el-button>
+                    </el-form-item>
+                    <el-form-item v-if="isReg && hasStep1" class="sub-btn">
+                        <el-button type="text" @click="step1 = true">上一步</el-button>
                     </el-form-item>
                 </el-form>
             </template>
@@ -68,13 +71,14 @@
     </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, Ref, nextTick } from 'vue'
+import { computed, defineComponent, reactive, ref, Ref, nextTick, watch } from 'vue'
 import WaveWrapper from '@/components/WaveWrapper.vue'
 import CloseWinBtn from '@/components/CloseWinBtn.vue'
 import MinWinBtn from '@/components/MinWinBtn.vue'
 import { ElForm } from 'element-plus'
 import { useStore } from 'vuex'
 import { getLoginData, saveLoginData, doLogin, openMainWindow, haskey, addSkey } from '@/api/login'
+import { openChildWindow, showMessageBoxSync } from '@/api/win'
 
 export default defineComponent({
     name: 'Login',
@@ -246,6 +250,31 @@ export default defineComponent({
             })
         }
 
+        // 密码重设
+        const passReset = async () => {
+            const confirmRes = await showMessageBoxSync({
+                title: '提示',
+                msg: '确认要重设密码？',
+            })
+            if (confirmRes === 0) {
+                const { origin, pathname } = location
+                openChildWindow({
+                    wid: 'passReset',
+                    url: `${origin + pathname}#/reset?from=login`,
+                    width: 660,
+                    height: 350,
+                    title: '重设密码',
+                })
+
+                // // 切换为注册模式
+                // isReg.value = true
+                // nextTick(() => {
+                //     // 清除数据更新导致自动触发的表单验证
+                //     formEl.value.clearValidate()
+                // })
+            }
+        }
+
         // 暴露数据
         return {
             step1,
@@ -259,6 +288,7 @@ export default defineComponent({
             tipStr,
             rules,
             onSubmit,
+            passReset,
         }
     },
 })
@@ -306,10 +336,22 @@ export default defineComponent({
             margin-bottom: 0;
             text-align: center;
             .el-button {
-                padding: 12px 50px;
+                padding: 12px 70px;
                 transition: 0.5s;
                 &:hover {
                     opacity: 0.6;
+                }
+            }
+        }
+        .sub-btn {
+            text-align: center;
+            margin-bottom: 0;
+            height: 26px;
+            .el-button--text {
+                color: #999;
+                font-size: 12px;
+                &:hover {
+                    color: #854cff;
                 }
             }
         }

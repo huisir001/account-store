@@ -2,10 +2,11 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-16 21:25:49
+ * @LastEditTime: 2021-06-19 21:09:47
  */
 import { BrowserWindow } from 'electron'
 import methods from "../service"
+import curWin from "../tools/curWin"
 import Response from "../tools/Response"
 import Permission from "../tools/Permission"
 import { decodeToken } from "../tools/Token"
@@ -14,9 +15,6 @@ import CONST from "../config/const"
 
 export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boolean, query?: object) => any) => {
 
-    // 缓存当前主窗口
-    let mainWindow: BrowserWindow
-
     // 接收渲染进程事件（操作系统模块）,将模块返回
     ipcMain.on('todo', async (event: Electron.IpcMainEvent, something: string, token?: string, ...params: any[]) => {
         let res: object
@@ -24,20 +22,21 @@ export default async (ipcMain: Electron.IpcMain, createWindow: (isLoginWin?: boo
         // 登录成功启动主窗口
         if (something === "openMainWindow") {
             // 启动主窗口，将token以query方式传回
-            mainWindow = createWindow(false, { token })
+            createWindow(false, { token })
             return
         }
 
         // 重新登录
         if (something === "openLoginWindow") {
-            mainWindow = createWindow(true)
+            createWindow(true)
             return
         }
 
         // 子窗口创建
         if (something === "openChildWindow") {
-            if (mainWindow && params && params[0] && params[0].url) {
-                params[0].parent = mainWindow
+            const parentWin = curWin.get()
+            if (parentWin && params && params[0] && params[0].url) {
+                params[0].parent = parentWin
             } else {
                 event.reply(something, Response.fail("参数错误或父窗口未创建"))
                 return

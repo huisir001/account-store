@@ -2,11 +2,12 @@
  * @Description: 加密私钥存取
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-17 22:14:18
- * @LastEditTime: 2021-06-18 22:06:00
+ * @LastEditTime: 2021-06-19 12:10:09
  */
 import Response from "../tools/Response"
 import RegAgent from "../tools/RegAgent"
 import CONST from "../config/const"
+import { operate } from "./operationLog"
 const { regDir, regSkeyName } = CONST
 
 class Skey {
@@ -18,6 +19,7 @@ class Skey {
     }
 
     addSkey(val: string) {
+        operate("设置加密私钥")
         const res = this.Reg.add(this.regSkeyName, val)
         return Response.succ({ data: res })
     }
@@ -28,6 +30,7 @@ class Skey {
     }
 
     updateSkey(val: string) {
+        operate("重设加密私钥")
         const res = this.Reg.update(this.regSkeyName, val)
         return Response.succ({ data: res })
     }

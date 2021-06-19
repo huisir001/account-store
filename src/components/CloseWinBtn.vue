@@ -2,10 +2,10 @@
  * @Description: 关闭窗口按钮
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-07 18:32:02
- * @LastEditTime: 2021-06-15 14:57:35
+ * @LastEditTime: 2021-06-19 14:23:11
 -->
 <template>
-    <svg t="1622891709537" @click="doClose" class="icon close-icon"
+    <svg t="1622891709537" @click="close" class="icon close-icon"
         :style="{top,bottom,left,right,'--hover':hoverColor}" viewBox="0 0 1024 1024" version="1.1"
         xmlns="http://www.w3.org/2000/svg" p-id="34945" :width="size" :height="size">
         <path
@@ -19,9 +19,7 @@
  
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { logout } from '@/api/login'
 import { close } from '@/api/win'
-import { useRoute } from 'vue-router'
 
 export default defineComponent({
     name: 'CloseWinBtn',
@@ -57,17 +55,8 @@ export default defineComponent({
         },
     },
     setup() {
-        let $route = useRoute()
-
-        const doClose = async () => {
-            if ($route.name != 'Login') {
-                await logout() //执行退出和备份数据
-            }
-            close()
-        }
-
         return {
-            doClose,
+            close,
         }
     },
 })

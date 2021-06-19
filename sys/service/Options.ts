@@ -2,7 +2,7 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-06-15 14:31:37
+ * @LastEditTime: 2021-06-19 14:24:07
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
@@ -44,7 +44,7 @@ class Options {
         }
     }
 
-    // 执行备份(若设置为自动备份，则在执行退出Login.ts中的logout时会执行此备份方法)
+    // 执行备份(若设置为自动备份，则在主进程退出前会执行此备份方法)
     async doBackup(): Promise<any> {
         operate("执行数据备份")
         // 请求首选项设置数据
@@ -60,7 +60,7 @@ class Options {
                 Log.trace("删除超量备份文件：" + earliestFile)
             }
         } catch ({ errno }) {
-            if (errno == -4058) {
+            if (errno === -4058) {
                 // 路径不存在时创建备份目录
                 await mkdir(res.data.backup_path)
                 Log.trace("备份目录创建成功")
@@ -69,7 +69,7 @@ class Options {
         // 组装备份路径
         const copytopath = path.join(res.data.backup_path, formatDate(Date.now(), 'yyyyMMddhhmmss') + '.db.bak')
         // 拷贝
-        await copyFile(DB_NAME, copytopath);
+        await copyFile(DB_NAME, copytopath)
         return Promise.resolve(Response.succ())
     }
 }

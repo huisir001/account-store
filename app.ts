@@ -2,7 +2,7 @@
  * @Description: 主进程(主窗口创建，不含子窗口)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-06-16 15:24:06
+ * @LastEditTime: 2021-06-19 14:49:48
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -13,6 +13,8 @@ import CONST from './sys/config/const'
 import request from 'request'
 import { obj2Query } from './sys/tools/utils'
 import curWin from './sys/tools/curWin'
+import Options from './sys/service/Options'
+import { operate } from './sys/service/operationLog'
 
 // 环境变量
 const IsDev: boolean = process.env.NODE_ENV === "development"
@@ -23,11 +25,15 @@ const IsDev: boolean = process.env.NODE_ENV === "development"
  */
 const WINS: Set<any> = new Set()
 
+// 当前主窗口是否为登陆窗口
+let LoginWin = false
+
 
 // 创建一个带有预加载脚本的新的浏览器窗口
 function createWindow(isLoginWin = false, query?: object, callback?: () => void): BrowserWindow {
     //隐藏菜单栏
     Menu.setApplicationMenu(null)
+    LoginWin = isLoginWin
 
     let {
         MAIN_WIN_WIDTH: winWidth,
@@ -143,7 +149,7 @@ app.whenReady().then(async () => {
                 Print.info("插件加载成功：" + res)
             }
         } catch (err) {
-            Print.info('Vue Devtools 加载失败：', err.toString())
+            Print.info('Vue Devtools 加载失败：', err)
         }
     }
 
@@ -160,19 +166,53 @@ app.whenReady().then(async () => {
     })
 })
 
+
+/**
+ * 自动备份
+ */
+const autoBackup = (callback: () => void) => {
+
+    // 判断当前窗口，若为登陆窗口，则无需备份
+    if (LoginWin) {
+        callback()
+        return
+    }
+
+    // 查询是否需要自动备份
+    Options.getOptionsData().then((res) => {
+        if (res && res.ok && res.data.auto_backup) {
+            // 执行备份
+            Options.doBackup().then(() => {
+                callback()
+            }).catch(() => {
+                callback()
+            })
+        } else {
+            callback()
+        }
+    }).catch(() => {
+        callback()
+    })
+
+}
+
 /**
  * 退出所有窗口时 关闭主进程、关闭数据库连接
  * 由于有两个窗口，所以要保证两个窗口不能同时关闭
  * 所以若登录成功后不能立即关闭登录窗口，需要等待主窗口打开后再关闭
  */
-app.on('window-all-closed', async () => {
+app.on('window-all-closed', () => {
+    operate("退出程序")
     // 当应用程序不再有任何打开窗口时试图退出
     if (process.platform !== 'darwin') {
-        // 关闭数据库连接
-        dataPool.closeAll()
-        cachePool.closeAll()
-        // 关闭主进程
-        app.quit()
+        // 备份
+        autoBackup(() => {
+            // 关闭数据库连接
+            dataPool.closeAll()
+            cachePool.closeAll()
+            // 关闭主进程
+            app.quit()
+        })
     }
 })
 

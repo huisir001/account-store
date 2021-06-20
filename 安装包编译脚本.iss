@@ -1,6 +1,3 @@
-; ï¿½Å±ï¿½ï¿½ï¿½ Inno Setup ï¿½Å±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É£ï¿½
-; ï¿½Ð¹Ø´ï¿½ï¿½ï¿½ Inno Setup ï¿½Å±ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä°ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½
-
 #define MyAppName "Account Store"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "HuiSir"
@@ -8,9 +5,6 @@
 #define MyAppExeName "AccountStore.exe"
 
 [Setup]
-; ×¢: AppIdï¿½ï¿½ÖµÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½
-; ï¿½ï¿½ÒªÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½AppIdÖµï¿½ï¿½
-; (ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½GUIDï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½IDEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½GUIDï¿½ï¿½)
 AppId={{315B94F0-C5F6-4992-8A89-5269A4A3F137}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -21,10 +15,10 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=H:\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿\ï¿½ï¿½ï¿½ï¿½\ï¿½ËºÅ²Ö¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\account-store\install-license.txt
-OutputDir=E:\ï¿½Ëµï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
+LicenseFile=H:\¹¤×÷ÏîÄ¿\¸öÈË\ÕËºÅ²Ö¿â×ÀÃæÈí¼þ\account-store\install-license.txt
+OutputDir=E:\´ËµçÄÔ\×ÀÃæ
 OutputBaseFilename=AccountStore
-SetupIconFile=H:\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿\ï¿½ï¿½ï¿½ï¿½\ï¿½ËºÅ²Ö¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\account-store\public\favicon.ico
+SetupIconFile=H:\¹¤×÷ÏîÄ¿\¸öÈË\ÕËºÅ²Ö¿â×ÀÃæÈí¼þ\account-store\public\favicon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -36,8 +30,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "H:\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿\ï¿½ï¿½ï¿½ï¿½\ï¿½ËºÅ²Ö¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿\ï¿½ï¿½ï¿½ï¿½\ï¿½ËºÅ²Ö¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "H:\¹¤×÷ÏîÄ¿\¸öÈË\ÕËºÅ²Ö¿â×ÀÃæÈí¼þ\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "H:\¹¤×÷ÏîÄ¿\¸öÈË\ÕËºÅ²Ö¿â×ÀÃæÈí¼þ\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; ×¢ï¿½ï¿½: ï¿½ï¿½Òªï¿½ï¿½ï¿½ÎºÎ¹ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ä¼ï¿½ï¿½ï¿½Ê¹ï¿½Ã¡ï¿½Flags: ignoreversionï¿½ï¿½
 
 [Icons]

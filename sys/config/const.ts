@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-06-20 15:16:28
+ * @LastEditTime: 2021-06-20 19:36:40
  */
 
 export default {
@@ -44,7 +44,7 @@ export default {
 
     MAIN_WIN_BG_COLOR: '#00000000', // 主窗口初始化背景
     MAIN_WIN_WIDTH: 900, // 主窗口宽
-    MAIN_WIN_HEIGHT: 600, // 主窗口高
+    MAIN_WIN_HEIGHT: 560, // 主窗口高
 
     LOGIN_WIN_BG_COLOR: '#00000000', // 登录窗口初始化背景
     LOGIN_WIN_WIDTH: 380, // 登录窗口宽

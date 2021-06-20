@@ -2,7 +2,7 @@
  * @Description: 窗口操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-16 15:50:07
- * @LastEditTime: 2021-06-20 19:18:10
+ * @LastEditTime: 2021-06-20 20:21:42
  */
 import path from 'path'
 import { dialog, shell } from 'electron'
@@ -128,7 +128,7 @@ const winMethods: Iobj = {
      * 打开文件
      */
     openFile(file: string): void {
-        const basePath = path.resolve(__dirname, "../../")
+        const basePath = path.resolve(__dirname, "../../../../")
         shell.openPath(path.join(basePath, file))
     }
 }

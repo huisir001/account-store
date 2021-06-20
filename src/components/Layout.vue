@@ -2,11 +2,15 @@
  * @Description: 布局外层
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-11 10:27:11
+ * @LastEditTime: 2021-06-20 18:39:24
 -->
 <template>
     <div class="layout">
         <div class="navs">
+            <div class="logo">
+                <img src="../assets/imgs/logo.svg">
+                <h2>Account Store</h2>
+            </div>
             <div class="routers-box">
                 <router-link v-for="nav in navList" :key="nav.path" :to="nav.path"
                     :class="{'menu-item':true,act:nav.path==curRoute.fullPath}"
@@ -86,6 +90,24 @@ $routerBoxTop: 100px;
         &:hover {
             .navHoverBox {
                 opacity: 1;
+            }
+        }
+        .logo {
+            position: absolute;
+            bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            opacity: 0.2;
+            img {
+                width: 18px;
+                height: auto;
+            }
+            h2 {
+                color: #fff;
+                margin: 3px 0 0 5px;
+                font-size: 14px;
             }
         }
         .routers-box {

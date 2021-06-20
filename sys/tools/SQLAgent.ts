@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-17 16:31:06
+ * @LastEditTime: 2021-06-20 14:03:54
  */
 
 /**
@@ -132,6 +132,11 @@ export default class SQLAgent {
             return ''
         }
 
+        // 随机
+        if (orderStr === 'random') {
+            return 'ORDER BY random()'
+        }
+
         const orderArr = orderStr.split(' ')
         const orderArr2 = orderArr.map((item) => {
             //升降序，带-号为降序
@@ -143,7 +148,7 @@ export default class SQLAgent {
             return `${item} ${sortMark}`
         })
 
-        return ' ORDER BY ' + orderArr2.join(',')
+        return 'ORDER BY ' + orderArr2.join(',')
     }
     getDBConn: () => SQLiteDB
 
@@ -297,10 +302,16 @@ export default class SQLAgent {
         const whereStr = obj2whereStr(slot, fuzzy)
         //升降序，带-号为降序
         const sortQueryStr = sort2QueryStr(sort)
-        // 分页
-        const pageLimitStr = limit ? `limit ${(page - 1) * limit},${limit}` : ""
+        // 限制
+        let limitStr: string
+        // 不分页查所有
+        if (page === -1) {
+            limitStr = limit ? `limit ${limit}` : ""
+        } else {
+            limitStr = limit ? `limit ${(page - 1) * limit},${limit}` : ""
+        }
         return new Promise((resolve, reject) => {
-            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr} ${pageLimitStr};`
+            const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr} ${limitStr};`
             const DB = getDBConn()
             DB.all(sqlMod, function (err: any, rows: any) {
                 DB.release()

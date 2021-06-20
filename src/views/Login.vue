@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-19 20:55:26
+ * @LastEditTime: 2021-06-20 18:21:46
 -->
 <template>
     <div class="login">
@@ -15,7 +15,7 @@
         <!-- logo -->
         <div class="cont">
             <img src="../assets/imgs/logo.svg">
-            <h2>账号仓库</h2>
+            <h2>Account Store</h2>
         </div>
         <div class="form">
             <template v-if="step1">
@@ -254,24 +254,37 @@ export default defineComponent({
         const passReset = async () => {
             const confirmRes = await showMessageBoxSync({
                 title: '提示',
-                msg: '确认要重设密码？',
+                msg: '确认要重设密码？\n若数据库中已有账户数据，\n需要先验证随机1-2条账户的账号密码，\n验证成功方可重设。',
             })
             if (confirmRes === 0) {
                 const { origin, pathname } = location
-                openChildWindow({
-                    wid: 'passReset',
-                    url: `${origin + pathname}#/reset?from=login`,
-                    width: 660,
-                    height: 350,
-                    title: '重设密码',
-                })
+                openChildWindow(
+                    {
+                        wid: 'passReset',
+                        url: `${origin + pathname}#/reset?from=login`,
+                        width: 250,
+                        height: 326,
+                        title: '重设密码',
+                    },
+                    async ({ msg }) => {
+                        // 接收消息
+                        if (msg == 'resetSuccess') {
+                            // 重设成功，刷新页面
+                            const {
+                                ok,
+                                data: { verify_question },
+                            } = await getLoginData()
 
-                // // 切换为注册模式
-                // isReg.value = true
-                // nextTick(() => {
-                //     // 清除数据更新导致自动触发的表单验证
-                //     formEl.value.clearValidate()
-                // })
+                            // 有登录数据
+                            if (ok === 1 && verify_question) {
+                                loginData.verify_question = verify_question
+                            }
+
+                            // 提示
+                            window.toast('重设成功')
+                        }
+                    }
+                )
             }
         }
 
@@ -309,7 +322,7 @@ export default defineComponent({
         h2 {
             color: #fff;
             margin: 5px 0 0 0;
-            font-size: 20px;
+            font-size: 22px;
         }
     }
     .form {

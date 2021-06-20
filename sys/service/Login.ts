@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-06-19 14:28:03
+ * @LastEditTime: 2021-06-20 17:58:15
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -10,7 +10,7 @@ import AccountModel from '../models/Accounts'
 import OptionsModel from '../models/Options'
 import TokenModel from '../models/Token'
 import OperateLogModel from '../models/OperateLog'
-import { creatToken } from "../tools/Token"
+import { creatToken, decodeToken } from "../tools/Token"
 import { formatDate } from '../tools/utils' //工具
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
@@ -50,6 +50,39 @@ class Login {
                 return Promise.resolve(Response.succ({ data: res }))
             }
         }
+    }
+
+    /**
+     * @description: 重设登陆数据
+     * @param {IResetLoginParams} param1
+     * @return {*}
+     * @author: HuiSir
+     */
+    async resetLoginData({
+        old_password, core_password, verify_question, verify_answer, token }: IResetLoginParams): Promise<any> {
+
+        const userid = decodeToken(token)
+
+        // 如果有旧密码，则校验旧密码
+        if (old_password) {
+            // 查询
+            const res = await LoginModel.findOne({
+                id: userid,
+                core_password: Encrypt.encrypt(old_password)
+            }, "id")
+
+            if (!res || !res.id) {
+                return Promise.resolve(Response.fail("旧密码输入错误"))
+            }
+        }
+
+        const loginParams: ILoginParams = {
+            id: userid!,
+            core_password,
+            verify_question,
+            verify_answer
+        }
+        return this.saveLoginData(loginParams)
     }
 
     /**

@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-06-19 18:32:16
+ * @LastEditTime: 2021-06-20 17:30:07
 -->
 <template>
     <div class="option">
@@ -54,6 +54,7 @@ import {
     openFile,
     showOpenFileBox,
     showMessageBoxSync,
+    openChildWindow,
 } from '@/api/win'
 
 export default defineComponent({
@@ -161,6 +162,16 @@ export default defineComponent({
                 msg: '确认要重设密码？',
             })
             if (confirmRes === 0) {
+                const { origin, pathname } = location
+                openChildWindow({
+                    wid: 'passReset',
+                    url: `${origin + pathname}#/reset?from=home&token=${sessionStorage.getItem(
+                        'token'
+                    )}`,
+                    width: 250,
+                    height: 386,
+                    title: '重设密码',
+                })
             }
         }
 

@@ -2,7 +2,7 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-19 21:09:47
+ * @LastEditTime: 2021-06-20 16:19:03
  */
 import { BrowserWindow } from 'electron'
 import methods from "../service"

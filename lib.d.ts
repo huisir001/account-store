@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-06-19 17:39:23
+ * @LastEditTime: 2021-06-20 16:57:11
  */
 
 /**
@@ -72,6 +72,17 @@ declare interface ILoginParams extends Index {
     id?: string
     core_password: string
     verify_question?: string
+    verify_answer: string
+}
+
+/**
+ * 重设账户数据入参
+ */
+declare interface IResetLoginParams {
+    token: string
+    old_password?: string
+    core_password: string
+    verify_question: string
     verify_answer: string
 }
 

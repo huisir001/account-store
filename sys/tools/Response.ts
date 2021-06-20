@@ -2,7 +2,7 @@
  * @Description: 响应参数配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 14:23:18
- * @LastEditTime: 2021-06-09 12:27:47
+ * @LastEditTime: 2021-06-20 15:52:25
  */
 interface IResponse {
     ok: number
@@ -25,10 +25,8 @@ export default class Response implements IResponse {
     /**
      * 重载参数
      */
-    static fail(msg: string): Response
-    static fail(arg: IResponse): Response
     static fail(arg: IResponse | string): Response {
-        if (typeof arg == "string") {
+        if (typeof arg === "string") {
             return new Response(0, arg)
         } else {
             return new Response(arg.ok, arg.msg)

@@ -2,12 +2,12 @@
  * @Description: 新增账户
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:11
- * @LastEditTime: 2021-06-19 23:14:32
+ * @LastEditTime: 2021-06-20 10:47:59
 -->
 <template>
     <div :class="{formbox:true,edit:isEdit}">
         <el-form ref="formRef" :size="isEdit?'mini':'medium'" :rules="rules" :model="formdata"
-            label-width="50px">
+            :label-width="isEdit?'46px':'50px'">
             <el-form-item label="名称" prop="name">
                 <el-input v-model="formdata.name" placeholder="请输入账户名称，如网站名称" clearable></el-input>
             </el-form-item>
@@ -156,15 +156,17 @@ export default defineComponent({
     float: left;
     width: 70%;
     &.edit {
+        padding: 10px;
         width: calc(100% - 5px);
         &:deep(.el-form > .el-form-item):last-child {
             position: fixed;
+            left: 0;
             bottom: 0;
             width: 100%;
             text-align: center;
             background: #f5f5f5;
-            margin: 0 -10px;
             padding: 10px;
+            margin-bottom: 0;
             border-top: 1px solid #eee;
             .el-form-item__content {
                 margin-left: 0 !important;
@@ -187,7 +189,6 @@ export default defineComponent({
         }
         &:deep(.el-form-item__label) {
             font-size: 12px;
-            font-weight: 400;
         }
         &:deep(.el-input__inner),
         &:deep(.el-textarea__inner) {
@@ -196,7 +197,7 @@ export default defineComponent({
         }
     }
     &:deep(.el-form-item__label) {
-        color: #000;
+        color: #333;
     }
     &:deep(.el-input__inner),
     &:deep(.el-textarea__inner) {

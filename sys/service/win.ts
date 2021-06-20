@@ -2,7 +2,7 @@
  * @Description: 窗口操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-16 15:50:07
- * @LastEditTime: 2021-06-19 16:44:26
+ * @LastEditTime: 2021-06-20 17:15:43
  */
 import path from 'path'
 import { dialog, shell } from 'electron'

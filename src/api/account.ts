@@ -2,7 +2,7 @@
  * @Description: 账户存储相关API
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:29:40
- * @LastEditTime: 2021-06-16 00:23:51
+ * @LastEditTime: 2021-06-20 16:22:18
  */
 
 import { todo } from "@/utils/sys"
@@ -21,3 +21,9 @@ export const delAccount = (id: string) => todo('delAccount', id)
 
 // 解密账户字符串
 export const decryptByVal = (val: string) => todo('decryptByVal', val)
+
+// 随机查询2条账户
+export const getAccountListRan = () => todo('getAccountListRan', 2)
+
+// 验证数据
+export const checkAccounts = (data: string) => todo('checkAccounts', data)

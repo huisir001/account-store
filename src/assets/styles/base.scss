@@ -15,6 +15,10 @@ body {
   user-select: none;
   overflow: hidden;
   font-weight: 100;
+  &.show{
+    padding: 0;
+    font-weight: 400;
+  }
   #app {
     visibility: hidden;
   }

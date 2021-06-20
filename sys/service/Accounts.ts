@@ -2,13 +2,16 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-16 14:13:58
+ * @LastEditTime: 2021-06-20 16:10:30
  */
 import Response from "../tools/Response"
 import AccountModel from '../models/Accounts'
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
 import { formatDate } from "../tools/utils"
+import { creatToken } from "../tools/Token"
+import TokenModel from '../models/Token'
+import loginMethod from './Login'
 
 /**
  * 查询列表返回数据类型
@@ -124,7 +127,10 @@ class Accounts implements IAccunts {
     async getAccountList(params: IGetListParams): Promise<any> {
         // operate("账户列表分页查询")
         const { name = "", page, limit } = params
-        const list = await AccountModel.find({ name }, { page, limit, sort: "-create_time", fuzzy: true })
+        // fuzzy-模糊查询
+        const list = await AccountModel.find({ name }, {
+            page, limit, sort: "-create_time", filter: "id name create_time", fuzzy: true
+        })
         const { count: total } = await AccountModel.count({ name })
         if (list) {
             const data: IAccountListByPage = {
@@ -135,6 +141,57 @@ class Accounts implements IAccunts {
                 pageTotal: total % limit > 0 ? Math.floor(total / limit) + 1 : total / limit
             }
             return Promise.resolve(Response.succ({ data }))
+        }
+    }
+
+    /**
+     * @description: 随机查询n条数据
+     * @param {number} limit 查询n条，必须为大于0整数
+     * @return {*}
+     * @author: HuiSir
+     */
+    async getAccountListRan(limit: number): Promise<any> {
+        operate("账户列表随机查询")
+        const list = await AccountModel.find("", {
+            page: -1, limit, filter: "id name", sort: 'random'
+        })
+        if (list) {
+            return Promise.resolve(Response.succ({ data: list }))
+        }
+    }
+
+    /**
+     * @description: 多个账户数据校验
+     * @param {IAddAccountParams} params
+     * @return {*}
+     * @author: HuiSir
+     */
+    async checkAccounts(jsonstr: string): Promise<any> {
+        operate("账户数据校验")
+
+        const params: IAddAccountParams[] = JSON.parse(jsonstr)
+
+        const list: IAddAccountParams[] = await AccountModel.find({ id: params.map((item) => item.id) }, {
+            page: -1, filter: "id account password"
+        })
+
+        if (list) {
+            for (const { id, account, password } of list) {
+                const paramItem = params.find((p) => p.id === id)
+                if (paramItem?.account !== Encrypt.decrypt(account!) ||
+                    paramItem?.password !== Encrypt.decrypt(password!)) {
+                    return Promise.resolve(Response.succ({ data: { token: null } }))
+                }
+            }
+            // 查询用户id
+            const { data } = await loginMethod.getLoginData()
+            // 创建token
+            const token = creatToken(data.id)
+            // 缓存token
+            const saveToken = await TokenModel.create({ token })
+            if (saveToken) {
+                return Promise.resolve(Response.succ({ data: { token } }))
+            }
         }
     }
 }

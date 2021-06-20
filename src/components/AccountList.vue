@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-19 16:56:34
+ * @LastEditTime: 2021-06-20 14:07:58
 -->
 <template>
     <div class="accountList">
@@ -12,24 +12,6 @@
                 @keydown.enter="$event.currentTarget.blur()" @clear="doSearch" />
             <el-table :data="tableData" style="width: 100%;">
                 <el-table-column prop="name" label="账户名称" />
-                <!-- <el-table-column prop="account"
-                         label="登录账号">
-        </el-table-column>
-        <el-table-column prop="password"
-                         label="登录密码">
-        </el-table-column>
-        <el-table-column prop="email"
-                         label="绑定邮箱">
-        </el-table-column>
-        <el-table-column prop="phone"
-                         label="绑定手机">
-        </el-table-column>
-        <el-table-column prop="update_time"
-                         label="修改时间">
-        </el-table-column>
-        <el-table-column prop="remark"
-                         label="备注">
-        </el-table-column> -->
                 <el-table-column label="账号信息" width="100">
                     <template #default="scope">
                         <span class="see-detail-btn"

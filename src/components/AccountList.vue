@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-20 14:07:58
+ * @LastEditTime: 2021-06-20 19:13:03
 -->
 <template>
     <div class="accountList">
@@ -87,8 +87,8 @@ export default defineComponent({
                 url: `${origin + pathname}#/detail?aid=${aid}&token=${sessionStorage.getItem(
                     'token'
                 )}`,
-                width: 660,
-                height: 350,
+                width: 500,
+                height: 278,
                 title: aName,
             })
         }

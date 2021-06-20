@@ -2,7 +2,7 @@
  * @Description: 主线程API调用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-02 16:03:20
- * @LastEditTime: 2021-06-11 23:02:13
+ * @LastEditTime: 2021-06-20 19:14:38
  */
 import { ElLoading as Loading } from 'element-plus'
 const noLoadings = ["getAccountList", "getOperateLogs"]
@@ -17,7 +17,7 @@ export const todo = async (something: string, ...parames: any[]): Promise<any> =
     if (!noLoadings.includes(something)) {
         loading = Loading.service({
             text: 'Loading...',
-            background: 'rgba(255, 255, 255, 0.6)',
+            background: 'rgba(255, 255, 255, 0)',
             target: "#app" // 在app元素内loading，避免遮罩覆盖透明区
         })
     }

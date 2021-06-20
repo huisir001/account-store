@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-20 18:21:46
+ * @LastEditTime: 2021-06-20 18:48:01
 -->
 <template>
     <div class="login">
@@ -262,8 +262,8 @@ export default defineComponent({
                     {
                         wid: 'passReset',
                         url: `${origin + pathname}#/reset?from=login`,
-                        width: 250,
-                        height: 326,
+                        width: 280,
+                        height: 320,
                         title: '重设密码',
                     },
                     async ({ msg }) => {

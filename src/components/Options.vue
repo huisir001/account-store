@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-06-20 17:30:07
+ * @LastEditTime: 2021-06-20 18:48:46
 -->
 <template>
     <div class="option">
@@ -168,8 +168,8 @@ export default defineComponent({
                     url: `${origin + pathname}#/reset?from=home&token=${sessionStorage.getItem(
                         'token'
                     )}`,
-                    width: 250,
-                    height: 386,
+                    width: 280,
+                    height: 380,
                     title: '重设密码',
                 })
             }

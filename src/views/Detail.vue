@@ -2,10 +2,10 @@
  * @Description: 账户详情页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 21:31:24
- * @LastEditTime: 2021-06-19 20:46:59
+ * @LastEditTime: 2021-06-20 19:09:18
 -->
 <template>
-    <el-descriptions class="detail" direction="vertical" :column="2" size="medium" border>
+    <el-descriptions class="detail" direction="vertical" :column="2" size="mini" border>
         <!-- <template #extra>
             <el-button type="primary" size="small">操作</el-button>
         </template> -->

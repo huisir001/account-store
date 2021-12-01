@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-20 18:48:01
+ * @LastEditTime: 2021-12-01 16:56:19
 -->
 <template>
     <div class="login">
@@ -19,7 +19,7 @@
         </div>
         <div class="form">
             <template v-if="step1">
-                <el-divider class="login-divider">设置数据加密私钥</el-divider>
+                <el-divider class="login-divider">设置加密私钥</el-divider>
                 <el-form size="medium">
                     <el-form-item class="skey-form-item">
                         <el-input v-model="skey" placeholder="请输入数据加密私钥"></el-input>

@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-06-20 18:48:46
+ * @LastEditTime: 2021-12-02 00:44:17
 -->
 <template>
     <div class="option">
@@ -117,7 +117,8 @@ export default defineComponent({
                         '1. 数据恢复后当前数据将会被覆盖！\n' +
                         '2. 数据包不合法将导致程序故障！\n' +
                         '3. 若在之前有重设总密码，则在恢复数据后密码会还原！\n' +
-                        '4. 请谨慎操作，确保已选择的备份文件安全有效！',
+                        '4. 数据恢复后需重启软件！\n' +
+                        '5. 请谨慎操作，确保已选择的备份文件安全有效！',
                 })
 
                 if (confirmRes === 0) {

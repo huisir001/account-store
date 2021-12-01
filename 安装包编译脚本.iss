@@ -15,10 +15,10 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=H:\工作项目\个人\账号仓库桌面软件\account-store\install-license.txt
-OutputDir=E:\此电脑\桌面
+LicenseFile=G:\我的项目\account-store\install-license.txt
+OutputDir=G:\我的项目
 OutputBaseFilename=AccountStore-1.0-installer
-SetupIconFile=H:\工作项目\个人\账号仓库桌面软件\account-store\public\favicon.ico
+SetupIconFile=G:\我的项目\account-store\public\favicon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -30,8 +30,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "H:\工作项目\个人\账号仓库桌面软件\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\工作项目\个人\账号仓库桌面软件\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "G:\我的项目\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "G:\我的项目\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 注锟斤拷: 锟斤拷要锟斤拷锟轿何癸拷锟斤拷系统锟侥硷拷锟斤拷使锟矫★拷Flags: ignoreversion锟斤拷
 
 [Icons]

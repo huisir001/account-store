@@ -2,9 +2,8 @@
  * @Description: 服务分发
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 15:11:20
- * @LastEditTime: 2021-06-20 16:19:03
+ * @LastEditTime: 2021-12-02 12:57:43
  */
-import { BrowserWindow } from 'electron'
 import methods from "../service"
 import curWin from "../tools/curWin"
 import Response from "../tools/Response"

@@ -2,10 +2,10 @@
  * @Description: 窗口操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-16 15:50:07
- * @LastEditTime: 2021-06-20 20:21:42
+ * @LastEditTime: 2021-12-02 12:50:06
  */
 import path from 'path'
-import { dialog, shell } from 'electron'
+import { app, dialog, shell } from 'electron'
 import curWin from '../tools/curWin'
 
 interface IshowOpenFileBoxArgs {
@@ -41,7 +41,13 @@ const winMethods: Iobj = {
      */
     close: () => curWin.get().close(),
 
-
+    /**
+     * 软件重启
+     */
+    relaunch: () => {
+        app.relaunch()
+        return curWin.get().close()
+    },
 
     /**
      * @description: 错误提示（普通提示，无按钮回调）

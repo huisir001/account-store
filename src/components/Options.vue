@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-02 10:12:04
+ * @LastEditTime: 2021-12-02 13:25:37
 -->
 <template>
     <div class="option">
@@ -49,6 +49,7 @@
 import { defineComponent, ref } from 'vue'
 import { getOptionsData, saveOptionsData, backup, doRecover } from '@/api/option'
 import {
+    relaunch,
     showOpenDirBox,
     openExternal,
     openFile,
@@ -114,10 +115,10 @@ export default defineComponent({
                     title: '警告',
                     type: 'warning',
                     msg:
-                        '1. 数据恢复后当前数据将会被完全清空，包括总密码和验证问题答案以及所有配置项和操作记录！\n' +
+                        '1. 数据恢复后当前数据将会被完全清空，包括总密码、验证问题、配置项以及操作记录！\n' +
                         '2. 可到账户列表对现有账户数据进行选择性导出，等恢复了备份再增量导入！\n' +
                         '3. 数据包不合法将导致程序故障！\n' +
-                        '5. 数据恢复后需重启软件！\n' +
+                        '5. 数据恢复后将重启软件！\n' +
                         '6. 请谨慎操作，确保已选择的备份文件安全有效！',
                 })
 
@@ -127,6 +128,19 @@ export default defineComponent({
                     const recoverRes = await doRecover(bakfilePath)
                     if (recoverRes && recoverRes.ok) {
                         window.toast('数据恢复成功')
+                        let num = 3
+                        const timer = setInterval(() => {
+                            window.toast({
+                                type: 'warn',
+                                msg: '即将重启...(' + num.toString() + ')',
+                            })
+                            num--
+                            if (num < 0) {
+                                // 重启
+                                relaunch()
+                                clearInterval(timer)
+                            }
+                        }, 1000)
                     }
                 }
             }

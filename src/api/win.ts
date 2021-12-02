@@ -2,7 +2,7 @@
  * @Description: 窗口api
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:30:12
- * @LastEditTime: 2021-06-19 17:00:13
+ * @LastEditTime: 2021-12-02 12:52:30
  */
 import { winTodo, todo, on, postMsg } from "@/utils/sys"
 
@@ -11,6 +11,9 @@ export const minimize = () => winTodo('minimize')
 
 // 关闭窗口
 export const close = () => winTodo('close')
+
+// 重启软件
+export const relaunch = () => winTodo('relaunch')
 
 // 消息弹框
 export const showMessageBoxSync = (params: IshowMessageBoxArgs) => winTodo('showMessageBoxSync', params)

@@ -2,14 +2,13 @@
  * @Description: 子窗口创建
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-11 11:25:57
- * @LastEditTime: 2021-06-20 17:45:42
+ * @LastEditTime: 2021-12-02 11:28:00
  */
 
 import { BrowserWindow, ipcMain } from 'electron'
 import Response from "../tools/Response"
 import path from 'path'
 import curWin from '../tools/curWin'
-import { Log } from '../tools/Logger'
 const IsDev: boolean = process.env.NODE_ENV === "development" // 环境变量
 
 /**

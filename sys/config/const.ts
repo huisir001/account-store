@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-12-02 12:51:51
+ * @LastEditTime: 2021-12-02 18:15:37
  */
 
 export default {
@@ -23,6 +23,7 @@ export default {
         "clearAllTable",
         "getLoginData",
         "saveLoginData",
+        "resetLoginData",
         "openMainWindow",
         "openChildWindow",
         "openLoginWindow",

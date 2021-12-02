@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-12-01 17:13:54
+ * @LastEditTime: 2021-12-02 18:13:04
 -->
 <template>
     <div class="login">
@@ -28,7 +28,7 @@
                     </el-form-item>
                     <el-form-item>
                         <div class="tips">
-                            一台电脑只能设置一次私钥，请备份好私钥。<br />重装系统或在其他电脑上安装软件，需提供先前一致的私钥才能恢复备份的数据。
+                            一台电脑只允许设置一次私钥，请备份好私钥<br />备份数据需要提供正确的私钥才能恢复成功
                         </div>
                     </el-form-item>
                     <el-form-item class="btn-go">

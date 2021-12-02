@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-02 13:25:37
+ * @LastEditTime: 2021-12-02 18:30:54
 -->
 <template>
     <div class="option">
@@ -47,6 +47,7 @@
  
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { ElMessageBox } from 'element-plus'
 import { getOptionsData, saveOptionsData, backup, doRecover } from '@/api/option'
 import {
     relaunch,
@@ -57,6 +58,7 @@ import {
     showMessageBoxSync,
     openChildWindow,
 } from '@/api/win'
+import { updateSkey } from '@/api/login'
 
 export default defineComponent({
     name: '',
@@ -105,27 +107,45 @@ export default defineComponent({
         // 数据恢复
         const dataRecover = async () => {
             // 选择文件
-            const res = await showOpenFileBox(
+            const fileRes = await showOpenFileBox(
                 '选择需要恢复的数据备份文件',
                 ['db.bak'],
                 backup_path.value
             )
-            if (res && !res.canceled) {
+
+            if (fileRes && !fileRes.canceled) {
                 const confirmRes = await showMessageBoxSync({
                     title: '警告',
                     type: 'warning',
                     msg:
-                        '1. 数据恢复后当前数据将会被完全清空，包括总密码、验证问题、配置项以及操作记录！\n' +
+                        '1. 恢复后当前数据将被完全清空，包括总密码、账户表、验证问题、配置项及操作记录！\n' +
                         '2. 可到账户列表对现有账户数据进行选择性导出，等恢复了备份再增量导入！\n' +
-                        '3. 数据包不合法将导致程序故障！\n' +
-                        '5. 数据恢复后将重启软件！\n' +
-                        '6. 请谨慎操作，确保已选择的备份文件安全有效！',
+                        '3. 稍候将填写数据加密私钥，数据恢复后将重启软件！\n' +
+                        '4. 数据包不合法或加密私钥错误将导致程序故障，若有疑问请取消恢复！\n' +
+                        '5. 请谨慎操作，确保已选择的备份文件安全有效！',
                 })
 
                 if (confirmRes === 0) {
-                    const bakfilePath = res.filePaths[0]
+                    let skey
+                    try {
+                        const { value } = await ElMessageBox.prompt(
+                            '请输入此备份的数据加密私钥！私钥是在软件安装时所填写。',
+                            '提示',
+                            {
+                                confirmButtonText: '确认',
+                                cancelButtonText: '取消',
+                                inputPattern: /\w+/,
+                                inputErrorMessage: '私钥不能为空',
+                            }
+                        )
+                        skey = value
+                    } catch (error) {
+                        return
+                    }
+
+                    const bakfilePath = fileRes.filePaths[0]
                     // 执行恢复
-                    const recoverRes = await doRecover(bakfilePath)
+                    const recoverRes = await doRecover(bakfilePath, skey)
                     if (recoverRes && recoverRes.ok) {
                         window.toast('数据恢复成功')
                         let num = 3

@@ -2,7 +2,7 @@
  * @Description: 选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-14 20:58:09
- * @LastEditTime: 2021-06-19 16:33:21
+ * @LastEditTime: 2021-12-02 18:26:52
  */
 import { todo } from "@/utils/sys"
 
@@ -16,4 +16,4 @@ export const saveOptionsData = (params: IOptionsParams) => todo('saveOptionsData
 export const backup = () => todo('doBackup')
 
 // 执行数据恢复
-export const doRecover = (filePath: string) => todo('doRecover', filePath)
+export const doRecover = (filePath: string, skey: string) => todo('doRecover', { filePath, skey })

@@ -2,12 +2,13 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-06-19 17:07:28
+ * @LastEditTime: 2021-12-02 18:30:36
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
 import Response from "../tools/Response"
 import { operate } from "./operationLog"
+import Skey from "./Skey"
 import { mkdir, readdir, unlink, copyFile } from 'fs/promises'
 import path from 'path'
 import { formatDate } from '../tools/utils'
@@ -79,9 +80,10 @@ class Options {
      * @return {*}
      * @author: HuiSir
      */
-    async doRecover(filePath: string): Promise<any> {
+    async doRecover({ filePath, skey }: { filePath: string, skey: string }): Promise<any> {
         operate("执行数据恢复")
         // 拷贝
+        await Skey.updateSkey(skey)
         await copyFile(filePath, DB_NAME)
         return Promise.resolve(Response.succ())
     }

@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-12-03 10:41:00
+ * @LastEditTime: 2021-12-03 16:03:57
  */
 
 export default {
@@ -39,6 +39,7 @@ export default {
         "showSaveDialog",
         "openExternal",
         "openFile",
+        "doRecover"
     ],
 
     DB_NAME: "data.db", // 数据库名称

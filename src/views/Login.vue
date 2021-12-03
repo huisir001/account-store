@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-12-03 15:16:51
+ * @LastEditTime: 2021-12-03 16:12:33
 -->
 <template>
     <div class="login">
@@ -22,17 +22,21 @@
                 <el-divider class="login-divider">设置加密私钥</el-divider>
                 <el-form size="medium">
                     <el-form-item class="skey-form-item">
-                        <el-input v-model="skey" placeholder="请输入数据加密私钥"></el-input>
+                        <el-input v-model="skey" placeholder="请输入私钥" class="create-skey-input">
+                        </el-input>
                         <el-button type="text" class="create-skey-btn" @click="createSkey">生成
                         </el-button>
                     </el-form-item>
                     <el-form-item>
                         <div class="tips">
-                            一台电脑只允许设置一次私钥，请备份好私钥<br />备份数据需要提供正确的私钥才能恢复成功
+                            私钥用作此软件所有数据的加密参数，请做好备份<br />恢复备份数据时需要提供正确的私钥
                         </div>
                     </el-form-item>
                     <el-form-item class="btn-go">
                         <el-button type="primary" round @click="toNextStep">下一步</el-button>
+                    </el-form-item>
+                    <el-form-item class="sub-btn">
+                        <el-button type="text" @click="dataRecover">或直接导入备份数据</el-button>
                     </el-form-item>
                 </el-form>
             </template>
@@ -89,6 +93,7 @@ import {
     softWareReset,
 } from '@/api/login'
 import { openChildWindow, showMessageBoxSync, relaunch } from '@/api/win'
+import useDataRecover from '@/hooks/useDataRecover'
 
 export default defineComponent({
     name: 'Login',
@@ -146,6 +151,9 @@ export default defineComponent({
             }
             step1.value = false
         }
+
+        // 数据导入
+        const dataRecover = useDataRecover()
 
         // 查询是否已有登录数据
         ;(async () => {
@@ -351,6 +359,7 @@ export default defineComponent({
             onSubmit,
             passReset,
             softReset,
+            dataRecover,
         }
     },
 })
@@ -383,7 +392,7 @@ export default defineComponent({
         }
         .tips {
             font-size: 12px;
-            color: #ccc;
+            color: #bbb;
             line-height: 2;
             text-align: center;
         }
@@ -418,6 +427,11 @@ export default defineComponent({
             }
         }
         .skey-form-item {
+            .create-skey-input {
+                :deep(.el-input__inner) {
+                    text-align: center;
+                }
+            }
             .create-skey-btn {
                 position: absolute;
                 right: 15px;

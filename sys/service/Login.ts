@@ -2,7 +2,7 @@
  * @Description: 登陆
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-29 17:20:11
- * @LastEditTime: 2021-12-03 15:19:57
+ * @LastEditTime: 2021-12-03 15:25:01
  */
 import Response from "../tools/Response"
 import LoginModel from '../models/Login'
@@ -16,7 +16,7 @@ import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
 import optionsMethods from "./Options"
 import Skey from "./Skey"
-import { Print, Log } from '../tools/Logger'
+import { Print } from '../tools/Logger'
 
 /**
  * 登录数据加密

@@ -2,7 +2,7 @@
  * @Description: 数据恢复，在初次安装和设置界面使用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-03 15:50:11
- * @LastEditTime: 2021-12-03 18:21:15
+ * @LastEditTime: 2021-12-04 00:38:03
  */
 import os from "os"
 import { doRecover } from '@/api/option'
@@ -40,66 +40,45 @@ export default (backup_path?: Ref<string>) => {
             )
 
             if (fileRes && !fileRes.canceled) {
-                let skey
-                // try {
-                //     const { value } = await ElMessageBox.prompt(
-                //         '输入此备份文件的数据加密私钥！私钥在软件安装时所填写。',
-                //         '提示',
-                //         {
-                //             confirmButtonText: '确认',
-                //             cancelButtonText: '取消',
-                //             inputPattern: /\w+/,
-                //             inputErrorMessage: '私钥不能为空',
-                //         }
-                //     )
-                //     skey = value
-                // } catch (error) {
-                //     return
-                // }
-
                 const { origin, pathname } = location
                 const queryObj = {
-                    label: '私钥是在软件安装时所填写的一串字符',
-                    placeholder: "请输入数据加密私钥"
+                    label: '请输入数据加密私钥，私钥是在软件安装时所填写的一串字符',
                 }
                 openChildWindow(
                     {
                         wid: 'promptWindow',
                         url: `${origin + pathname}#/prompt?${obj2Query(queryObj)}`,
                         width: 360,
-                        height: 95,
+                        height: 150,
                         title: '私钥',
                     },
-                    ({ msg }) => {
+                    async ({ msg, data }: IWinMessage) => {
                         // 接收消息
-                        if (msg == 'saved') {
-                            // 修改数据成功，刷新列表
-                            getList(curPage.value, search.value)
-                            // 提示
-                            window.toast('修改成功')
+                        if (msg === 'sure') {
+                            const skey = (data as any).value
+                            const filePath = fileRes.filePaths[0]
+                            // 执行恢复
+                            const recoverRes = await doRecover(filePath, skey)
+                            if (recoverRes && recoverRes.ok) {
+                                window.toast(`数据${MSG}成功`)
+                                let num = 3
+                                const timer = setInterval(() => {
+                                    window.toast({
+                                        type: 'warn',
+                                        msg: '即将重启...(' + num.toString() + ')',
+                                    })
+                                    num--
+                                    if (num < 0) {
+                                        // 重启
+                                        relaunch()
+                                        clearInterval(timer)
+                                    }
+                                }, 1000)
+                            }
                         }
                     }
                 )
 
-                const bakfilePath = fileRes.filePaths[0]
-                // 执行恢复
-                const recoverRes = await doRecover(bakfilePath, skey)
-                if (recoverRes && recoverRes.ok) {
-                    window.toast(`数据${MSG}成功`)
-                    let num = 3
-                    const timer = setInterval(() => {
-                        window.toast({
-                            type: 'warn',
-                            msg: '即将重启...(' + num.toString() + ')',
-                        })
-                        num--
-                        if (num < 0) {
-                            // 重启
-                            relaunch()
-                            clearInterval(timer)
-                        }
-                    }, 1000)
-                }
             }
         }
     }

@@ -2,7 +2,7 @@
  * @Description: 主进程(主窗口创建，不含子窗口)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 23:45:01
- * @LastEditTime: 2021-12-02 11:21:25
+ * @LastEditTime: 2021-12-03 23:46:58
  */
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'path'
@@ -78,7 +78,7 @@ function createWindow(isLoginWin = false, query?: object, callback?: () => void)
 
     if (IsDev) {
         // 获取端口号
-        const Port = process.env.npm_package_scripts_serve!.split(" ").find((_, index, arr) => arr[index - 1] === "--port")
+        const Port = process.env['npm_package_config_port']
 
         // 由于vue-cli-service serve和electron命令同时启动，无法判定哪个先启动完成
         // 所以这里写个定时器，不断加载直到加载成功

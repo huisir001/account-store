@@ -7,8 +7,11 @@
   "private": true,
   "main": "app.js",
   "homepage": "./",
+  "config":{
+      "port":55555
+  },
   "scripts": {
-    "serve": "vue-cli-service serve --port 54321 --mode dev",
+    "serve": "vue-cli-service serve --mode dev",
     "build:vue": "vue-cli-service build --mode pro",
     "install:dist": "cd dist && npm install --production",
     "lint": "vue-cli-service lint",

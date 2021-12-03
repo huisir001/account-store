@@ -2,7 +2,7 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-12-02 18:30:36
+ * @LastEditTime: 2021-12-03 11:04:46
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
@@ -82,12 +82,12 @@ class Options {
      */
     async doRecover({ filePath, skey }: { filePath: string, skey: string }): Promise<any> {
         operate("执行数据恢复")
+        // 更新私钥
+        Skey.updateSkey(skey)
         // 拷贝
-        await Skey.updateSkey(skey)
         await copyFile(filePath, DB_NAME)
         return Promise.resolve(Response.succ())
     }
-
 }
 
 export default new Options()

@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-06-20 16:57:11
+ * @LastEditTime: 2021-12-03 14:50:02
  */
 
 /**
@@ -78,7 +78,7 @@ declare interface ILoginParams extends Index {
 /**
  * 重设账户数据入参
  */
-declare interface IResetLoginParams {
+declare interface IResetLoginParams extends Index {
     token: string
     old_password?: string
     core_password: string

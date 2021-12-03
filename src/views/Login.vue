@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-12-02 18:13:04
+ * @LastEditTime: 2021-12-03 15:16:51
 -->
 <template>
     <div class="login">
@@ -61,6 +61,8 @@
                     </el-form-item>
                     <el-form-item v-if="!isReg" class="sub-btn">
                         <el-button type="text" @click="passReset">忘记密码</el-button>
+                        <span style="color: #999;">/</span>
+                        <el-button type="text" @click="softReset">软件重置</el-button>
                     </el-form-item>
                     <el-form-item v-if="isReg && hasStep1" class="sub-btn">
                         <el-button type="text" @click="step1 = true">上一步</el-button>
@@ -77,8 +79,16 @@ import CloseWinBtn from '@/components/CloseWinBtn.vue'
 import MinWinBtn from '@/components/MinWinBtn.vue'
 import { ElForm } from 'element-plus'
 import { useStore } from 'vuex'
-import { getLoginData, saveLoginData, doLogin, openMainWindow, haskey, addSkey } from '@/api/login'
-import { openChildWindow, showMessageBoxSync } from '@/api/win'
+import {
+    getLoginData,
+    saveLoginData,
+    doLogin,
+    openMainWindow,
+    haskey,
+    addSkey,
+    softWareReset,
+} from '@/api/login'
+import { openChildWindow, showMessageBoxSync, relaunch } from '@/api/win'
 
 export default defineComponent({
     name: 'Login',
@@ -272,12 +282,15 @@ export default defineComponent({
                             // 重设成功，刷新页面
                             const {
                                 ok,
-                                data: { verify_question },
+                                data: { id, verify_question },
                             } = await getLoginData()
 
                             // 有登录数据
                             if (ok === 1 && verify_question) {
+                                loginData.id = id
                                 loginData.verify_question = verify_question
+                                loginData.core_password = ''
+                                loginData.verify_answer = ''
                             }
 
                             // 提示
@@ -285,6 +298,41 @@ export default defineComponent({
                         }
                     }
                 )
+            }
+        }
+
+        // 软件重置
+        const softReset = async () => {
+            const confirmRes = await showMessageBoxSync({
+                title: '提示',
+                msg: '若程序发生未知错误无法登录或无法重设密码，\n或忘记加密私钥导致恢复备份数据后出错，需重置。',
+                btns: ['取消', '确认重置'],
+            })
+            if (confirmRes === 1) {
+                const sureConfirm = await showMessageBoxSync({
+                    title: '确认重置',
+                    msg: '重置后数据将会清空，确认重置？',
+                    type: 'warning',
+                })
+                if (sureConfirm === 0) {
+                    const ResetRes = await softWareReset()
+                    if (ResetRes && ResetRes.ok) {
+                        window.toast('软件重置成功')
+                        let num = 3
+                        const timer = setInterval(() => {
+                            window.toast({
+                                type: 'warn',
+                                msg: '即将重启...(' + num.toString() + ')',
+                            })
+                            num--
+                            if (num < 0) {
+                                // 重启
+                                relaunch()
+                                clearInterval(timer)
+                            }
+                        }, 1000)
+                    }
+                }
             }
         }
 
@@ -302,6 +350,7 @@ export default defineComponent({
             rules,
             onSubmit,
             passReset,
+            softReset,
         }
     },
 })

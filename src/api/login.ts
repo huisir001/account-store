@@ -2,7 +2,7 @@
  * @Description: 登录相关API
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:29:10
- * @LastEditTime: 2021-12-02 17:33:09
+ * @LastEditTime: 2021-12-03 10:42:07
  */
 import { todo } from "@/utils/sys"
 
@@ -29,3 +29,6 @@ export const updateSkey = (key: string) => todo('updateSkey', key)
 
 // 重设登陆数据
 export const resetLoginData = (data: IResetLoginParams) => todo('resetLoginData', data)
+
+// 重置软件
+export const softWareReset = () => todo("softWareReset")

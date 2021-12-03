@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-12-02 18:15:37
+ * @LastEditTime: 2021-12-03 10:41:00
  */
 
 export default {
@@ -31,6 +31,7 @@ export default {
         "maximize",
         "close",
         "relaunch",
+        "softWareReset",
         "showErrorBox",
         "showMessageBoxSync",
         "showOpenFileBox",

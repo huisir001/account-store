@@ -70,8 +70,6 @@ class Login {
      * @author: HuiSir
      */
     async resetLoginData(params: IResetLoginParams): Promise<any> {
-
-
         const { old_password, core_password, verify_question, verify_answer, token } = params
         // 如果有旧密码，则校验旧密码
         if (old_password) {

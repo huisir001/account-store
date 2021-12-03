@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-12-03 16:03:57
+ * @LastEditTime: 2021-12-03 17:21:02
  */
 
 export default {
@@ -52,7 +52,7 @@ export default {
 
     LOGIN_WIN_BG_COLOR: '#00000000', // 登录窗口初始化背景
     LOGIN_WIN_WIDTH: 380, // 登录窗口宽
-    LOGIN_WIN_HEIGHT: 630, // 登录窗口高
+    LOGIN_WIN_HEIGHT: 655, // 登录窗口高
 
     VUE_DEVTOOLS_CDN_LINK: "http://wailian.qn.zuifengyun.com/vue_devtools_20210601.crx"
 }

@@ -2,7 +2,7 @@
  * @Description: 路由配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-12-01 17:23:45
+ * @LastEditTime: 2021-12-03 18:13:25
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Login from '../views/Login.vue'
@@ -84,6 +84,11 @@ const routes: RouteRecordRaw[] = [
     path: '/reset',
     name: 'Reset',
     component: () => import('../views/Reset.vue')
+  },
+  {
+    path: '/prompt',
+    name: 'Prompt',
+    component: () => import('../components/Prompt.vue')
   },
 ]
 

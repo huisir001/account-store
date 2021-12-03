@@ -2,13 +2,13 @@
  * @Description: 数据恢复，在初次安装和设置界面使用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-03 15:50:11
- * @LastEditTime: 2021-12-03 16:29:39
+ * @LastEditTime: 2021-12-03 18:21:15
  */
 import os from "os"
-import { ElMessageBox } from 'element-plus'
 import { doRecover } from '@/api/option'
-import { relaunch, showOpenFileBox, showMessageBoxSync } from '@/api/win'
+import { relaunch, showOpenFileBox, showMessageBoxSync, openChildWindow } from '@/api/win'
 import { Ref } from "vue"
+import { obj2Query } from "@/utils/common"
 
 export default (backup_path?: Ref<string>) => {
     return async () => {
@@ -41,21 +41,45 @@ export default (backup_path?: Ref<string>) => {
 
             if (fileRes && !fileRes.canceled) {
                 let skey
-                try {
-                    const { value } = await ElMessageBox.prompt(
-                        '输入此备份文件的数据加密私钥！私钥在软件安装时所填写。',
-                        '提示',
-                        {
-                            confirmButtonText: '确认',
-                            cancelButtonText: '取消',
-                            inputPattern: /\w+/,
-                            inputErrorMessage: '私钥不能为空',
-                        }
-                    )
-                    skey = value
-                } catch (error) {
-                    return
+                // try {
+                //     const { value } = await ElMessageBox.prompt(
+                //         '输入此备份文件的数据加密私钥！私钥在软件安装时所填写。',
+                //         '提示',
+                //         {
+                //             confirmButtonText: '确认',
+                //             cancelButtonText: '取消',
+                //             inputPattern: /\w+/,
+                //             inputErrorMessage: '私钥不能为空',
+                //         }
+                //     )
+                //     skey = value
+                // } catch (error) {
+                //     return
+                // }
+
+                const { origin, pathname } = location
+                const queryObj = {
+                    label: '私钥是在软件安装时所填写的一串字符',
+                    placeholder: "请输入数据加密私钥"
                 }
+                openChildWindow(
+                    {
+                        wid: 'promptWindow',
+                        url: `${origin + pathname}#/prompt?${obj2Query(queryObj)}`,
+                        width: 360,
+                        height: 95,
+                        title: '私钥',
+                    },
+                    ({ msg }) => {
+                        // 接收消息
+                        if (msg == 'saved') {
+                            // 修改数据成功，刷新列表
+                            getList(curPage.value, search.value)
+                            // 提示
+                            window.toast('修改成功')
+                        }
+                    }
+                )
 
                 const bakfilePath = fileRes.filePaths[0]
                 // 执行恢复

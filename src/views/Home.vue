@@ -44,7 +44,6 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 .home {
-    // height: calc(100vh - 20px);
     height: 100%;
 }
 </style>

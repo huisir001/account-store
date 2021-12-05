@@ -2,7 +2,7 @@
  * @Description: 导出CSV操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-05 15:03:02
- * @LastEditTime: 2021-12-05 16:44:52
+ * @LastEditTime: 2021-12-05 17:15:49
  */
 import iconvLite from "iconv-lite"
 /**
@@ -10,6 +10,10 @@ import iconvLite from "iconv-lite"
  * @param data any[]
  */
 export function JSON2CsvBuffer(data: any[]) {
+    if (!data.length) {
+        return Buffer.from("")
+    }
+
     const keys = Object.keys(data[0])
     const csvData = data.reduce((prev: string, curr: { [x: string]: any }, index: number) => {
         index === 1 && (prev = `${keys.join(",")}\r\n${keys.map(key => handleCsvWord(data[0][key])).join(',')}`)

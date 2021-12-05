@@ -2,7 +2,7 @@
  * @Description: 首页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-06-11 15:49:20
+ * @LastEditTime: 2021-12-05 11:34:17
 -->
 <template>
     <div class="home">
@@ -44,6 +44,7 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 .home {
-    height: calc(100vh - 20px);
+    // height: calc(100vh - 20px);
+    height: 100%;
 }
 </style>

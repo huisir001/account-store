@@ -2,7 +2,7 @@
  * @Description: 路由入口
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-22 15:46:37
- * @LastEditTime: 2021-12-01 17:24:21
+ * @LastEditTime: 2021-12-05 11:24:30
 -->
 <template>
     <router-view />
@@ -11,6 +11,7 @@
 <style lang="scss">
 #app {
     width: 100%;
+    height: 100%; // new
     position: relative;
     border-radius: 20px;
     overflow: hidden;

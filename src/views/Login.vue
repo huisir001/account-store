@@ -2,7 +2,7 @@
  * @Description: 登录页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-12-03 16:12:33
+ * @LastEditTime: 2021-12-05 12:26:59
 -->
 <template>
     <div class="login">
@@ -57,7 +57,8 @@
                     </el-form-item>
                     <el-form-item prop="verify_answer">
                         <el-input v-model="loginData.verify_answer" clearable
-                            :placeholder="`请${tipStr}以上验证问题的答案`"></el-input>
+                            :placeholder="`请${tipStr}以上验证问题的答案`" @keypress.enter="onSubmit">
+                        </el-input>
                     </el-form-item>
                     <el-form-item class="btn-go">
                         <el-button type="primary" round @click="onSubmit">立即{{isReg?'提交':'进入'}}

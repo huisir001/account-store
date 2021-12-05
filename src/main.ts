@@ -2,7 +2,7 @@
  * @Description: 入口
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-24 10:42:53
- * @LastEditTime: 2021-12-05 12:08:46
+ * @LastEditTime: 2021-12-05 12:20:26
  */
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -25,14 +25,11 @@ router.afterEach((to) => {
     }
     // 开发环境设置body宽高
     if (process.env.NODE_ENV == 'development') {
-        const CONST = require('../sys/config/const').default
-        document.body.style.background = '#ccc'
+        const { LOGIN_WIN_WIDTH, LOGIN_WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_HEIGHT } = require('../sys/config/const').default
         if (to.name === "Login") {
-            document.body.style.width = CONST.LOGIN_WIN_WIDTH + 'px'
-            document.body.style.height = CONST.LOGIN_WIN_HEIGHT + 'px'
+            document.body.setAttribute("style", `background:#ccc;width:${LOGIN_WIN_WIDTH}px;height:${LOGIN_WIN_HEIGHT}px`)
         } else if (to.path.includes("/home")) {
-            document.body.style.width = CONST.MAIN_WIN_WIDTH + 'px'
-            document.body.style.height = CONST.MAIN_WIN_HEIGHT + 'px'
+            document.body.setAttribute("style", `background:#ccc;width:${MAIN_WIN_WIDTH}px;height:${MAIN_WIN_HEIGHT}px`)
         }
     }
 })

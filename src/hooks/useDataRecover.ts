@@ -2,7 +2,7 @@
  * @Description: 数据恢复，在初次安装和设置界面使用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-03 15:50:11
- * @LastEditTime: 2021-12-04 00:38:03
+ * @LastEditTime: 2021-12-05 10:18:32
  */
 import os from "os"
 import { doRecover } from '@/api/option'
@@ -10,15 +10,15 @@ import { relaunch, showOpenFileBox, showMessageBoxSync, openChildWindow } from '
 import { Ref } from "vue"
 import { obj2Query } from "@/utils/common"
 
-export default (backup_path?: Ref<string>) => {
+export default (backupPath?: Ref<string>) => {
     return async () => {
 
-        const MSG = backup_path ? '恢复' : '导入'
+        const MSG = backupPath ? '恢复' : '导入'
 
         const confirmRes = await showMessageBoxSync({
             title: '警告',
             type: 'warning',
-            msg: backup_path ?
+            msg: backupPath ?
                 '1. 恢复后当前数据将被完全清空，包括总密码、账户表、验证问题、配置项及操作记录！\n' +
                 '2. 可到账户列表对现有账户数据进行选择性导出，等恢复了备份再增量导入！\n' +
                 '3. 稍候将填写数据加密私钥，数据恢复后将重启软件！\n' +
@@ -36,7 +36,7 @@ export default (backup_path?: Ref<string>) => {
             const fileRes = await showOpenFileBox(
                 `选择需要${MSG}的数据备份文件`,
                 ['db.bak'],
-                backup_path ? backup_path.value : os.homedir() //用户文件夹
+                backupPath ? backupPath.value : os.homedir() //用户文件夹
             )
 
             if (fileRes && !fileRes.canceled) {

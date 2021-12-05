@@ -2,23 +2,26 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-06-20 16:10:30
+ * @LastEditTime: 2021-12-05 16:45:07
  */
 import Response from "../tools/Response"
-import AccountModel from '../models/Accounts'
+import AccountModel from "../models/Accounts"
 import { operate } from "./operationLog"
 import Encrypt from "../tools/Encrypt"
 import { formatDate } from "../tools/utils"
 import { creatToken } from "../tools/Token"
-import TokenModel from '../models/Token'
-import loginMethod from './Login'
+import TokenModel from "../models/Token"
+import loginMethod from "./Login"
+import { JSON2CsvBuffer } from "../tools/csv"
+import path from "path"
+import fs from "fs"
 
 /**
  * 查询列表返回数据类型
  */
 interface IAccountListByPage {
-    list: object[]  // 数据集
-    page: number  // 当前页码
+    list: object[] // 数据集
+    page: number // 当前页码
     limit: number // 每页条数
     total: number // 总条数
     pageTotal: number // 总页数
@@ -34,11 +37,9 @@ interface IAccunts {
 }
 
 // 需要加密的字段
-const needEncryptKeys: string[] = ['account', 'password', 'email', 'phone']
+const needEncryptKeys: string[] = ["account", "password", "email", "phone"]
 
 class Accounts implements IAccunts {
-
-
     /**
      * @description: 修改或新增账户数据
      * @param {IAddAccountParams} params
@@ -59,7 +60,7 @@ class Accounts implements IAccunts {
             const id = params.id
             delete params.id
             // 更新时间
-            params.update_time = formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+            params.update_time = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
             const res = await AccountModel.update({ id }, params)
             if (res) {
                 return Promise.resolve(Response.succ({ msg: "保存成功" }))
@@ -128,9 +129,16 @@ class Accounts implements IAccunts {
         // operate("账户列表分页查询")
         const { name = "", page, limit } = params
         // fuzzy-模糊查询
-        const list = await AccountModel.find({ name }, {
-            page, limit, sort: "-create_time", filter: "id name create_time", fuzzy: true
-        })
+        let list = await AccountModel.find(
+            { name },
+            {
+                page,
+                limit,
+                sort: "-create_time",
+                filter: "id name create_time",
+                fuzzy: true,
+            }
+        )
         const { count: total } = await AccountModel.count({ name })
         if (list) {
             const data: IAccountListByPage = {
@@ -138,9 +146,36 @@ class Accounts implements IAccunts {
                 page,
                 limit,
                 total, // 总条数
-                pageTotal: total % limit > 0 ? Math.floor(total / limit) + 1 : total / limit
+                pageTotal:
+                    total % limit > 0 ? Math.floor(total / limit) + 1 : total / limit,
             }
             return Promise.resolve(Response.succ({ data }))
+        }
+    }
+
+    /**
+     * 导出所有账户为CSV
+     * @param {string} folder
+     * @return {*}
+     */
+    async exportAccounts2Csv(folder: string): Promise<any> {
+        operate("导出CSV账户数据")
+        // 查询所有：page=-1
+        let list = await AccountModel.find({}, { page: -1, sort: "-create_time" })
+        if (list) {
+            // 解密
+            list = list.map((item: any) => {
+                Object.keys(item).forEach((key) => {
+                    if (needEncryptKeys.includes(key)) {
+                        item[key] = Encrypt.decrypt(item[key])
+                    }
+                })
+                return item
+            })
+
+            fs.writeFileSync(path.join(folder, `${Date.now()}.csv`), JSON2CsvBuffer(list))
+
+            return Promise.resolve(Response.succ())
         }
     }
 
@@ -153,7 +188,10 @@ class Accounts implements IAccunts {
     async getAccountListRan(limit: number): Promise<any> {
         operate("账户列表随机查询")
         const list = await AccountModel.find("", {
-            page: -1, limit, filter: "id name", sort: 'random'
+            page: -1,
+            limit,
+            filter: "id name",
+            sort: "random",
         })
         if (list) {
             return Promise.resolve(Response.succ({ data: list }))
@@ -171,15 +209,21 @@ class Accounts implements IAccunts {
 
         const params: IAddAccountParams[] = JSON.parse(jsonstr)
 
-        const list: IAddAccountParams[] = await AccountModel.find({ id: params.map((item) => item.id) }, {
-            page: -1, filter: "id account password"
-        })
+        const list: IAddAccountParams[] = await AccountModel.find(
+            { id: params.map((item) => item.id) },
+            {
+                page: -1,
+                filter: "id account password",
+            }
+        )
 
         if (list) {
             for (const { id, account, password } of list) {
                 const paramItem = params.find((p) => p.id === id)
-                if (paramItem?.account !== Encrypt.decrypt(account!) ||
-                    paramItem?.password !== Encrypt.decrypt(password!)) {
+                if (
+                    paramItem?.account !== Encrypt.decrypt(account!) ||
+                    paramItem?.password !== Encrypt.decrypt(password!)
+                ) {
                     return Promise.resolve(Response.succ({ data: { token: null } }))
                 }
             }

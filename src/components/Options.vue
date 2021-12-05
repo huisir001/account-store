@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-03 16:28:15
+ * @LastEditTime: 2021-12-05 16:49:46
 -->
 <template>
     <div class="option">
@@ -23,6 +23,10 @@
             <el-form-item label="自动备份">
                 <el-switch v-model="auto_backup" @change="setAutoBackup"></el-switch>
                 <span class="line-intro">开启后每次退出时将会备份数据库</span>
+            </el-form-item>
+            <el-form-item label="导出表格">
+                <el-button @click="exportAccounts">立即导出</el-button>
+                <span class="line-intro">导出当前账户列表</span>
             </el-form-item>
             <el-form-item label="密码重设">
                 <el-button @click="passReset">立即重设</el-button>
@@ -48,7 +52,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import useDataRecover from '@/hooks/useDataRecover'
-import { getOptionsData, saveOptionsData, backup, doRecover } from '@/api/option'
+import { getOptionsData, saveOptionsData, backup } from '@/api/option'
 import {
     showOpenDirBox,
     openExternal,
@@ -56,6 +60,7 @@ import {
     showMessageBoxSync,
     openChildWindow,
 } from '@/api/win'
+import { exportAccounts2Csv } from '@/api/account'
 
 export default defineComponent({
     name: '',
@@ -148,6 +153,27 @@ export default defineComponent({
             }
         }
 
+        // 导出账户列表
+        const exportAccounts = async () => {
+            const confirmRes = await showMessageBoxSync({
+                title: '提示',
+                msg: '导出为明文数据，为了数据安全，请妥善保管。',
+                btns: ['取消导出', '选择导出文件存放位置'],
+            })
+
+            if (confirmRes === 1) {
+                // 选择导出文件夹
+                const res = await showOpenDirBox()
+                if (res && !res.canceled) {
+                    // 导出到选定的文件夹
+                    const exportRes = await exportAccounts2Csv(res.filePaths[0])
+                    if (exportRes && exportRes.ok) {
+                        window.toast('导出成功')
+                    }
+                }
+            }
+        }
+
         return {
             backup_path,
             backup_file_num,
@@ -160,6 +186,7 @@ export default defineComponent({
             openExternal,
             openFile,
             passReset,
+            exportAccounts,
         }
     },
 })

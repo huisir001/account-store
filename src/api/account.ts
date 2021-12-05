@@ -2,7 +2,7 @@
  * @Description: 账户存储相关API
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:29:40
- * @LastEditTime: 2021-06-20 16:22:18
+ * @LastEditTime: 2021-12-05 15:39:30
  */
 
 import { todo } from "@/utils/sys"
@@ -27,3 +27,6 @@ export const getAccountListRan = () => todo('getAccountListRan', 2)
 
 // 验证数据
 export const checkAccounts = (data: string) => todo('checkAccounts', data)
+
+// 导出
+export const exportAccounts2Csv = (path: string) => todo('exportAccounts2Csv', path)

@@ -7,8 +7,8 @@
   "private": true,
   "main": "app.js",
   "homepage": "./",
-  "config":{
-      "port":55555
+  "config": {
+    "port": 55555
   },
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
@@ -25,6 +25,7 @@
     "dist:app-asar": "run-s tsc:sys build:vue install:dist build:app-asar"
   },
   "dependencies": {
+    "iconv-lite": "^0.6.3",
     "log4js": "^6.3.0",
     "sqlite3": "^5.0.2",
     "uuid": "^8.3.2"

@@ -2,7 +2,7 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-12-03 11:04:46
+ * @LastEditTime: 2021-12-07 19:49:29
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
@@ -33,6 +33,7 @@ class Options {
         }
     }
 
+    // 初始化首选项默认数据
     async initOptions(): Promise<any> {
         const res = await OptionsModel.find({})
         // 若没有数据则创建一条

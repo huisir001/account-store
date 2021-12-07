@@ -2,14 +2,14 @@
  * @Description: 导出CSV操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-05 15:03:02
- * @LastEditTime: 2021-12-05 17:15:49
+ * @LastEditTime: 2021-12-07 21:35:23
  */
 import iconvLite from "iconv-lite"
 /**
  * 导出csv-csvDataBuffer
  * @param data any[]
  */
-export function JSON2CsvBuffer(data: any[]) {
+export function JSON2CsvBuffer(data: any[]): Buffer {
     if (!data.length) {
         return Buffer.from("")
     }
@@ -22,6 +22,31 @@ export function JSON2CsvBuffer(data: any[]) {
 
     // 注意使用iconvLite将带汉字的字符串格式转为GBK，解决中文文件乱码问题
     return iconvLite.encode(csvData, "gbk")
+}
+
+/**
+ * 导入csv文件字符转数组对象
+ * @param csvBuffer csv文件字符
+ * @returns 
+ */
+export function csvString2Obj(csvBuffer: Buffer): Index[] {
+    // 注意使用iconvLite解决中文文件乱码问题
+    const rows = iconvLite.decode(csvBuffer, "gbk").split("\r\n")
+    const keys = (rows.shift() || '').split(",")
+    const jsonObj = rows.map(item => {
+        // 去除制表符
+        const values = item.replace(/\t/g, "").split(",")
+        const obj: Index = {}
+        for (var i = 0; i < keys.length; i++) {
+            const curVal = values[i]
+            // 去除值首尾的双引号
+            const matchQuot = curVal.match(/^"(.*)"$/)
+            const realVal = matchQuot ? matchQuot[1] : curVal
+            obj[keys[i]] = realVal
+        }
+        return obj
+    })
+    return jsonObj
 }
 
 /**

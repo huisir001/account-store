@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-12-05 16:45:07
+ * @LastEditTime: 2021-12-07 21:31:03
  */
 import Response from "../tools/Response"
 import AccountModel from "../models/Accounts"
@@ -12,7 +12,7 @@ import { formatDate } from "../tools/utils"
 import { creatToken } from "../tools/Token"
 import TokenModel from "../models/Token"
 import loginMethod from "./Login"
-import { JSON2CsvBuffer } from "../tools/csv"
+import { csvString2Obj, JSON2CsvBuffer } from "../tools/csv"
 import path from "path"
 import fs from "fs"
 
@@ -177,6 +177,23 @@ class Accounts implements IAccunts {
 
             return Promise.resolve(Response.succ())
         }
+    }
+
+    /**
+     * 导入cvs
+     * @param filePath cvs文件绝对路径
+     * @returns 
+     */
+    async importCsvAccountsFile(filePath: string): Promise<any> {
+        operate("导入CSV账户数据文件")
+        // 读文件
+        const csvBuffer = fs.readFileSync(filePath)
+        // 转换为对象
+        const jsonObj = csvString2Obj(csvBuffer)
+        // 存表
+        let result = await AccountModel.createMany(jsonObj)
+
+        return Promise.resolve(Response.succ({ data: result }))
     }
 
     /**

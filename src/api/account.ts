@@ -2,7 +2,7 @@
  * @Description: 账户存储相关API
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:29:40
- * @LastEditTime: 2021-12-05 15:39:30
+ * @LastEditTime: 2021-12-07 20:38:20
  */
 
 import { todo } from "@/utils/sys"
@@ -30,3 +30,5 @@ export const checkAccounts = (data: string) => todo('checkAccounts', data)
 
 // 导出
 export const exportAccounts2Csv = (path: string) => todo('exportAccounts2Csv', path)
+// 导入
+export const importCsvAccountsFile = (filePath: string) => todo('importCsvAccountsFile', filePath)

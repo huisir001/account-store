@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-05 16:49:46
+ * @LastEditTime: 2021-12-07 20:58:51
 -->
 <template>
     <div class="option">
@@ -26,7 +26,8 @@
             </el-form-item>
             <el-form-item label="导出表格">
                 <el-button @click="exportAccounts">立即导出</el-button>
-                <span class="line-intro">导出当前账户列表</span>
+                <el-button @click="importCvs">导入CSV</el-button>
+                <span class="line-intro">账户列表的导出导入</span>
             </el-form-item>
             <el-form-item label="密码重设">
                 <el-button @click="passReset">立即重设</el-button>
@@ -40,9 +41,12 @@
                 </el-button>
             </el-form-item>
             <el-form-item label="作者博客">
-                <el-button @click="openExternal('http://www.zuifengyun.com')" type="text">醉风云博客
+                <el-button @click="openExternal('https://www.zuifengyun.com')" type="text">醉风云博客
                 </el-button>
-                <el-button @click="openExternal('http://code.zuifengyun.com')" type="text">码农备忘录
+                <el-button @click="openExternal('https://code.zuifengyun.com')" type="text">码农备忘录
+                </el-button>
+                <el-button @click="openExternal('https://code.zuifengyun.com/accountstore')"
+                    type="text">账号仓库官网
                 </el-button>
             </el-form-item>
         </el-form>
@@ -59,8 +63,10 @@ import {
     openFile,
     showMessageBoxSync,
     openChildWindow,
+    showOpenFileBox,
 } from '@/api/win'
-import { exportAccounts2Csv } from '@/api/account'
+import { exportAccounts2Csv, importCsvAccountsFile } from '@/api/account'
+import os from 'os'
 
 export default defineComponent({
     name: '',
@@ -157,7 +163,9 @@ export default defineComponent({
         const exportAccounts = async () => {
             const confirmRes = await showMessageBoxSync({
                 title: '提示',
-                msg: '导出为明文数据，为了数据安全，请妥善保管。',
+                msg:
+                    '1. 导出为明文数据，为了数据安全，请妥善保管！\n' +
+                    '2. 导出可能需要几分钟，请耐心等待！',
                 btns: ['取消导出', '选择导出文件存放位置'],
             })
 
@@ -169,6 +177,33 @@ export default defineComponent({
                     const exportRes = await exportAccounts2Csv(res.filePaths[0])
                     if (exportRes && exportRes.ok) {
                         window.toast('导出成功')
+                    }
+                }
+            }
+        }
+
+        // 导入CSV
+        const importCvs = async () => {
+            const confirmRes = await showMessageBoxSync({
+                title: '警告',
+                type: 'warning',
+                msg:
+                    '1. csv文件格式要与导出的csv文件格式一致方能导入成功！\n' +
+                    '2. csv文件不合法将导致不可预知的错误！\n' +
+                    '3. 导入不会影响当前已有的账户数据！\n' +
+                    '4. 请谨慎操作，确保已选择的csv文件安全有效！',
+            })
+            if (confirmRes === 0) {
+                // 选择文件
+                const fileRes = await showOpenFileBox(
+                    `选择需要导入的csv文件`,
+                    ['csv'],
+                    os.homedir() //用户文件夹
+                )
+                if (fileRes && !fileRes.canceled) {
+                    const importRes = await importCsvAccountsFile(fileRes.filePaths[0])
+                    if (importRes && importRes.ok) {
+                        window.toast(`导入成功${importRes.data.count}条数据`)
                     }
                 }
             }
@@ -187,6 +222,7 @@ export default defineComponent({
             openFile,
             passReset,
             exportAccounts,
+            importCvs,
         }
     },
 })

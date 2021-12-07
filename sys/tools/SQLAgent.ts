@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-06-20 14:03:54
+ * @LastEditTime: 2021-12-07 20:02:32
  */
 
 /**
@@ -367,11 +367,10 @@ export default class SQLAgent {
     /**
      * @description: 多数据创建
      * @param {Array} slot [Object,Object,...]
-     * @param {String} filter el:'-password -id' 要返回的字段或要排除的字段，-号为排除
      * @return {*}
      * @author: HuiSir
      */
-    createMany(slot: any[] = [], filter: string = ''): Promise<any> {
+    createMany(slot: any[] = []): Promise<any> {
         if (slot.length === 0) {
             return Promise.reject(new Error('插入数据为空'))
         }
@@ -391,13 +390,11 @@ export default class SQLAgent {
             return valuesArr.join("','")
         })
         const insertValuesStr = insertValues.join("'),('")
-        //返回字段过滤
-        const resFields = SQLAgent.fieldFilter(filter, schema)
         //条件转义
         const whereStr = SQLAgent.obj2whereStr({ id: ids })
         return new Promise((resolve, reject) => {
             const sqlMod1 = `INSERT INTO ${tableName} (${insertKeys.join(',')}) VALUES ('${insertValuesStr}');`
-            const sqlMod2 = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''};`
+            const sqlMod2 = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''};`
 
             const DB = getDBConn()
 
@@ -409,12 +406,12 @@ export default class SQLAgent {
                     }
                 })
 
-                DB.all(sqlMod2, function (err: any, rows: any) {
+                DB.get(sqlMod2, function (err: any, row: any) {
                     DB.release()
                     if (err) {
                         reject(err)
                     } else {
-                        resolve(rows)
+                        resolve(row)
                     }
                 })
             })

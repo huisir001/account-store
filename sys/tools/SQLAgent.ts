@@ -2,7 +2,7 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-12-07 20:02:32
+ * @LastEditTime: 2021-12-07 22:03:01
  */
 
 /**
@@ -405,7 +405,7 @@ export default class SQLAgent {
                         reject(err)
                     }
                 })
-
+                // 读取插入条数
                 DB.get(sqlMod2, function (err: any, row: any) {
                     DB.release()
                     if (err) {

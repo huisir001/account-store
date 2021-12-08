@@ -1,51 +1,27 @@
 /*
- * @Description: 导出导入CSV操作
+ * @Description: 导出CSV操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-05 15:03:02
- * @LastEditTime: 2021-12-08 18:39:08
+ * @LastEditTime: 2021-12-08 21:51:59
  */
 import iconvLite from "iconv-lite"
-import fs from "fs"
-import Encrypt from "./Encrypt"
-// 需要加密的字段
-const needEncryptKeys: string[] = ["account", "password", "email", "phone"]
-
 /**
- * 行对象数据转义csv-buffer
- * @param row 行数据
- * @param hasKeys 是否是第一行 
+ * 导出csv-csvDataBuffer
+ * @param data any[]
  */
-export function rowData2CsvBuffer(row: Index, hasKeys: boolean = false): Buffer {
-    const keys = Object.keys(row)
-    const keysLine = hasKeys ? keys.join(",") : ""
-    const valsLine = `\r\n${keys.map(key => {
-        // 这里处理解密
-        let value = row[key]
-        if (needEncryptKeys.includes(key)) {
-            value = Encrypt.decrypt(value)
-        }
-        return handleCsvWord(value)
-    }).join(',')}`
-    // 注意使用iconvLite将带汉字的字符串格式转为GBK，解决中文文件乱码问题
-    return iconvLite.encode(keysLine + valsLine, "gbk")
-}
+export function JSON2CsvBuffer(data: any[]): Buffer {
+    if (!data.length) {
+        return Buffer.from("")
+    }
 
-/**
- * 封装写入流为promise
- * @param Ws 
- * @param buf 
- * @returns 
- */
-export function wsWriteSync(Ws: fs.WriteStream, buf: Buffer): Promise<any> {
-    return new Promise((resolve, reject) => {
-        Ws.write(buf, (err) => {
-            if (err) {
-                reject(err)
-            } else {
-                resolve(1)
-            }
-        })
+    const keys = Object.keys(data[0])
+    const csvData = data.reduce((prev: string, curr: { [x: string]: any }, index: number) => {
+        index === 1 && (prev = `${keys.join(",")}\r\n${keys.map((key) => handleCsvWord(data[0][key])).join(',')}`)
+        return `${prev}\r\n${keys.map((key) => handleCsvWord(curr[key])).join(',')}`
     })
+
+    // 注意使用iconvLite将带汉字的字符串格式转为GBK，解决中文文件乱码问题
+    return iconvLite.encode(csvData, "gbk")
 }
 
 /**
@@ -57,7 +33,7 @@ export function csvString2Obj(csvBuffer: Buffer): Index[] {
     // 注意使用iconvLite解决中文文件乱码问题
     const rows = iconvLite.decode(csvBuffer, "gbk").split("\r\n")
     const keys = (rows.shift() || '').split(",")
-    const jsonObj = rows.map(item => {
+    const jsonObj = rows.map((item) => {
         // 去除制表符
         const values = item.replace(/\t/g, "").split(",")
         const obj: Index = {}
@@ -84,7 +60,7 @@ export function csvString2Obj(csvBuffer: Buffer): Index[] {
  */
 function handleCsvWord(value: string) {
     const Characters = [',', ' ', '\r\n', '"']
-    if (value && value.toString().split("").find(word => Characters.includes(word))) {
+    if (value && value.toString().split("").find((word) => Characters.includes(word))) {
         return `"${value}"`
     } else if (typeof value === "string" && value.length > 5 && !isNaN(Number(value))) {
         // 防止预览时被表格转义为科学计数

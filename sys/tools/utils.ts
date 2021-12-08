@@ -2,7 +2,7 @@
  * @Description: 工具
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-30 17:12:49
- * @LastEditTime: 2021-06-12 00:37:03
+ * @LastEditTime: 2021-12-08 23:41:02
  */
 
 interface IObject {

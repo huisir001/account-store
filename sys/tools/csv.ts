@@ -1,27 +1,51 @@
 /*
- * @Description: 导出CSV操作
+ * @Description: 导出导入CSV操作
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-05 15:03:02
- * @LastEditTime: 2021-12-07 21:35:23
+ * @LastEditTime: 2021-12-08 18:39:08
  */
 import iconvLite from "iconv-lite"
+import fs from "fs"
+import Encrypt from "./Encrypt"
+// 需要加密的字段
+const needEncryptKeys: string[] = ["account", "password", "email", "phone"]
+
 /**
- * 导出csv-csvDataBuffer
- * @param data any[]
+ * 行对象数据转义csv-buffer
+ * @param row 行数据
+ * @param hasKeys 是否是第一行 
  */
-export function JSON2CsvBuffer(data: any[]): Buffer {
-    if (!data.length) {
-        return Buffer.from("")
-    }
-
-    const keys = Object.keys(data[0])
-    const csvData = data.reduce((prev: string, curr: { [x: string]: any }, index: number) => {
-        index === 1 && (prev = `${keys.join(",")}\r\n${keys.map(key => handleCsvWord(data[0][key])).join(',')}`)
-        return `${prev}\r\n${keys.map(key => handleCsvWord(curr[key])).join(',')}`
-    })
-
+export function rowData2CsvBuffer(row: Index, hasKeys: boolean = false): Buffer {
+    const keys = Object.keys(row)
+    const keysLine = hasKeys ? keys.join(",") : ""
+    const valsLine = `\r\n${keys.map(key => {
+        // 这里处理解密
+        let value = row[key]
+        if (needEncryptKeys.includes(key)) {
+            value = Encrypt.decrypt(value)
+        }
+        return handleCsvWord(value)
+    }).join(',')}`
     // 注意使用iconvLite将带汉字的字符串格式转为GBK，解决中文文件乱码问题
-    return iconvLite.encode(csvData, "gbk")
+    return iconvLite.encode(keysLine + valsLine, "gbk")
+}
+
+/**
+ * 封装写入流为promise
+ * @param Ws 
+ * @param buf 
+ * @returns 
+ */
+export function wsWriteSync(Ws: fs.WriteStream, buf: Buffer): Promise<any> {
+    return new Promise((resolve, reject) => {
+        Ws.write(buf, (err) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(1)
+            }
+        })
+    })
 }
 
 /**

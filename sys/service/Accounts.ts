@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-12-07 21:31:03
+ * @LastEditTime: 2021-12-08 18:24:53
  */
 import Response from "../tools/Response"
 import AccountModel from "../models/Accounts"
@@ -12,7 +12,7 @@ import { formatDate } from "../tools/utils"
 import { creatToken } from "../tools/Token"
 import TokenModel from "../models/Token"
 import loginMethod from "./Login"
-import { csvString2Obj, JSON2CsvBuffer } from "../tools/csv"
+import { csvString2Obj, rowData2CsvBuffer, wsWriteSync } from "../tools/csv"
 import path from "path"
 import fs from "fs"
 
@@ -160,23 +160,38 @@ class Accounts implements IAccunts {
      */
     async exportAccounts2Csv(folder: string): Promise<any> {
         operate("导出CSV账户数据")
-        // 查询所有：page=-1
-        let list = await AccountModel.find({}, { page: -1, sort: "-create_time" })
-        if (list) {
-            // 解密
-            list = list.map((item: any) => {
-                Object.keys(item).forEach((key) => {
-                    if (needEncryptKeys.includes(key)) {
-                        item[key] = Encrypt.decrypt(item[key])
-                    }
-                })
-                return item
-            })
 
-            fs.writeFileSync(path.join(folder, `${Date.now()}.csv`), JSON2CsvBuffer(list))
-
-            return Promise.resolve(Response.succ())
+        // 思路：先查出所有id，再根据ID查询单行数据，然后按行写入文件
+        // 查询所有id：page=-1
+        const ids = await AccountModel.find('', { page: -1, filter: "id", sort: "-create_time" })
+        if (!(ids && ids.length)) {
+            return Promise.resolve(Response.fail("暂无账户数据"))
         }
+
+        // 写文件流
+        const Ws = fs.createWriteStream(path.join(folder, `${Date.now()}.csv`))
+
+        // 查詢單行数据
+        for (let index = 0; index < ids.length; index++) {
+            const { id } = ids[index];
+            const data = await AccountModel.findOne({ id })
+
+            if (data) {
+                // 单行数据写入
+                if (index === 0) {
+                    // 第一行，需要同时写入keys和第一行values
+                    await wsWriteSync(Ws, rowData2CsvBuffer(data, true))
+                } else {
+                    await wsWriteSync(Ws, rowData2CsvBuffer(data))
+                }
+                // 关闭流
+                if (index === ids.length - 1) {
+                    Ws.close()
+                }
+            }
+        }
+
+        return Promise.resolve(Response.succ())
     }
 
     /**
@@ -186,10 +201,21 @@ class Accounts implements IAccunts {
      */
     async importCsvAccountsFile(filePath: string): Promise<any> {
         operate("导入CSV账户数据文件")
-        // 读文件
+
+        // 思路：由于表数据不会很大，所以这里直接全文件读，写入
         const csvBuffer = fs.readFileSync(filePath)
         // 转换为对象
         const jsonObj = csvString2Obj(csvBuffer)
+
+        // 加密
+        jsonObj.forEach(params => {
+            Object.keys(params).forEach((key) => {
+                if (needEncryptKeys.includes(key)) {
+                    params[key] = Encrypt.encrypt(params[key])
+                }
+            })
+        })
+
         // 存表
         let result = await AccountModel.createMany(jsonObj)
 

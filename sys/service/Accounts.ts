@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-12-09 12:31:56
+ * @LastEditTime: 2021-12-09 12:54:05
  */
 import Response from "../tools/Response"
 import AccountModel from "../models/Accounts"
@@ -246,7 +246,7 @@ class Accounts implements IAccunts {
             { id: params.map((item) => item.id) },
             {
                 page: -1,
-                filter: "id account password",
+                filter: "id secret",
             }
         )
 
@@ -256,8 +256,8 @@ class Accounts implements IAccunts {
                 handleDecryptData(findListItem)
                 const paramItem = params.find((p) => p.id === findListItem.id)
                 if (
-                    paramItem?.account !== Encrypt.decrypt(findListItem.account!) ||
-                    paramItem?.password !== Encrypt.decrypt(findListItem.password!)
+                    paramItem?.account !== findListItem.account ||
+                    paramItem?.password !== findListItem.password
                 ) {
                     return Promise.resolve(Response.succ({ data: { token: null } }))
                 }

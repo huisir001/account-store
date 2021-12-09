@@ -2,7 +2,7 @@
  * @Description: 账号表数据增删改查
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-25 11:26:37
- * @LastEditTime: 2021-12-08 23:40:46
+ * @LastEditTime: 2021-12-09 12:31:56
  */
 import Response from "../tools/Response"
 import AccountModel from "../models/Accounts"
@@ -36,8 +36,28 @@ interface IAccunts {
     getAccountList: (params: IGetListParams) => Promise<Response>
 }
 
+/**
+ * 数据加密处理,无secret
+ */
+const handleEncryptData = (params: IAddAccountParams) => {
+    const { account, password, email, phone } = params
+    params.secret = Encrypt.encrypt(JSON.stringify({ account, password, email, phone }))
+    delete params.account
+    delete params.password
+    delete params.email
+    delete params.phone
+}
+
+/**
+ * 数据解密处理，有secret
+ */
+const handleDecryptData = (params: IAddAccountParams) => {
+    Object.assign(params, JSON.parse(Encrypt.decrypt(params.secret!)))
+    delete params.secret
+}
+
 // 需要加密的字段
-const needEncryptKeys: string[] = ["account", "password"/* , "email", "phone" */]
+const needEncryptKeys: string[] = ["account", "password", "email", "phone"]
 
 class Accounts implements IAccunts {
     /**
@@ -46,12 +66,8 @@ class Accounts implements IAccunts {
      * @return {*}
      */
     async saveAccount(params: IAddAccountParams): Promise<any> {
-        // 加密
-        Object.keys(params).forEach((key) => {
-            if (needEncryptKeys.includes(key)) {
-                params[key] = Encrypt.encrypt(params[key])
-            }
-        })
+        // 加密处理
+        handleEncryptData(params)
 
         // 修改
         if (params.hasOwnProperty("id")) {
@@ -99,11 +115,7 @@ class Accounts implements IAccunts {
             operate(`查询【${data.name}】账户数据`)
 
             // 解密
-            Object.keys(data).forEach((key) => {
-                if (needEncryptKeys.includes(key)) {
-                    data[key] = Encrypt.decrypt(data[key])
-                }
-            })
+            handleDecryptData(data)
 
             return Promise.resolve(Response.succ({ data }))
         }
@@ -167,11 +179,7 @@ class Accounts implements IAccunts {
 
             // 解密
             list.forEach((item: any) => {
-                Object.keys(item).forEach((key) => {
-                    if (needEncryptKeys.includes(key)) {
-                        item[key] = Encrypt.decrypt(item[key])
-                    }
-                })
+                handleDecryptData(item)
             })
 
             // 由于数据量本不大，所以这里不使用文件流操作
@@ -195,11 +203,7 @@ class Accounts implements IAccunts {
 
         // 加密
         jsonObj.forEach((obj: any) => {
-            Object.keys(obj).forEach((key) => {
-                if (needEncryptKeys.includes(key)) {
-                    obj[key] = Encrypt.encrypt(obj[key])
-                }
-            })
+            handleEncryptData(obj)
         })
 
         // 存表
@@ -247,11 +251,13 @@ class Accounts implements IAccunts {
         )
 
         if (list) {
-            for (const { id, account, password } of list) {
-                const paramItem = params.find((p) => p.id === id)
+            for (const findListItem of list) {
+                // 解密
+                handleDecryptData(findListItem)
+                const paramItem = params.find((p) => p.id === findListItem.id)
                 if (
-                    paramItem?.account !== Encrypt.decrypt(account!) ||
-                    paramItem?.password !== Encrypt.decrypt(password!)
+                    paramItem?.account !== Encrypt.decrypt(findListItem.account!) ||
+                    paramItem?.password !== Encrypt.decrypt(findListItem.password!)
                 ) {
                     return Promise.resolve(Response.succ({ data: { token: null } }))
                 }

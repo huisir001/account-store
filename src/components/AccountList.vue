@@ -2,7 +2,7 @@
  * @Description: 账户列表
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:28
- * @LastEditTime: 2021-06-20 19:13:03
+ * @LastEditTime: 2021-12-09 11:28:20
 -->
 <template>
     <div class="accountList">
@@ -108,11 +108,11 @@ export default defineComponent({
                     height: 390,
                     title: '编辑账户',
                 },
-                ({ msg }) => {
+                async({ msg }) => {
                     // 接收消息
                     if (msg == 'saved') {
                         // 修改数据成功，刷新列表
-                        getList(curPage.value, search.value)
+                        await getList(curPage.value, search.value)
                         // 提示
                         window.toast('修改成功')
                     }

@@ -2,7 +2,7 @@
  * @Description: 全局类型定义
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 16:13:02
- * @LastEditTime: 2021-12-03 14:50:02
+ * @LastEditTime: 2021-12-09 10:43:55
  */
 
 /**
@@ -97,6 +97,9 @@ declare interface IAddAccountParams extends Index {
     email?: string // 绑定邮箱
     phone?: string // 绑定手机
     remark?: string // 备注
+    secret?: string //加密数据
+    update_time?: string
+    create_time?: string
 }
 
 /**

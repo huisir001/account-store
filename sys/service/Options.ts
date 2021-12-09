@@ -2,7 +2,7 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-12-07 22:02:20
+ * @LastEditTime: 2021-12-09 15:26:17
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
@@ -87,6 +87,13 @@ class Options {
         // 拷贝
         await copyFile(filePath, DB_NAME)
         return Promise.resolve(Response.succ())
+    }
+
+    /**
+     * 获取版本号
+     */
+    async getVersion(): Promise<any> {
+        return Promise.resolve(Response.succ({ data: process.env['npm_package_version'] }))
     }
 }
 

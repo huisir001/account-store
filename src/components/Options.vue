@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-09 15:07:19
+ * @LastEditTime: 2021-12-09 15:32:39
 -->
 <template>
     <div class="option">
@@ -41,7 +41,7 @@
                 </el-button>
             </el-form-item>
             <el-form-item label="作品相关">
-                <el-button @click="openExternal('https://code.zuifengyun.com/accountstore')"
+                <el-button @click="openExternal('https://code.zuifengyun.com/accountstore?version='+version)"
                     type="text">检查更新
                 </el-button>
                 <el-button @click="openExternal('https://www.zuifengyun.com')" type="text">醉风云博客
@@ -56,7 +56,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import useDataRecover from '@/hooks/useDataRecover'
-import { getOptionsData, saveOptionsData, backup } from '@/api/option'
+import { getOptionsData, saveOptionsData, backup,getVersion } from '@/api/option'
 import {
     showOpenDirBox,
     openExternal,
@@ -75,6 +75,7 @@ export default defineComponent({
         const backup_file_num = ref(1)
         const auto_backup = ref(false)
         const optionId = ref('')
+        const version = ref('')
 
         // 请求初始数据
         ;(async () => {
@@ -84,6 +85,14 @@ export default defineComponent({
                 backup_file_num.value = res.data.backup_file_num
                 auto_backup.value = !!res.data.auto_backup
                 optionId.value = res.data.id
+            }
+        })()
+
+        // 请求版本号
+        ;(async () => {
+            const res = await getVersion()
+            if (res && res.ok) {
+                version.value = res.data
             }
         })()
 
@@ -210,6 +219,7 @@ export default defineComponent({
         }
 
         return {
+            version,
             backup_path,
             backup_file_num,
             backupNumChange,

@@ -1,7 +1,7 @@
 # AccountStore 账号仓库
 你的私人密码管理器
 > version: 1.0.0      
-> website：[https://code.zuifengyun.com/accountstore](https://code.zuifengyun.com/accountstore)
+> website: [https://code.zuifengyun.com/accountstore](https://code.zuifengyun.com/accountstore)
 
 ## 特色
 * 数据加密存储

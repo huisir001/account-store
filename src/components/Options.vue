@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-07 22:01:27
+ * @LastEditTime: 2021-12-09 15:07:19
 -->
 <template>
     <div class="option">
@@ -40,13 +40,13 @@
                 <el-button @click="openFile('./logs/errors.log')" type="text" style="color:red">错误日志
                 </el-button>
             </el-form-item>
-            <el-form-item label="作者博客">
+            <el-form-item label="作品相关">
+                <el-button @click="openExternal('https://code.zuifengyun.com/accountstore')"
+                    type="text">检查更新
+                </el-button>
                 <el-button @click="openExternal('https://www.zuifengyun.com')" type="text">醉风云博客
                 </el-button>
                 <el-button @click="openExternal('https://code.zuifengyun.com')" type="text">码农备忘录
-                </el-button>
-                <el-button @click="openExternal('https://code.zuifengyun.com/accountstore')"
-                    type="text">账号仓库官网
                 </el-button>
             </el-form-item>
         </el-form>

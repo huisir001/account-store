@@ -2,7 +2,7 @@
  * @Description: 设置页
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-08 13:57:51
- * @LastEditTime: 2021-12-09 15:32:39
+ * @LastEditTime: 2021-12-10 21:16:55
 -->
 <template>
     <div class="option">
@@ -41,7 +41,8 @@
                 </el-button>
             </el-form-item>
             <el-form-item label="作品相关">
-                <el-button @click="openExternal('https://code.zuifengyun.com/accountstore?version='+version)"
+                <el-button
+                    @click="openExternal('https://code.zuifengyun.com/accountstore?version='+version)"
                     type="text">检查更新
                 </el-button>
                 <el-button @click="openExternal('https://www.zuifengyun.com')" type="text">醉风云博客
@@ -56,7 +57,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import useDataRecover from '@/hooks/useDataRecover'
-import { getOptionsData, saveOptionsData, backup,getVersion } from '@/api/option'
+import { getOptionsData, saveOptionsData, backup, getVersion } from '@/api/option'
 import {
     showOpenDirBox,
     openExternal,
@@ -66,7 +67,6 @@ import {
     showOpenFileBox,
 } from '@/api/win'
 import { exportAccounts2Csv, importCsvAccountsFile } from '@/api/account'
-import os from 'os'
 
 export default defineComponent({
     name: '',
@@ -204,11 +204,7 @@ export default defineComponent({
             })
             if (confirmRes === 0) {
                 // 选择文件
-                const fileRes = await showOpenFileBox(
-                    `选择需要导入的csv文件`,
-                    ['csv'],
-                    os.homedir() //用户文件夹
-                )
+                const fileRes = await showOpenFileBox(`选择需要导入的csv文件`, ['csv'])
                 if (fileRes && !fileRes.canceled) {
                     const importRes = await importCsvAccountsFile(fileRes.filePaths[0])
                     if (importRes && importRes.ok) {

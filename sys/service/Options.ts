@@ -2,7 +2,7 @@
  * @Description: 首选项设置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-31 13:39:33
- * @LastEditTime: 2021-12-09 15:26:17
+ * @LastEditTime: 2021-12-10 21:56:54
  */
 import OptionsModel from '../models/Options'
 import { Log } from '../tools/Logger'
@@ -14,6 +14,7 @@ import path from 'path'
 import { formatDate } from '../tools/utils'
 import CONST from "../config/const"
 const { DB_NAME } = CONST
+const packageJson = require("../../package.json")
 class Options {
     async getOptionsData(): Promise<any> {
         // operate("请求首选项设置数据")
@@ -93,7 +94,7 @@ class Options {
      * 获取版本号
      */
     async getVersion(): Promise<any> {
-        return Promise.resolve(Response.succ({ data: process.env['npm_package_version'] }))
+        return Promise.resolve(Response.succ({ data: packageJson.version }))
     }
 }
 

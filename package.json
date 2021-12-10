@@ -3,7 +3,7 @@
   "productName": "Account Store",
   "author": "HuiSir<273250950@qq.com>",
   "description": "Users store personal account information, such as the account password of a website or application.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "main": "app.js",
   "homepage": "./",

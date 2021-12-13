@@ -1,5 +1,5 @@
 #define MyAppName "Account Store"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "HuiSir"
 #define MyAppURL "http://code.zuifengyun.com/accountstore"
 #define MyAppExeName "AccountStore.exe"
@@ -15,10 +15,10 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=G:\我的项目\account-store\install-license.txt
-OutputDir=G:\我的项目
-OutputBaseFilename=AccountStore-1.0.0-win-x64x32-installer
-SetupIconFile=G:\我的项目\account-store\public\favicon.ico
+LicenseFile=C:\Users\gxh\Documents\account-store\install-license.txt
+OutputDir=C:\Users\gxh\Documents\account-store\output
+OutputBaseFilename=AccountStore-1.1.0-win-x64x32-installer
+SetupIconFile=C:\Users\gxh\Documents\account-store\public\favicon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -30,8 +30,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "G:\我的项目\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "G:\我的项目\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\gxh\Documents\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\gxh\Documents\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 注锟斤拷: 锟斤拷要锟斤拷锟轿何癸拷锟斤拷系统锟侥硷拷锟斤拷使锟矫★拷Flags: ignoreversion锟斤拷
 
 [Icons]

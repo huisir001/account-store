@@ -97,13 +97,15 @@ class Pool implements IPool {
      * 关闭所有连接
      */
     closeAll(): void {
-        this.pool.forEach((item) => {
+       this.pool.forEach((item,index) => {
             item.close((err) => {
                 if (err) {
                     Log.error("关闭所有数据库：", err.toString())
                 }
             })
-            this.pool = []
+			if(index== this.pool.length-1){
+				this.pool = []	
+			}
         })
     }
 }

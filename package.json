@@ -13,7 +13,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
     "build:vue": "vue-cli-service build --mode pro",
-    "install:dist": "cd dist && npm install --production",
+    "install:dist": "cd dist && npm install",
     "lint": "vue-cli-service lint",
     "tsc:sys": "tsc --build ./sys/tsconfig.json",
     "build:app": "set NODE_ENV=production&&　electron-packager ./dist AccountStore --overwrite --electron-version=13.0.1 --platform=win32 --arch=x64 --out=output --icon=./dist/favicon.ico",

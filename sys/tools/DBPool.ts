@@ -2,7 +2,7 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2022-05-05 14:07:46
+ * @LastEditTime: 2022-05-05 14:08:55
  */
 import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"

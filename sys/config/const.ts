@@ -2,7 +2,7 @@
  * @Description: 常量配置
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 09:32:21
- * @LastEditTime: 2021-12-03 17:21:02
+ * @LastEditTime: 2022-05-05 11:11:47
  */
 
 export default {
@@ -43,8 +43,10 @@ export default {
     ],
 
     DB_NAME: "data.db", // 数据库名称
-    BD_POOL_LEN: 6, // 数据库连接池默认初始化容量
-    BD_POOL_MAX_LEN: 8, // 数据库连接池最大连接数
+    BD_POOL_MIN_CONN_NUM: 6, // 数据库连接池最小连接数
+    BD_POOL_MAX_CONN_NUM: 12, // 数据库连接池最大连接数
+    BD_POOL_MAX_WAIT_TIME: 500, // 数据库连接池最大等待时间
+    BD_POOL_MAX_USE_TIMES: 8, // 数据库连接池最大使用次数
 
     MAIN_WIN_BG_COLOR: '#00000000', // 主窗口初始化背景
     MAIN_WIN_WIDTH: 900, // 主窗口宽

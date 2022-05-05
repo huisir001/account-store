@@ -2,7 +2,7 @@
  * @Description: 窗口api
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-06-10 17:30:12
- * @LastEditTime: 2021-12-03 23:33:08
+ * @LastEditTime: 2022-05-05 12:22:48
  */
 import { winTodo, todo, on, postMsg } from "@/utils/sys"
 
@@ -64,3 +64,9 @@ export const openExternal = (url: string) => winTodo('openExternal', url)
  * 打开文件
  */
 export const openFile = (path: string) => winTodo('openFile', path)
+
+/**
+ * 用户文件夹
+ */
+export const homedir = () => todo('homedir')
+

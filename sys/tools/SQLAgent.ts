@@ -2,14 +2,13 @@
  * @Description: SQLite查询封装（中间件）
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-26 17:53:39
- * @LastEditTime: 2021-12-07 22:03:01
+ * @LastEditTime: 2022-05-05 11:43:14
  */
 
 /**
  * SQLite语句中 带特殊符号的字符串要加单引号
  */
 
-import SQLiteDB from "./SQLiteDB"
 import { Log } from './Logger' //日志
 import { v1 as uuidv1 } from 'uuid'
 import { IPool, dataPool, cachePool } from "./DBPool"
@@ -150,7 +149,6 @@ export default class SQLAgent {
 
         return 'ORDER BY ' + orderArr2.join(',')
     }
-    getDBConn: () => SQLiteDB
 
     private pool: IPool
     private tableName: string
@@ -162,7 +160,6 @@ export default class SQLAgent {
     constructor(tableName: string, schema: object, cache: boolean = false) {
         this.tableName = tableName
         this.pool = cache ? cachePool : dataPool
-        this.getDBConn = this.pool.getDBConn.bind(this.pool)
 
         // 添加主键id
         this.schema = {
@@ -183,8 +180,8 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     run(sqlMod: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const DB = this.getDBConn()
+        return new Promise(async (resolve, reject) => {
+            const DB = await this.pool.getDBConn()
             DB.run(sqlMod, function (err: any) {
                 DB.release() // 释放连接
                 if (err) {
@@ -203,8 +200,8 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     exec(sqlMod: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const DB = this.getDBConn()
+        return new Promise(async (resolve, reject) => {
+            const DB = await this.pool.getDBConn()
             DB.run(sqlMod, function (err: any) {
                 DB.release()
                 if (err) {
@@ -220,12 +217,12 @@ export default class SQLAgent {
     /**
      * 创建数据表
      */
-    creatTable(): void {
-        const { tableName, schema, getDBConn } = this
+    async creatTable(): Promise<void> {
+        const { tableName, schema } = this
 
         // 判断表是否存在
         const tableExistSql = `SELECT count(*) as count FROM sqlite_master WHERE type = 'table' AND name = '${tableName}'`
-        const DB = getDBConn()
+        const DB = await this.pool.getDBConn()
         DB.get(tableExistSql, function (err: any, { count }: any) {
             if (err) {
                 DB.release()
@@ -268,14 +265,14 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     findOne(slot: object, filter = ''): Promise<any> {
-        const { tableName, schema, getDBConn } = this
+        const { tableName, schema } = this
         //返回字段过滤
         const resFields = SQLAgent.fieldFilter(filter, schema)
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} limit 1;`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
             DB.get(sqlMod, function (err: any, row: any) {
                 DB.release()
                 if (err) {
@@ -293,7 +290,7 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     find(slot: object | string, listParams: IListParams = {}): Promise<any> {
-        const { tableName, getDBConn, schema } = this
+        const { tableName, schema } = this
         const { filter = "", sort = "", page = 1, limit, fuzzy = false } = listParams
         const { fieldFilter, obj2whereStr, sort2QueryStr } = SQLAgent
         //返回字段过滤
@@ -310,9 +307,9 @@ export default class SQLAgent {
         } else {
             limitStr = limit ? `limit ${(page - 1) * limit},${limit}` : ""
         }
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const sqlMod = `SELECT ${resFields} FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''} ${sortQueryStr} ${limitStr};`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
             DB.all(sqlMod, function (err: any, rows: any) {
                 DB.release()
                 if (err) {
@@ -332,17 +329,17 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     create(slot: any, filter = ''): Promise<any> {
-        const { tableName, getDBConn, schema } = this
+        const { tableName, schema } = this
         // uuid
         slot.id = uuidv1()
         // 返回字段过滤
         const resFields = SQLAgent.fieldFilter(filter, schema)
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const slotKeys = Object.keys(slot)
             const slotVals = slotKeys.map((key) => slot[key])
             const sqlMod1 = `INSERT INTO ${tableName} (${slotKeys.join(',')}) VALUES ('${slotVals.join('\',\'')}');`
             const sqlMod2 = `SELECT ${resFields} FROM ${tableName} WHERE id = '${slot.id}';`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
 
             // 串行
             DB.serialize(function () {
@@ -375,7 +372,7 @@ export default class SQLAgent {
             return Promise.reject(new Error('插入数据为空'))
         }
 
-        const { tableName, getDBConn, schema } = this
+        const { tableName } = this
         const ids: string[] = []
 
         //插入字段
@@ -392,11 +389,11 @@ export default class SQLAgent {
         const insertValuesStr = insertValues.join("'),('")
         //条件转义
         const whereStr = SQLAgent.obj2whereStr({ id: ids })
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const sqlMod1 = `INSERT INTO ${tableName} (${insertKeys.join(',')}) VALUES ('${insertValuesStr}');`
             const sqlMod2 = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''};`
 
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
 
             // 串行
             DB.serialize(function () {
@@ -425,13 +422,13 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     update(whereSlot: object, updateSlot: object): Promise<any> {
-        const { tableName, getDBConn } = this
+        const { tableName } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(whereSlot)
         const updateStr = SQLAgent.obj2SetStr(updateSlot)
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const sqlMod = `UPDATE ${tableName} SET ${updateStr} WHERE ${whereStr}`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
             DB.run(sqlMod, function (err: any) {
                 DB.release()
                 if (err) {
@@ -451,18 +448,18 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     remove(slot: object, returnData: boolean = false, filter: string = ''): Promise<any> {
-        const { tableName, getDBConn, schema } = this
+        const { tableName, schema } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
         //返回字段过滤
         const resFields = returnData && SQLAgent.fieldFilter(filter, schema)
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const sqlDelMod = `DELETE FROM ${tableName} WHERE ${whereStr};`
 
             //返回被删数据
             const sqlMod = `SELECT ${resFields} FROM ${tableName} WHERE ${whereStr};`
 
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
 
             if (returnData) {
                 // 串行
@@ -499,11 +496,11 @@ export default class SQLAgent {
      * @param values el: "1,2,3" 
      */
     removeMany(key: string, values: string): Promise<any> {
-        const { tableName, getDBConn } = this
-        return new Promise((resolve, reject) => {
+        const { tableName } = this
+        return new Promise(async (resolve, reject) => {
             values = values.split(",").join("','")
             const sqlMod = `DELETE FROM ${tableName} WHERE ${key} IN ('${values}')`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
             DB.run(sqlMod, function (err: any) {
                 DB.release()
                 if (err) {
@@ -521,12 +518,12 @@ export default class SQLAgent {
      * @returns {Promise<any>}
      */
     count(slot: object | string = ""): Promise<any> {
-        const { tableName, getDBConn } = this
+        const { tableName } = this
         //条件转义
         const whereStr = SQLAgent.obj2whereStr(slot)
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const sqlMod = `SELECT COUNT(*) as count FROM ${tableName} ${whereStr ? 'WHERE ' + whereStr : ''}`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
             DB.get(sqlMod, function (err: any, row: any) {
                 DB.release()
                 if (err) {
@@ -544,10 +541,10 @@ export default class SQLAgent {
      * @author: HuiSir
      */
     clearTable(): Promise<any> {
-        const { tableName, getDBConn } = this
-        return new Promise((resolve, reject) => {
+        const { tableName } = this
+        return new Promise(async (resolve, reject) => {
             const sqlMod = `DELETE FROM ${tableName};`
-            const DB = getDBConn()
+            const DB = await this.pool.getDBConn()
             DB.run(sqlMod, function (err: any) {
                 DB.release()
                 if (err) {

@@ -2,15 +2,15 @@
  * @Description: 数据恢复，在初次安装和设置界面使用
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-12-03 15:50:11
- * @LastEditTime: 2021-12-05 14:42:07
+ * @LastEditTime: 2022-05-05 13:58:31
  */
-import os from "os"
 import { doRecover } from "@/api/option"
 import {
   relaunch,
   showOpenFileBox,
   showMessageBoxSync,
   openChildWindow,
+  homedir
 } from "@/api/win"
 import { Ref } from "vue"
 import { obj2Query } from "@/utils/common"
@@ -32,11 +32,13 @@ export default (backupPath?: Ref<string>) => {
     })
 
     if (confirmRes === 0) {
+      const myHomedir = await homedir()
+
       // 选择文件
       const fileRes = await showOpenFileBox(
         `选择需要${MSG}的数据备份文件`,
         ["db.bak"],
-        backupPath ? backupPath.value : os.homedir() //用户文件夹
+        backupPath ? backupPath.value : myHomedir.data //用户文件夹
       )
 
       if (fileRes && !fileRes.canceled) {

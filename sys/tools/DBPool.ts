@@ -2,7 +2,7 @@
  * @Description: SQLite数据库连接池(自创)
  * @Autor: HuiSir<273250950@qq.com>
  * @Date: 2021-05-27 10:15:21
- * @LastEditTime: 2022-05-05 14:06:01
+ * @LastEditTime: 2022-06-16 23:06:48
  */
 import SQLiteDB from "./SQLiteDB"
 import CONST from "../config/const"
@@ -23,7 +23,7 @@ const PoolOpts = {
 }
 
 export interface IPool {
-    createDBConn(): SQLiteDB
+    createDBConn(): Promise<SQLiteDB>
     getDBConn(): Promise<SQLiteDB>
     closeAll(): void
 }
@@ -56,24 +56,35 @@ class Pool implements IPool {
         this.maxUseTimes = poolOpts.maxUseTimes
 
         if (this.dbName !== ":memory:") {
-            // 连接池中连接数初始化
-            while (this.pool.length < poolOpts.minConnNum) {
-                this.pool.push(this.createDBConn())
-            }
-            Print.info(`数据库 [${this.dbName}] 连接池初始化成功`)
+            this.initPool(poolOpts)
         }
+    }
+
+    /**
+     * 连接池中连接数初始化
+     */
+    private async initPool(poolOpts: IPoolOpts) {
+        while (this.pool.length < poolOpts.minConnNum) {
+            this.pool.push(await this.createDBConn())
+        }
+        Print.info(`数据库 [${this.dbName}] 连接池初始化成功`)
     }
 
     /**
      * 创建数据库连接
      */
-    createDBConn(): SQLiteDB {
-        const conn = new SQLiteDB(this.dbName, function (err) {
-            if (err) {
-                Log.error("创建数据库连接失败：", err.toString())
-                // 创建连接池属于程序启动初始化脚本，出错时直接抛出错误，中断程序
-                throw err
-            }
+    // tslint:disable-next-line: member-ordering
+    async createDBConn() {
+        const conn: SQLiteDB = await new Promise((resolve, reject) => {
+            const dbconn = new SQLiteDB(this.dbName, function (err) {
+                if (err) {
+                    Log.error("创建数据库连接失败：", err.toString())
+                    // 创建连接池属于程序启动初始化脚本，出错时直接抛出错误，中断程序
+                    reject(err)
+                } else {
+                    resolve(dbconn)
+                }
+            })
         })
         // 监听是否释放
         // 当客户释放数据库连接时，先判断该连接的引用次数是否超过了规定值
@@ -81,6 +92,7 @@ class Pool implements IPool {
         // 删除前判断连接数是否大于最小值
         conn.on('release', () => {
             if (conn.useTimes >= this.maxUseTimes && this.pool.length > this.minConnNum) {
+                // tslint:disable-next-line: triple-equals
                 this.pool.splice(this.pool.findIndex(({ id }) => id == conn.id), 1)
 
                 conn.close((err) => {
@@ -105,12 +117,13 @@ class Pool implements IPool {
      * 6.当应用程序退出时，关闭连接池中所有的连接，释放连接池相关的资源。
      * ！！！注意：每次执行语句完毕之后都要进行手动释放，否则无法进行管理
      */
+    // tslint:disable-next-line: member-ordering
     async getDBConn() {
         // 缓存数据库直接取出
         if (this.dbName === ":memory:") {
             const memorydb = this.pool[0]
             if (!memorydb) {
-                this.pool.push(this.createDBConn())
+                this.pool.push(await this.createDBConn())
                 return Promise.resolve(this.pool[0])
             } else {
                 return Promise.resolve(memorydb)
@@ -129,7 +142,7 @@ class Pool implements IPool {
             // 查看当前所开的连接数是否已经达到最大连接数，如果没达到就重新创建一个连接给请求的客户
             if (this.pool.length < this.maxConnNum) {
                 // 未达到最大连接数，新建一个连接给用户
-                const newConn = this.createDBConn()
+                const newConn = await this.createDBConn()
                 this.pool.push(newConn)
                 // 上锁
                 newConn.lock()
@@ -159,6 +172,7 @@ class Pool implements IPool {
                 if (err) {
                     Log.error("关闭数据库：", err.toString())
                 }
+                // tslint:disable-next-line: triple-equals
                 if (index == this.pool.length - 1) {
                     this.pool = []
                 }
@@ -177,10 +191,10 @@ class Pool implements IPool {
     }
 
     /**
-    * 等待-获取空闲连接
-    * 递归实现
-    * 每次递归等待20毫秒
-    */
+     * 等待-获取空闲连接
+     * 递归实现
+     * 每次递归等待20毫秒
+     */
     private getConnBySleep(): Promise<SQLiteDB | undefined> {
         const _this = this
         const itemWaitMs = 20

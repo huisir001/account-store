@@ -1,5 +1,5 @@
 #define MyAppName "Account Store"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "HuiSir"
 #define MyAppURL "http://code.zuifengyun.com/accountstore"
 #define MyAppExeName "AccountStore.exe"
@@ -15,10 +15,10 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\gxh\Documents\account-store\install-license.txt
-OutputDir=C:\Users\gxh\Documents\account-store\output
-OutputBaseFilename=AccountStore-1.1.0-win-x64x32-installer
-SetupIconFile=C:\Users\gxh\Documents\account-store\public\favicon.ico
+LicenseFile=G:\�ҵ���Ŀ\account-store\install-license.txt
+OutputDir=G:\�ҵ���Ŀ\account-store\output
+OutputBaseFilename=AccountStore-1.2.0-win-x64x32-installer
+SetupIconFile=G:\�ҵ���Ŀ\account-store\public\favicon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -30,8 +30,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\gxh\Documents\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\gxh\Documents\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "G:\�ҵ���Ŀ\account-store\output\AccountStore-win32-x64\AccountStore.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "G:\�ҵ���Ŀ\account-store\output\AccountStore-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; ע��: ��Ҫ���κι���ϵͳ�ļ���ʹ�á�Flags: ignoreversion��
 
 [Icons]
@@ -41,4 +41,3 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
